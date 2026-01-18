@@ -22,10 +22,10 @@
     "@headlessui/vue": "latest",
     "@heroicons/vue": "latest",
     "@nuxtjs/color-mode": "latest",
-    "autoprefixer": "latest",
+    "autoprefixer": "^10.4.16",
     "axios": "latest",
     "chart.js": "latest",
-    "postcss": "latest",
-    "tailwindcss": "latest"
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.1"
   }
 }
