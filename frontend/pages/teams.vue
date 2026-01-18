@@ -1,88 +1,176 @@
 <template>
-  <div>
-    <h1 class="text-3xl font-bold mb-8">🏟️ Teams & Franchises</h1>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Franchise Selector -->
-      <div class="stat-card">
-        <h2 class="text-xl font-bold mb-4">Select Franchise</h2>
-        <div class="grid grid-cols-2 gap-2">
-          <button 
-            v-for="franchise in franchises" 
-            :key="franchise.franchise_id"
-            @click="selectFranchise(franchise)"
-            :class="[
-              'px-4 py-2 rounded-lg transition text-sm font-medium',
-              selectedFranchise?.franchise_id === franchise.franchise_id 
-                ? 'bg-ipl-blue text-white shadow-md' 
-                : 'bg-slate-50 text-slate-700 hover:bg-ipl-blue/10 hover:text-ipl-blue border border-slate-200'
-            ]"
-          >
-            {{ franchise.current_name }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Team Stats -->
-      <div v-if="selectedFranchise" class="stat-card">
-        <h2 class="text-xl font-bold mb-4">{{ selectedFranchise.current_name }} Statistics</h2>
-        <div class="space-y-4">
-          <div>
-            <p class="text-slate-600 text-sm">Total Matches</p>
-            <p class="text-3xl font-display font-bold text-ipl-navy">{{ teamStats.total_matches }}</p>
-          </div>
-          <div>
-            <p class="text-slate-600 text-sm">Wins</p>
-            <p class="text-3xl font-display font-bold text-ipl-blue">{{ teamStats.wins }}</p>
-          </div>
-          <div>
-            <p class="text-slate-600 text-sm">Win Percentage</p>
-            <p class="text-3xl font-display font-bold text-ipl-orange">{{ teamStats.win_percentage }}%</p>
-          </div>
-        </div>
-      </div>
+  <div class="space-y-8 pb-12">
+    <!-- Header -->
+    <div class="flex items-center gap-3">
+      <CricketStadiumIcon class="w-8 h-8 text-brand-primary" />
+      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Teams & Statistics</h1>
     </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Team Selector -->
+      <div class="lg:col-span-4 lg:sticky lg:top-24 h-fit">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Select Team</h2>
+          </div>
+          <div class="p-4 space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto custom-scrollbar">
+            <!-- Active Teams separator -->
+            <div class="relative py-2">
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-slate-200"></div>
+              </div>
+              <div class="relative flex justify-center">
+                <span class="bg-white px-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Teams</span>
+              </div>
+            </div>
+            
+            <!-- Active Teams -->
+            <div class="space-y-1">
+              <div v-for="team in activeTeams" :key="team.name">
+                <button 
+                  @click="selectTeam(team)"
+                  :class="[
+                    'w-full text-left px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium border',
+                    selectedTeam?.name === team.name 
+                      ? 'bg-brand-primary text-white border-brand-primary shadow-md shadow-brand-primary/20' 
+                      : 'bg-white text-slate-600 hover:bg-slate-50 border-transparent'
+                  ]"
+                >
+                  {{ getTeamLabel(team) }}
+                </button>
+              </div>
+            </div>
 
-    <!-- Squad -->
-    <div v-if="selectedFranchise && squad.length > 0" class="stat-card mt-8">
-      <h2 class="text-xl font-bold mb-4">{{ selectedFranchise.current_name }} Squad</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <button 
-          v-for="player in squad" 
-          :key="player"
-          @click="goToPlayer(player)"
-          class="px-3 py-2 bg-slate-50 border border-slate-200 hover:bg-ipl-blue/10 hover:scale-105 rounded text-sm font-medium transition-all text-slate-700 hover:text-ipl-blue"
-        >
-          {{ player }}
-        </button>
+            <!-- Separator -->
+            <div class="relative py-2">
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-slate-200"></div>
+              </div>
+              <div class="relative flex justify-center">
+                <span class="bg-white px-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Defunct Teams</span>
+              </div>
+            </div>
+
+            <!-- Defunct Teams -->
+            <div class="space-y-1">
+              <div v-for="team in defunctTeams" :key="team.name">
+                <button 
+                  @click="selectTeam(team)"
+                  :class="[
+                    'w-full text-left px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium border opacity-75',
+                    selectedTeam?.name === team.name 
+                      ? 'bg-slate-800 text-white border-slate-800 shadow-md shadow-slate-800/20' 
+                      : 'bg-white text-slate-500 hover:bg-slate-50 border-transparent'
+                  ]"
+                >
+                  {{ getTeamLabel(team) }}
+                  <span v-if="selectedTeam?.name === team.name" class="ml-1 text-[10px] opacity-60">(Defunct)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Panel -->
+      <div v-if="selectedTeam" class="lg:col-span-8 space-y-8">
+        <!-- Main Stats -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">{{ selectedTeam.name }}</h2>
+              <p class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">
+                {{ selectedTeam.is_active ? 'Currently Active' : 'Defunct Franchise' }}
+              </p>
+            </div>
+            <div v-if="!selectedTeam.is_active" class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase">
+              Historical
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+            <div class="p-6">
+              <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Matches</p>
+              <p class="text-4xl font-black text-slate-900">{{ teamStats.total_matches }}</p>
+            </div>
+            <div class="p-6">
+              <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Wins</p>
+              <p class="text-4xl font-black text-brand-primary">{{ teamStats.wins }}</p>
+            </div>
+            <div class="p-6">
+              <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Win Rate</p>
+              <div class="flex items-baseline gap-1">
+                <p class="text-4xl font-black text-brand-accent">{{ teamStats.win_percentage }}</p>
+                <span class="text-lg font-bold text-slate-400">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Squad Section -->
+        <div v-if="squad.length > 0" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Historical Squad Members</h2>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <button 
+                v-for="player in squad" 
+                :key="player"
+                @click="goToPlayer(player)"
+                class="group text-left p-3 bg-white border border-slate-100 hover:border-brand-primary/30 hover:bg-slate-50 rounded-lg transition-all duration-200"
+              >
+                <p class="text-sm font-semibold text-slate-700 group-hover:text-brand-primary transition-colors">{{ player }}</p>
+                <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Player</p>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
 
 const config = useRuntimeConfig()
-const franchises = ref<any[]>([])
-const selectedFranchise = ref<any>(null)
+const allTeams = ref<any[]>([])
+const selectedTeam = ref<any>(null)
 const teamStats = ref<any>({ total_matches: 0, wins: 0, win_percentage: 0 })
 const squad = ref<any[]>([])
 
-const selectFranchise = async (franchise: any) => {
-  selectedFranchise.value = franchise
+const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
+const defunctTeams = computed(() => allTeams.value.filter(t => !t.is_active))
+
+const getTeamLabel = (team: any) => {
+  let label = team.name
+  
+  if (team.is_active) {
+    const olderNames = team.raw_names.filter((n: string) => n !== team.name)
+    if (olderNames.length > 0) {
+      label += ` (earlier known as ${olderNames.join(', ')})`
+    }
+  }
+  
+  return label
+}
+
+const selectTeam = async (team: any) => {
+  selectedTeam.value = team
   teamStats.value = { total_matches: 0, wins: 0, win_percentage: 0 }
   squad.value = []
   
   try {
-    const stats = await $fetch(`${config.public.apiBase}/api/team/${franchise.franchise_id}/stats`)
+    const stats = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`)
     teamStats.value = stats
   } catch (error) {
     console.error('Failed to fetch team stats:', error)
   }
   
   try {
-    const squadData = await $fetch(`${config.public.apiBase}/api/team/${franchise.franchise_id}/squad`)
+    const squadData = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/squad`)
     squad.value = Array.isArray(squadData) ? squadData : []
   } catch (error) {
     console.error('Failed to fetch squad data:', error)
@@ -96,12 +184,32 @@ const goToPlayer = (playerName: string) => {
 
 onMounted(async () => {
   try {
-    franchises.value = await $fetch(`${config.public.apiBase}/api/franchises`)
-    if (franchises.value.length > 0) {
-      await selectFranchise(franchises.value[0])
+    const teamsData = await $fetch(`${config.public.apiBase}/api/teams`)
+    allTeams.value = Array.isArray(teamsData) ? teamsData : []
+    
+    if (allTeams.value.length > 0) {
+      // Find First active team to select by default
+      const firstActive = allTeams.value.find(t => t.is_active) || allTeams.value[0]
+      await selectTeam(firstActive)
     }
   } catch (error) {
-    console.error('Failed to fetch franchises:', error)
+    console.error('Failed to fetch teams:', error)
   }
 })
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+</style>

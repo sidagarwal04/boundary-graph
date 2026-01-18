@@ -100,19 +100,19 @@
           <!-- Stats Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
              <!-- Runner Up -->
-             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 min-h-[90px] flex flex-col justify-center">
                 <p class="text-xs text-slate-400 font-medium mb-1">Runner Up</p>
-                <p class="text-lg font-bold text-slate-800">{{ selectedSeasonDetails.runner_up }}</p>
+                <p class="text-lg font-bold text-slate-800 leading-tight">{{ selectedSeasonDetails.runner_up }}</p>
              </div>
              
              <!-- Venue -->
-             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 min-h-[90px] flex flex-col justify-center">
                 <p class="text-xs text-slate-400 font-medium mb-1">Final Venue</p>
-                <p class="text-lg font-bold text-slate-800 line-clamp-1" :title="selectedSeasonDetails.venue">{{ selectedSeasonDetails.venue }}</p>
+                <p class="text-lg font-bold text-slate-800 leading-tight">{{ selectedSeasonDetails.venue }}</p>
              </div>
              
              <!-- Total Teams -->
-             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
+             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between min-h-[90px]">
                 <div>
                   <p class="text-xs text-slate-400 font-medium mb-1">Participating Teams</p>
                   <p class="text-lg font-bold text-slate-800">{{ selectedSeasonDetails.total_teams }}</p>
@@ -121,7 +121,7 @@
              </div>
 
              <!-- Total Matches -->
-             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
+             <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between min-h-[90px]">
                 <div>
                   <p class="text-xs text-slate-400 font-medium mb-1">Total Matches played</p>
                   <p class="text-lg font-bold text-slate-800">{{ selectedSeasonDetails.total_matches }}</p>

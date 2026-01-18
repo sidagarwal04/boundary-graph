@@ -121,6 +121,14 @@ async def health_check():
         "database": "connected" if db.driver else "disconnected"
     }
 
+# Standard rebrand mapping for IPL teams
+REBRAND_MAP = {
+    "Delhi Daredevils": "Delhi Capitals",
+    "Kings XI Punjab": "Punjab Kings",
+    "Royal Challengers Bangalore": "Royal Challengers Bengaluru",
+    "Rising Pune Supergiant": "Rising Pune Supergiants" # Merge spelling variants
+}
+
 # ==================== OVERVIEW ENDPOINTS ====================
 @app.get("/api/overview", response_model=OverviewStats)
 async def get_overview():
@@ -142,28 +150,18 @@ async def get_overview():
         RETURN DISTINCT t.name as name
     """)
     
-    # Map of Old Name -> Current Name (or standardized Defunct Name)
-    # This ensures rebrands (DD->DC) are counted as 1 franchise, 
-    # while distinct defunct teams (Deccan Chargers) remain separate.
-    rebrand_map = {
-        "Delhi Daredevils": "Delhi Capitals",
-        "Kings XI Punjab": "Punjab Kings",
-        "Royal Challengers Bangalore": "Royal Challengers Bengaluru",
-        "Rising Pune Supergiant": "Rising Pune Supergiants" # Merge spelling variants
-    }
-    
-    # Simple sets to track unique "Franchises"
+    # Simple sets to track unique standardized names
     all_franchises = set()
     active_franchises = set()
     
     for row in all_teams_result:
         raw_name = row['name']
-        normalized_name = rebrand_map.get(raw_name, raw_name)
+        normalized_name = REBRAND_MAP.get(raw_name, raw_name)
         all_franchises.add(normalized_name)
         
     for row in active_teams_result:
         raw_name = row['name']
-        normalized_name = rebrand_map.get(raw_name, raw_name)
+        normalized_name = REBRAND_MAP.get(raw_name, raw_name)
         active_franchises.add(normalized_name)
         
     active_count = len(active_franchises)
@@ -383,40 +381,72 @@ async def search_players(query: str, limit: int = 20):
 # ==================== TEAM ENDPOINTS ====================
 @app.get("/api/teams")
 async def get_teams():
-    """Get all teams"""
-    results = db.query("""
-        MATCH (t:Team)
-        RETURN DISTINCT t.name as name,
-               t.franchise_id as franchise_id,
-               t.current_name as current_name
-        ORDER BY t.name
-    """)
-    return results
-
-@app.get("/api/franchises")
-async def get_franchises():
-    """Get all franchises"""
-    results = db.query("""
-        MATCH (t:Team)
-        WHERE t.franchise_id IS NOT NULL
-        RETURN DISTINCT t.franchise_id as franchise_id,
-               t.current_name as current_name
-        ORDER BY t.current_name
-    """)
-    return results
-
-@app.get("/api/team/{franchise_id}/stats")
-async def get_team_stats(franchise_id: str):
-    """Get team statistics"""
-    results = db.query("""
-        MATCH (t:Team {franchise_id: $franchise_id})
-            -[r:TEAM_INVOLVED]-(m:Match)
-        RETURN COUNT(m) as total_matches,
-               SUM(CASE WHEN (m)-[:WON_BY]->(t) THEN 1 ELSE 0 END) as wins
-    """, {'franchise_id': franchise_id})
+    """Get all teams, normalized by rebrands, sorted by active status"""
+    # 1. Get ALL teams ever
+    all_teams_result = db.query("MATCH (t:Team) RETURN DISTINCT t.name as name")
     
-    if not results:
-        raise HTTPException(status_code=404, detail="Franchise not found")
+    # 2. Get Teams active in the LATEST season
+    active_teams_result = db.query("""
+        MATCH (m:Match)
+        WITH MAX(m.season) as latest_season
+        MATCH (t:Team)-[:TEAM_INVOLVED]-(:Match {season: latest_season})
+        RETURN DISTINCT t.name as name
+    """)
+    
+    active_names = {REBRAND_MAP.get(r['name'], r['name']) for r in active_teams_result}
+    
+    team_map = {}
+    for row in all_teams_result:
+        raw_name = row['name']
+        normalized_name = REBRAND_MAP.get(raw_name, raw_name)
+        
+        if normalized_name not in team_map:
+            team_map[normalized_name] = {
+                "name": normalized_name,
+                "is_active": normalized_name in active_names,
+                "raw_names": [raw_name]
+            }
+        else:
+            if raw_name not in team_map[normalized_name]["raw_names"]:
+                team_map[normalized_name]["raw_names"].append(raw_name)
+
+    # Convert to list and sort: Active first (A-Z), then Defunct (A-Z)
+    # Using .lower() for case-insensitive alphabetical sorting
+    teams = list(team_map.values())
+    teams.sort(key=lambda x: (not x['is_active'], x['name'].lower()))
+    return teams
+
+@app.get("/api/franchises") # Keep for backward compatibility but redirect logic
+async def get_franchises():
+    return await get_teams()
+
+@app.get("/api/team/{team_name}/stats")
+async def get_team_stats(team_name: str):
+    """Get team statistics, including history for rebranded teams"""
+    # Find all raw names associated with this normalized name
+    raw_names = [team_name]
+    for old_name, new_name in REBRAND_MAP.items():
+        if new_name == team_name:
+            raw_names.append(old_name)
+        elif old_name == team_name:
+            # If user passed an old name (e.g. DD), search for all related
+            target_current = REBRAND_MAP[old_name]
+            raw_names = [target_current]
+            for o, n in REBRAND_MAP.items():
+                if n == target_current:
+                    raw_names.append(o)
+            break
+
+    results = db.query("""
+        MATCH (t:Team)
+        WHERE t.name IN $names
+        MATCH (t)-[:TEAM_INVOLVED]-(m:Match)
+        RETURN COUNT(DISTINCT m) as total_matches,
+               SUM(CASE WHEN (m)-[:WON_BY]->(t) THEN 1 ELSE 0 END) as wins
+    """, {'names': list(set(raw_names))})
+    
+    if not results or results[0]['total_matches'] == 0:
+        raise HTTPException(status_code=404, detail="Team not found")
     
     stats = results[0]
     matches = stats['total_matches'] or 0
@@ -424,22 +454,29 @@ async def get_team_stats(franchise_id: str):
     win_percentage = (wins / matches * 100) if matches > 0 else 0
     
     return {
-        "franchise_id": franchise_id,
+        "name": team_name,
         "total_matches": matches,
         "wins": wins,
         "win_percentage": round(win_percentage, 2)
     }
 
-@app.get("/api/team/{franchise_id}/squad")
-async def get_team_squad(franchise_id: str, limit: int = 50):
-    """Get team squad"""
+@app.get("/api/team/{team_name}/squad")
+async def get_team_squad(team_name: str, limit: int = 50):
+    """Get team squad (players who played for any variant of the team)"""
+    # Find all raw names associated with this normalized name
+    raw_names = [team_name]
+    for old_name, new_name in REBRAND_MAP.items():
+        if new_name == team_name:
+            raw_names.append(old_name)
+            
     results = db.query(f"""
-        MATCH (t:Team {{franchise_id: $franchise_id}})
-            -[:SELECTED_PLAYER]-(p:Player)
+        MATCH (t:Team)
+        WHERE t.name IN $names
+        MATCH (t)-[:SELECTED_PLAYER]-(p:Player)
         RETURN DISTINCT p.name as name
         ORDER BY p.name
         LIMIT {limit}
-    """, {'franchise_id': franchise_id})
+    """, {'names': list(set(raw_names))})
     
     return [r['name'] for r in results]
 
