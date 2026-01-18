@@ -26,11 +26,16 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'IPL Cricket Dashboard',
+      title: 'Boundary Graph',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Professional IPL cricket analytics dashboard' },
+        { name: 'description', content: 'Professional cricket analytics dashboard' },
+      ],
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap' }
       ],
     },
   },

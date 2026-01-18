@@ -11,12 +11,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        cricket: {
-          navy: '#0f172a',
-          orange: '#ea580c',
-          red: '#dc2626',
-          gold: '#fbbf24',
+        brand: {
+          dark: '#0B1120',   // Almost Black
+          primary: '#2563EB', // Professional Blue
+          secondary: '#475569', // Slate
+          accent: '#0EA5E9',  // Sky Blue
+          success: '#10B981',
+          warning: '#F59E0B',
+          danger: '#EF4444',
         }
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       }
     },
   },

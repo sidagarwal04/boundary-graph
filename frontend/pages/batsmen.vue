@@ -15,17 +15,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(player, idx) in batsmen" :key="idx" class="border-b hover:bg-slate-50 transition">
-              <td class="px-4 py-3 text-sm font-medium text-blue-600">{{ (idx as number) + 1 }}</td>
+            <tr v-for="(player, idx) in batsmen" :key="idx" class="border-b border-slate-100 hover:bg-ipl-blue/5 transition group">
+              <td class="px-4 py-3 text-sm font-bold text-ipl-navy font-display text-lg">{{ (idx as number) + 1 }}</td>
               <td class="px-4 py-3 text-sm font-medium text-slate-900">
-                <NuxtLink :to="`/player-search?name=${encodeURIComponent(player.name)}`" class="hover:text-blue-600">
+                <NuxtLink :to="`/player-search?name=${encodeURIComponent(player.name)}`" class="hover:text-ipl-orange transition-colors">
                   {{ player.name }}
                 </NuxtLink>
               </td>
-              <td class="px-4 py-3 text-sm text-center font-semibold text-green-600">{{ player.runs }}</td>
-              <td class="px-4 py-3 text-sm text-center">{{ player.matches }}</td>
+              <td class="px-4 py-3 text-sm text-center font-bold font-display text-ipl-orange text-lg">{{ player.runs }}</td>
+              <td class="px-4 py-3 text-sm text-center font-medium">{{ player.matches }}</td>
               <td class="px-4 py-3 text-sm text-center">
-                <span class="badge">{{ player.strike_rate }}%</span>
+                <span class="badge badge-ipl">{{ player.strike_rate }}%</span>
               </td>
             </tr>
           </tbody>

@@ -144,7 +144,7 @@ async def get_seasons():
         MATCH (m:Match)
         WITH m.season as season_val, COUNT(*) as match_count
         RETURN toString(season_val) as season, match_count as matches
-        ORDER BY season_val DESC
+        ORDER BY season DESC
     """)
     return [SeasonStats(**r) for r in results]
 

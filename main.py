@@ -172,7 +172,19 @@ class IPLNeo4jImporter:
         info = match_data.get('info', {})
         
         # 1. Create/Merge Season
-        season = info.get('season', 'Unknown')
+        # 1. Create/Merge Season
+        raw_season = info.get('season', 'Unknown')
+        
+        # Normalize season
+        season_mapping = {
+            "2007/08": "2008",
+            "2009/10": "2010",
+            "2020/21": "2020"
+        }
+        season = str(raw_season)
+        if season in season_mapping:
+            season = season_mapping[season]
+
         session.run("""
             MERGE (s:Season {year: $year})
         """, year=season)
