@@ -22,9 +22,10 @@
         <input 
           v-model="searchQuery"
           type="text"
-          placeholder="Ex: Virat Kohli, Rashid Khan..."
+          placeholder="Ex: V Kohli, MS Dhoni, Rashid Khan..."
           class="flex-1 bg-transparent py-3 pr-4 outline-none text-slate-900 font-medium placeholder:text-slate-400"
           @input="searchPlayers"
+          @keydown="handleKeydown"
         />
         <div v-if="searchQuery" @click="searchQuery = ''; playerStats = null; showResults = false" class="pr-3 text-slate-400 hover:text-slate-600 cursor-pointer">
           <XMarkIcon class="w-5 h-5" />
@@ -43,12 +44,18 @@
         <div v-if="searchResults.length > 0 && showResults" class="absolute z-50 mt-3 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm bg-white/95">
           <div class="py-2">
             <button 
-              v-for="player in searchResults" 
+              v-for="(player, index) in searchResults" 
               :key="player"
               @click="selectPlayer(player)"
-              class="w-full text-left px-5 py-3.5 hover:bg-slate-50 flex items-center gap-3 transition-colors group"
+              :class="[
+                'w-full text-left px-5 py-3.5 flex items-center gap-3 transition-colors group',
+                highlightedIndex === index ? 'bg-slate-100' : 'hover:bg-slate-50'
+              ]"
             >
-              <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-brand-primary/10 group-hover:text-brand-primary">
+              <div :class="[
+                'w-8 h-8 rounded-full flex items-center justify-center transition-colors',
+                highlightedIndex === index ? 'bg-brand-primary/10 text-brand-primary' : 'bg-slate-100 text-slate-500 group-hover:bg-brand-primary/10 group-hover:text-brand-primary'
+              ]">
                 <UserIcon class="w-4 h-4" />
               </div>
               <span class="font-semibold text-slate-700 group-hover:text-slate-900">{{ player }}</span>
@@ -176,25 +183,59 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 const showResults = ref(false)
 const playerStats = ref<any>(null)
+const highlightedIndex = ref(-1)
+let searchTimeout: any = null
 
-const searchPlayers = async () => {
+const searchPlayers = () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  
   if (searchQuery.value.length < 2) {
     searchResults.value = []
     showResults.value = false
+    highlightedIndex.value = -1
     return
   }
   
-  try {
-    searchResults.value = await $fetch(`${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`)
-    showResults.value = true
-  } catch (error) {
-    console.error('Search failed:', error)
+  searchTimeout = setTimeout(async () => {
+    try {
+      searchResults.value = await $fetch(`${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`)
+      showResults.value = searchResults.value.length > 0
+      highlightedIndex.value = -1
+    } catch (error) {
+      console.error('Search failed:', error)
+      searchResults.value = []
+    }
+  }, 300)
+}
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (!showResults.value || searchResults.value.length === 0) return
+
+  switch (e.key) {
+    case 'ArrowDown':
+      e.preventDefault()
+      highlightedIndex.value = (highlightedIndex.value + 1) % searchResults.value.length
+      break
+    case 'ArrowUp':
+      e.preventDefault()
+      highlightedIndex.value = (highlightedIndex.value - 1 + searchResults.value.length) % searchResults.value.length
+      break
+    case 'Enter':
+      e.preventDefault()
+      if (highlightedIndex.value >= 0) {
+        selectPlayer(searchResults.value[highlightedIndex.value])
+      }
+      break
+    case 'Escape':
+      showResults.value = false
+      break
   }
 }
 
 const selectPlayer = async (playerName: string) => {
   searchQuery.value = playerName
   showResults.value = false
+  highlightedIndex.value = -1
   
   try {
     playerStats.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}`)

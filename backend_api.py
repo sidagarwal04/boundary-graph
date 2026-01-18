@@ -307,7 +307,7 @@ async def get_top_batsmen(limit: int = 20):
         RETURN p.name as name, 
                total_runs as runs, 
                matches as matches,
-               ROUND(total_runs * 100.0 / balls, 2) as strike_rate
+               CASE WHEN balls > 0 THEN ROUND(total_runs * 100.0 / balls, 2) ELSE 0 END as strike_rate
         ORDER BY total_runs DESC
         LIMIT {limit}
     """)
@@ -324,7 +324,7 @@ async def get_top_bowlers(limit: int = 20):
         RETURN p.name as name,
                total_wickets as wickets,
                matches as matches,
-               ROUND(runs_conceded * 6.0 / balls, 2) as economy
+               CASE WHEN balls > 0 THEN ROUND(runs_conceded * 6.0 / balls, 2) ELSE 0 END as economy
         ORDER BY total_wickets DESC
         LIMIT {limit}
     """)
@@ -351,13 +351,13 @@ async def get_player_stats(player_name: str):
         RETURN p.name as name,
                batting_matches,
                total_runs,
-               ROUND(total_runs * 100.0 / total_balls, 2) as strike_rate,
+               CASE WHEN total_balls > 0 THEN ROUND(total_runs * 100.0 / total_balls, 2) ELSE 0 END as strike_rate,
                total_fours,
                total_sixes,
                bowling_matches,
                total_wickets,
                runs_conceded,
-               ROUND(runs_conceded * 6.0 / bowling_balls, 2) as economy
+               CASE WHEN bowling_balls > 0 THEN ROUND(runs_conceded * 6.0 / bowling_balls, 2) ELSE 0 END as economy
     """, {'name': player_name})
     
     if not results:
@@ -370,7 +370,7 @@ async def search_players(query: str, limit: int = 20):
     """Search for players by name"""
     results = db.query(f"""
         MATCH (p:Player)
-        WHERE p.name CONTAINS $query
+        WHERE toUpper(p.name) CONTAINS $query
         RETURN p.name as name
         ORDER BY p.name
         LIMIT {limit}
