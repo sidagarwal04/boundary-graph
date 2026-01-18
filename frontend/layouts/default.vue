@@ -10,7 +10,7 @@
           </div>
           <div>
             <h1 class="text-xl font-bold tracking-tight text-slate-900">Boundary Graph</h1>
-            <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Analytics Platform</p>
+            <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Where Numbers Meet the Boundary</p>
           </div>
         </div>
         <nav class="hidden md:flex gap-8 items-center">
@@ -35,10 +35,10 @@
         <div class="flex flex-col md:flex-row justify-between items-center">
           <div class="mb-4 md:mb-0 text-center md:text-left">
             <h2 class="text-lg font-bold text-slate-800">Boundary Graph</h2>
-            <p class="text-slate-500 text-sm mt-1">Advanced Cricket Data Visualization</p>
+            <p class="text-slate-500 text-sm mt-1">Deep Analytics for Gentlemen & Madmen</p>
           </div>
           <div class="flex gap-4">
-             <span class="text-slate-400 text-sm">© 2026 Boundary Graph Inc.</span>
+             <span class="text-slate-400 text-sm">© 2026 Boundary Graph. All rights reserved.</span>
           </div>
         </div>
       </div>
