@@ -1,0 +1,65 @@
+graph TB
+    %% Core Entities
+    Season[Season<br/>year]
+    Match[Match<br/>match_id, date, season<br/>match_number, match_type<br/>winner, outcome_type<br/>outcome_margin<br/>toss_winner, toss_decision]
+    Venue[Venue<br/>name, city]
+    Team[Team<br/>name, team_type]
+    Player[Player<br/>player_id, name]
+    Official[Official<br/>name, role]
+    
+    %% Match Structure
+    Innings[Innings<br/>innings_number<br/>batting_team<br/>total_runs, total_wickets<br/>target_runs, target_overs<br/>powerplay_from, powerplay_to]
+    Over[Over<br/>over_number]
+    Delivery[Delivery<br/>delivery_number, ball_in_over<br/>runs_batter, runs_extras<br/>runs_total, extras_type<br/>is_wicket, wicket_kind<br/>is_boundary, is_six<br/>review data]
+    
+    %% Aggregated Performance
+    BattingStats[BattingStats<br/>runs, balls, fours, sixes<br/>dots, strike_rate<br/>dismissal_type, position]
+    BowlingStats[BowlingStats<br/>overs, maidens, runs<br/>wickets, economy, dots<br/>fours_conceded, sixes_conceded]
+    Partnership[Partnership<br/>runs, balls<br/>from_over, to_over<br/>wicket_ended]
+    
+    %% Match Context Relationships
+    Match -->|PLAYED_IN| Season
+    Match -->|HELD_AT| Venue
+    Match -->|TEAM_INVOLVED| Team
+    Match -->|WON_BY| Team
+    Match -->|TOSS_WON_BY| Team
+    Match -->|PLAYER_OF_MATCH| Player
+    Match -->|OFFICIATED_BY| Official
+    
+    %% Match Structure Relationships
+    Match -->|HAS_INNINGS| Innings
+    Innings -->|BATTING_TEAM| Team
+    Innings -->|HAS_OVER| Over
+    Over -->|HAS_DELIVERY| Delivery
+    
+    %% Ball-by-Ball Relationships
+    Delivery -->|BOWLED_BY| Player
+    Delivery -->|FACED_BY| Player
+    Delivery -->|NON_STRIKER| Player
+    Delivery -->|CAUGHT_BY| Player
+    Delivery -->|RUN_OUT_BY| Player
+    Delivery -->|STUMPED_BY| Player
+    Delivery -->|DISMISSED| Player
+    
+    %% Squad & Impact Players
+    Team -.->|SELECTED_PLAYER| Player
+    Player -.->|IMPACT_SUB_IN| Match
+    Player -.->|IMPACT_SUB_OUT| Match
+    
+    %% Aggregated Performance (Derived)
+    Player ==>|BATTING_STATS| Match
+    Player ==>|BOWLING_STATS| Match
+    Player ==>|PARTNERSHIP| Player
+    
+    %% Styling
+    classDef matchNode fill:#ff6b6b,stroke:#c92a2a,stroke-width:3px,color:#fff
+    classDef structureNode fill:#4dabf7,stroke:#1971c2,stroke-width:2px,color:#fff
+    classDef entityNode fill:#51cf66,stroke:#2f9e44,stroke-width:2px,color:#fff
+    classDef performanceNode fill:#ffd43b,stroke:#f59f00,stroke-width:2px,color:#000
+    classDef deliveryNode fill:#ff8787,stroke:#fa5252,stroke-width:3px,color:#fff
+    
+    class Match matchNode
+    class Innings,Over structureNode
+    class Season,Venue,Team,Player,Official entityNode
+    class BattingStats,BowlingStats,Partnership performanceNode
+    class Delivery deliveryNode

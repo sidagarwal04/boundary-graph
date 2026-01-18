@@ -1,0 +1,37 @@
+# .gitignore for Nuxt.js frontend
+
+# Nuxt dist directory
+dist/
+
+# Nuxt hidden directory used by nuxt generate
+.output/
+.nuxt/
+
+# Node dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*.local
+.env.local
+.env.*.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Nitro
+.nitro/
+.cache/
+
+# OS
+Thumbs.db

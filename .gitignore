@@ -1,0 +1,56 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+skipped_json_fields.txt
+import_errors.log
+Neo4j-*.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+frontend/node_modules/
+frontend/.nuxt/
+frontend/dist/
+frontend/.output/
+package-lock.json
+
+# Database files (if using local Neo4j)
+*.db
+*.sqlite
+
+# Data files (too large, users should download separately)
+data/ipl_json/

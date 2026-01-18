@@ -1,0 +1,14 @@
+[build]
+  command = "npm run generate"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[env]
+  [env.production]
+    NUXT_PUBLIC_API_BASE = "https://api.yourdomain.com"
+  [env.staging]
+    NUXT_PUBLIC_API_BASE = "https://staging-api.yourdomain.com"
