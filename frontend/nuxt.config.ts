@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/guide/concepts/auto-imports
 export default defineNuxtConfig({
+  ssr: false,
+  compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   postcss: {
