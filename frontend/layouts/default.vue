@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 font-sans">
+  <div class="min-h-screen bg-slate-50 font-sans flex flex-col">
     <!-- Header Navigation -->
     <header class="bg-white text-slate-900 border-b border-slate-200">
       <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -25,12 +25,12 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-12">
+    <footer class="bg-white border-t border-slate-200">
       <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <div class="mb-4 md:mb-0 text-center md:text-left">
