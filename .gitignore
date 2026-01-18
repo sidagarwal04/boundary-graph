@@ -51,6 +51,3 @@ package-lock.json
 # Database files (if using local Neo4j)
 *.db
 *.sqlite
-
-# Data files (too large, users should download separately)
-data/ipl_json/
