@@ -44,7 +44,6 @@
                 >
                   {{ player.name }}
                 </NuxtLink>
-                <span class="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Standard Entity</span>
               </td>
               <td class="px-6 py-4 text-center text-sm font-semibold text-slate-600">{{ player.matches }}</td>
               <td class="px-6 py-4 text-center">
