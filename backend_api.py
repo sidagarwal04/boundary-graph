@@ -142,19 +142,15 @@ async def get_overview():
         RETURN DISTINCT t.name as name
     """)
     
-    # Map of Old Name -> Current Name
+    # Map of Old Name -> Current Name (or standardized Defunct Name)
+    # This ensures rebrands (DD->DC) are counted as 1 franchise, 
+    # while distinct defunct teams (Deccan Chargers) remain separate.
     rebrand_map = {
         "Delhi Daredevils": "Delhi Capitals",
         "Kings XI Punjab": "Punjab Kings",
         "Royal Challengers Bangalore": "Royal Challengers Bengaluru",
-        "Deccan Chargers": "Sunrisers Hyderabad", # Often debatable, but for "franchise" continuity in stats sometimes kept. 
-                                                  # User asked for "name change". DC -> SRH might be seen as new. 
-                                                  # Let's stick to PURE rebrands first as per user request.
-                                                  # Actually, Deccan Chargers is usually considered defunct and SRH new. 
-                                                  # I will exclude DC->SRH mapping to be safe/accurate unless requested.
-        "Rising Pune Supergiants": "Rising Pune Supergiant" # Merge typo/minor change
+        "Rising Pune Supergiant": "Rising Pune Supergiants" # Merge spelling variants
     }
-    # User said "name change". DD->DC, KXIP->PBKS, RCB->RCB are 100% rebrands.
     
     # Simple sets to track unique "Franchises"
     all_franchises = set()
@@ -162,8 +158,6 @@ async def get_overview():
     
     for row in all_teams_result:
         raw_name = row['name']
-        # Normalize: Usage map or keep original
-        # If A -> B, and B exists, both map to B.
         normalized_name = rebrand_map.get(raw_name, raw_name)
         all_franchises.add(normalized_name)
         
