@@ -1,9 +1,11 @@
 [build]
-  command = "npm run build"
+  command = "npm run generate"
   publish = ".output/public"
+  base = "frontend"
 
 [build.environment]
   NODE_VERSION = "20"
+  NUXT_PUBLIC_API_BASE = "https://boundary-graph.onrender.com"
 
 [[redirects]]
   from = "/*"
