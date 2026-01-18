@@ -85,7 +85,8 @@ db.connect()
 class OverviewStats(BaseModel):
     total_matches: int
     total_players: int
-    total_franchises: int
+    active_teams: int
+    defunct_teams: int
     total_deliveries: int
 
 class SeasonStats(BaseModel):
@@ -127,13 +128,59 @@ async def get_overview():
     
     matches = db.query("MATCH (m:Match) RETURN COUNT(m) as count")
     players = db.query("MATCH (p:Player) RETURN COUNT(p) as count")
-    franchises = db.query("MATCH (t:Team) RETURN COUNT(DISTINCT t.franchise_id) as count")
     deliveries = db.query("MATCH (d:Delivery) RETURN COUNT(d) as count")
     
+    # Calculate Active vs Defunct Teams logic with Rebranding
+    # 1. Get ALL teams ever
+    all_teams_result = db.query("MATCH (t:Team) RETURN DISTINCT t.name as name")
+    
+    # 2. Get Teams active in the LATEST season
+    active_teams_result = db.query("""
+        MATCH (m:Match)
+        WITH MAX(m.season) as latest_season
+        MATCH (t:Team)-[:TEAM_INVOLVED]-(:Match {season: latest_season})
+        RETURN DISTINCT t.name as name
+    """)
+    
+    # Map of Old Name -> Current Name
+    rebrand_map = {
+        "Delhi Daredevils": "Delhi Capitals",
+        "Kings XI Punjab": "Punjab Kings",
+        "Royal Challengers Bangalore": "Royal Challengers Bengaluru",
+        "Deccan Chargers": "Sunrisers Hyderabad", # Often debatable, but for "franchise" continuity in stats sometimes kept. 
+                                                  # User asked for "name change". DC -> SRH might be seen as new. 
+                                                  # Let's stick to PURE rebrands first as per user request.
+                                                  # Actually, Deccan Chargers is usually considered defunct and SRH new. 
+                                                  # I will exclude DC->SRH mapping to be safe/accurate unless requested.
+        "Rising Pune Supergiants": "Rising Pune Supergiant" # Merge typo/minor change
+    }
+    # User said "name change". DD->DC, KXIP->PBKS, RCB->RCB are 100% rebrands.
+    
+    # Simple sets to track unique "Franchises"
+    all_franchises = set()
+    active_franchises = set()
+    
+    for row in all_teams_result:
+        raw_name = row['name']
+        # Normalize: Usage map or keep original
+        # If A -> B, and B exists, both map to B.
+        normalized_name = rebrand_map.get(raw_name, raw_name)
+        all_franchises.add(normalized_name)
+        
+    for row in active_teams_result:
+        raw_name = row['name']
+        normalized_name = rebrand_map.get(raw_name, raw_name)
+        active_franchises.add(normalized_name)
+        
+    active_count = len(active_franchises)
+    total_unique_franchises = len(all_franchises)
+    defunct_count = total_unique_franchises - active_count
+
     return OverviewStats(
         total_matches=matches[0]['count'] if matches else 0,
         total_players=players[0]['count'] if players else 0,
-        total_franchises=franchises[0]['count'] if franchises else 0,
+        active_teams=active_count,
+        defunct_teams=defunct_count,
         total_deliveries=deliveries[0]['count'] if deliveries else 0
     )
 

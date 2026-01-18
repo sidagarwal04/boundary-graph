@@ -56,6 +56,4 @@
 }
 </style>
 
-<style scoped>
-/* Navigation links styling */
-</style>
+

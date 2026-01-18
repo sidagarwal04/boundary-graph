@@ -19,8 +19,11 @@
       
       <div class="stat-card">
         <div class="flex flex-col">
-          <h3 class="text-label text-slate-500 mb-1">Franchises</h3>
-          <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_franchises }}</p>
+          <h3 class="text-label text-slate-500 mb-1">Teams</h3>
+          <div class="flex items-baseline gap-2">
+            <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.active_teams }}</p>
+            <span class="text-xs text-slate-400 font-medium">({{ overview.defunct_teams }} defunct)</span>
+          </div>
           <div class="h-1 w-12 bg-orange-500 mt-4 rounded-full"></div>
         </div>
       </div>
