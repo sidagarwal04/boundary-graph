@@ -1,23 +1,29 @@
 <template>
   <div>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div class="stat-card">
+      <div class="stat-card flex justify-between items-start">
         <div class="flex flex-col">
           <h3 class="text-label text-slate-500 mb-1">Total Matches</h3>
           <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_matches }}</p>
           <div class="h-1 w-12 bg-blue-500 mt-4 rounded-full"></div>
         </div>
+        <div class="p-3 bg-blue-50 rounded-lg">
+           <CricketStadiumIcon class="w-8 h-8 text-blue-600" />
+        </div>
       </div>
       
-      <div class="stat-card">
+      <div class="stat-card flex justify-between items-start">
         <div class="flex flex-col">
           <h3 class="text-label text-slate-500 mb-1">Total Players</h3>
           <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_players }}</p>
           <div class="h-1 w-12 bg-green-500 mt-4 rounded-full"></div>
         </div>
+        <div class="p-3 bg-green-50 rounded-lg">
+           <CricketHelmetIcon class="w-8 h-8 text-green-600" />
+        </div>
       </div>
       
-      <div class="stat-card">
+      <div class="stat-card flex justify-between items-start">
         <div class="flex flex-col">
           <h3 class="text-label text-slate-500 mb-1">Teams</h3>
           <div class="flex items-baseline gap-2">
@@ -26,13 +32,19 @@
           </div>
           <div class="h-1 w-12 bg-orange-500 mt-4 rounded-full"></div>
         </div>
+        <div class="p-3 bg-orange-50 rounded-lg">
+           <CricketJerseyIcon class="w-8 h-8 text-orange-600" />
+        </div>
       </div>
       
-      <div class="stat-card">
+      <div class="stat-card flex justify-between items-start">
         <div class="flex flex-col">
           <h3 class="text-label text-slate-500 mb-1">Total Deliveries</h3>
           <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ formatNumber(overview.total_deliveries) }}</p>
           <div class="h-1 w-12 bg-red-500 mt-4 rounded-full"></div>
+        </div>
+        <div class="p-3 bg-red-50 rounded-lg">
+           <CricketBallIcon class="w-8 h-8 text-red-600" />
         </div>
       </div>
     </div>
@@ -56,6 +68,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
+import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
+import CricketJerseyIcon from '~/components/icons/CricketJerseyIcon.vue'
+import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
 
 const config = useRuntimeConfig()
 const overview = ref<any>({
