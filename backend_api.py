@@ -178,6 +178,114 @@ async def get_overview():
         total_deliveries=deliveries[0]['count'] if deliveries else 0
     )
 
+# Official Player of the Tournament awards (not in match data)
+PLAYER_OF_TOURNAMENT_MAP = {
+    "2025": "Suryakumar Yadav",
+    "2024": "Sunil Narine",  # Fixed - was incorrectly Virat Kohli
+    "2023": "Shubman Gill",
+    "2022": "Jos Buttler",
+    "2021": "Harshal Patel",
+    "2020": "Jofra Archer",
+    "2019": "Andre Russell",
+    "2018": "Sunil Narine",
+    "2017": "Ben Stokes",
+    "2016": "Virat Kohli",
+    "2015": "Andre Russell",
+    "2014": "Glenn Maxwell",
+    "2013": "Shane Watson",
+    "2012": "Sunil Narine",
+    "2011": "Chris Gayle",
+    "2010": "Sachin Tendulkar",
+    "2009": "Adam Gilchrist",
+    "2008": "Shane Watson"
+}
+
+# Manual overrides for runner-up teams (for cases where database has incomplete data)
+RUNNER_UP_OVERRIDE_MAP = {
+    "2017": "Rising Pune Supergiant"  # Database has incomplete TEAM_INVOLVED relationship
+}
+
+class SeasonDetails(BaseModel):
+    season: str
+    winner: Optional[str] = None
+    runner_up: Optional[str] = None
+    venue: Optional[str] = None
+    margin: Optional[str] = None
+    total_teams: int
+    total_matches: int
+    player_of_tournament: Optional[str] = None
+    player_of_match: Optional[str] = None  # Player of Match from the final
+
+@app.get("/api/seasons/{season_year}", response_model=SeasonDetails)
+async def get_season_details(season_year: str):
+    """Get detailed stats for a specific season (Final results etc)"""
+    
+    # 1. Get Summary Stats (Teams count, Matches count)
+    summary_query = """
+        MATCH (m:Match {season: $season})
+        WITH COUNT(DISTINCT m) as total_matches
+        MATCH (t:Team)-[:TEAM_INVOLVED]-(m2:Match {season: $season})
+        RETURN total_matches, COUNT(DISTINCT t) as total_teams
+    """
+    summary = db.query(summary_query, {"season": season_year})
+    
+    if not summary:
+        # Fallback if season not found/no matches
+        return SeasonDetails(season=season_year, total_teams=0, total_matches=0)
+        
+    total_matches = summary[0]['total_matches']
+    total_teams = summary[0]['total_teams']
+    
+    # 2. Get Final Match Details (Last match by date - this is the Final)
+    final_query = """
+        MATCH (m:Match {season: $season})
+        WITH m ORDER BY m.date DESC LIMIT 1
+        
+        // Get all teams involved in the match
+        OPTIONAL MATCH (m)-[:TEAM_INVOLVED]-(t:Team)
+        WITH m, collect(DISTINCT t.name) as all_teams
+        
+        // Get player of match
+        OPTIONAL MATCH (m)-[:PLAYER_OF_MATCH]->(pom:Player)
+        
+        RETURN 
+            m.winner as winner,
+            [team IN all_teams WHERE team <> m.winner][0] as runner_up,
+            m.venue as venue,
+            m.outcome_margin as margin,
+            m.outcome_type as margin_type,
+            pom.name as player_of_match
+    """
+    final_res = db.query(final_query, {"season": season_year})
+    
+    details = {
+        "season": season_year,
+        "total_teams": total_teams,
+        "total_matches": total_matches
+    }
+    
+    if final_res and final_res[0]:
+        row = final_res[0]
+        details["winner"] = row.get('winner')
+        details["runner_up"] = row.get('runner_up')
+        details["venue"] = row.get('venue')
+        details["player_of_match"] = row.get('player_of_match')
+        
+        # Format margin (e.g. "runs" or "wickets")
+        margin_val = row.get('margin')
+        margin_type = row.get('margin_type')
+        if margin_val and margin_type:
+             details["margin"] = f"{margin_val} {margin_type}"
+    
+    # Get official Player of Tournament from mapping
+    details["player_of_tournament"] = PLAYER_OF_TOURNAMENT_MAP.get(season_year)
+    
+    # Apply manual runner-up override if applicable
+    if season_year in RUNNER_UP_OVERRIDE_MAP:
+        details["runner_up"] = RUNNER_UP_OVERRIDE_MAP[season_year]
+    
+    return SeasonDetails(**details)
+
 @app.get("/api/seasons", response_model=List[SeasonStats])
 async def get_seasons():
     """Get statistics for all seasons"""
