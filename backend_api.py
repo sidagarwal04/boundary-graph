@@ -484,16 +484,27 @@ async def get_team_squad(team_name: str, limit: int = 50):
 @app.get("/api/h2h/{team1}/{team2}")
 async def get_head_to_head(team1: str, team2: str):
     """Get head-to-head record between two teams"""
+    # Find all raw names associated with these normalized names
+    names1 = [team1]
+    for old_name, new_name in REBRAND_MAP.items():
+        if new_name == team1:
+            names1.append(old_name)
+            
+    names2 = [team2]
+    for old_name, new_name in REBRAND_MAP.items():
+        if new_name == team2:
+            names2.append(old_name)
+            
     results = db.query("""
-        MATCH (t1:Team {name: $team1})
-        MATCH (t2:Team {name: $team2})
+        MATCH (t1:Team) WHERE t1.name IN $names1
+        MATCH (t2:Team) WHERE t2.name IN $names2
         OPTIONAL MATCH (t1)-[r:TEAM_INVOLVED]-(m:Match)-[r2:TEAM_INVOLVED]-(t2)
-        WITH t1, COUNT(m) as total_matches,
-             SUM(CASE WHEN (m)-[:WON_BY]->(t1) THEN 1 ELSE 0 END) as team1_wins
-        RETURN total_matches, team1_wins
-    """, {'team1': team1, 'team2': team2})
+        WITH t1, m
+        RETURN COUNT(DISTINCT m) as total_matches,
+               SUM(CASE WHEN (m)-[:WON_BY]->(t1) THEN 1 ELSE 0 END) as team1_wins
+    """, {'names1': list(set(names1)), 'names2': list(set(names2))})
     
-    if not results or results[0]['total_matches'] is None:
+    if not results or results[0]['total_matches'] == 0:
         return {
             "total_matches": 0,
             "team1": team1,
@@ -518,17 +529,39 @@ async def get_head_to_head(team1: str, team2: str):
 @app.get("/api/h2h/{team1}/{team2}/matches")
 async def get_h2h_matches(team1: str, team2: str, limit: int = 50):
     """Get recent matches between two teams"""
+    # Find all raw names associated with these normalized names
+    names1 = [team1]
+    for old_name, new_name in REBRAND_MAP.items():
+        if new_name == team1:
+            names1.append(old_name)
+            
+    names2 = [team2]
+    for old_name, new_name in REBRAND_MAP.items():
+        if new_name == team2:
+            names2.append(old_name)
+
     results = db.query(f"""
-        MATCH (t1:Team {{name: $team1}})
-        MATCH (t2:Team {{name: $team2}})
+        MATCH (t1:Team) WHERE t1.name IN $names1
+        MATCH (t2:Team) WHERE t2.name IN $names2
         MATCH (t1)-[r:TEAM_INVOLVED]-(m:Match)-[r2:TEAM_INVOLVED]-(t2)
+        MATCH (m)-[:WON_BY]->(winner:Team)
         RETURN m.date as date, m.season as season,
-               CASE WHEN (m)-[:WON_BY]->(t1) THEN $team1 ELSE $team2 END as winner,
+               winner.name as winning_team_name,
                m.venue as venue
         ORDER BY m.date DESC
         LIMIT {limit}
-    """, {'team1': team1, 'team2': team2})
+    """, {'names1': list(set(names1)), 'names2': list(set(names2))})
     
+    # Normalize winner name to team1 or team2 as used in display
+    for r in results:
+        w_name = r['winning_team_name']
+        # If the actual winner's name maps to team1, set it to team1
+        if w_name in names1:
+            r['winner'] = team1
+        else:
+            r['winner'] = team2
+        del r['winning_team_name']
+        
     return results
 
 # ==================== TRENDS ENDPOINTS ====================

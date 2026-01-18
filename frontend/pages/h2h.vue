@@ -124,11 +124,20 @@
         </div>
       </div>
     </div>
+
+    <!-- No Match Alert -->
+    <div v-if="h2hStats.total_matches === 0 && team1 && team2 && hasSearched" class="bg-white p-12 rounded-2xl border-2 border-dashed border-slate-200 text-center animate-in fade-in zoom-in duration-300">
+      <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+        <span class="text-2xl">🔍</span>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 mb-2">No confrontations found</h3>
+      <p class="text-slate-500 max-w-sm mx-auto">Selected teams have not played against each other in any IPL season so far. Try changing one of the teams.</p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 const config = useRuntimeConfig()
 const team1 = ref('')
@@ -136,6 +145,7 @@ const team2 = ref('')
 const allTeamsInfo = ref<any[]>([])
 const h2hStats = ref<any>({ total_matches: 0, team1_wins: 0, team2_wins: 0 })
 const matches = ref<any[]>([])
+const hasSearched = ref(false)
 
 const activeTeams = computed(() => allTeamsInfo.value.filter(t => t.is_active))
 const defunctTeams = computed(() => allTeamsInfo.value.filter(t => !t.is_active))
@@ -176,8 +186,13 @@ onMounted(() => {
   loadTeams()
 })
 
+watch([team1, team2], () => {
+  hasSearched.value = false
+})
+
 const loadH2H = async () => {
   if (!team1.value || !team2.value) return
+  hasSearched.value = true
   
   try {
     const stats = await $fetch(`${config.public.apiBase}/api/h2h/${encodeURIComponent(team1.value)}/${encodeURIComponent(team2.value)}`)
