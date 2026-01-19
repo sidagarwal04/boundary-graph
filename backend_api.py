@@ -994,36 +994,26 @@ async def get_player_graph(player_name: str, hops: int = 1):
         hops = 1
     
     try:
-        # Start with simpler approach - find players in same matches
-        query = """
-            MATCH (center:Player {name: $name})
+        # Path-finding query inspired by: MATCH path = (n)-[*0..5]->(p:Player {name: "SP Narine"})
+        query = f"""
+            MATCH path = (start_node)-[*1..{hops}]->(target:Player {{name: $name}})
+            WHERE start_node <> target
             
-            // Find deliveries involving this player
-            OPTIONAL MATCH (center)-[r1:FACED_BY|:BOWLED_BY]-(d1:Delivery)
-            OPTIONAL MATCH (d1)-[r2:FACED_BY|:BOWLED_BY]-(other1:Player)
-            WHERE other1 <> center AND type(r1) <> type(r2)
+            WITH path, length(path) as path_length, nodes(path) as path_nodes, relationships(path) as path_rels
+            WHERE path_length <= {hops}
             
-            // Also try finding through match participation
-            OPTIONAL MATCH (center)-[:SELECTED_PLAYER]-(team1:Team)-[:TEAM_INVOLVED]-(m:Match)
-            OPTIONAL MATCH (other2:Player)-[:SELECTED_PLAYER]-(team2:Team)-[:TEAM_INVOLVED]-(m)
-            WHERE other2 <> center
+            // Get the first node in the path (connected to target)
+            WITH path_nodes[0] as connected_node, target, path_length, path_rels[0] as first_rel
+            WHERE connected_node:Player OR connected_node:Team OR connected_node:Match
             
-            WITH center, 
-                 CASE WHEN other1 IS NOT NULL THEN other1 ELSE other2 END as connected_player,
-                 CASE WHEN other1 IS NOT NULL THEN count(d1) ELSE 1 END as interaction_count,
-                 CASE 
-                     WHEN other1 IS NOT NULL THEN 'direct_play'
-                     ELSE 'same_match'
-                 END as rel_type
-                 
-            WHERE connected_player IS NOT NULL
-            
-            RETURN center.name as center_name,
-                   connected_player.name as connected_name,
-                   rel_type as relationship_type,
-                   interaction_count as weight
-            ORDER BY interaction_count DESC
-            LIMIT 20
+            RETURN DISTINCT 
+                   connected_node.name as node_name,
+                   labels(connected_node)[0] as node_type,
+                   type(first_rel) as rel_type,
+                   target.name as target_name,
+                   path_length
+            ORDER BY path_length ASC, node_name
+            LIMIT 25
         """
         
         results = db.query(query, {"name": player_name})
@@ -1042,60 +1032,79 @@ async def get_player_graph(player_name: str, hops: int = 1):
         
         # Process results
         if results:
-            for r in results:
-                connected_name = r['connected_name']
-                if connected_name:
-                    # Add connected node
-                    node = GraphNode(
-                        id=connected_name,
-                        name=connected_name,
-                        type="player",
-                        properties={"level": 1}
-                    )
-                    # Avoid duplicates
-                    if not any(n.id == connected_name for n in nodes):
-                        nodes.append(node)
-                    
-                    # Add edge
-                    edge = GraphEdge(
-                        source=player_name,
-                        target=connected_name,
-                        relationship=r['relationship_type'],
-                        weight=int(r['weight']) if r['weight'] else 1
-                    )
-                    edges.append(edge)
-        
-        # If no meaningful results, fallback to simple random connections
-        if len(nodes) <= 1:
-            simple_query = """
-                MATCH (center:Player {name: $name})
-                MATCH (other:Player)
-                WHERE other <> center
-                RETURN center.name as center_name, 
-                       other.name as connected_name, 
-                       'random_connection' as relationship_type, 
-                       1 as weight
-                LIMIT 8
-            """
-            results = db.query(simple_query, {"name": player_name})
+            processed_nodes = set([player_name])  # Track processed nodes to avoid duplicates
             
             for r in results:
-                connected_name = r['connected_name']
+                node_name = r.get('node_name')
+                node_type = r.get('node_type', 'player').lower()
+                rel_type = r.get('rel_type', 'connected')
+                path_length = r.get('path_length', 1)
+                
+                if not node_name or node_name == player_name or node_name in processed_nodes:
+                    continue
+                
+                # Add connected node
                 node = GraphNode(
-                    id=connected_name,
-                    name=connected_name,
-                    type="player",
-                    properties={"level": 1}
+                    id=node_name,
+                    name=node_name,
+                    type=node_type if node_type in ['player', 'team', 'match', 'venue'] else 'player',
+                    properties={"level": path_length, "hops": path_length}
                 )
                 nodes.append(node)
+                processed_nodes.add(node_name)
                 
+                # Add edge from connected node to target player
                 edge = GraphEdge(
-                    source=player_name,
-                    target=connected_name,
-                    relationship="random_connection",
-                    weight=1
+                    source=node_name,
+                    target=player_name,
+                    relationship=rel_type,
+                    weight=max(1, 6 - path_length)  # Shorter paths have higher weight
                 )
                 edges.append(edge)
+        
+        # If no meaningful results, fallback to simple connections
+        if len(nodes) <= 1:
+            fallback_query = """
+                MATCH (target:Player {name: $name})
+                OPTIONAL MATCH (other:Player)-[r]-(target)
+                WHERE other <> target
+                
+                RETURN DISTINCT other.name as node_name,
+                       'player' as node_type,
+                       coalesce(type(r), 'connected') as rel_type,
+                       1 as path_length
+                LIMIT 8
+                
+                UNION
+                
+                MATCH (target:Player {name: $name})-[:SELECTED_PLAYER]-(t:Team)
+                RETURN DISTINCT t.name as node_name,
+                       'team' as node_type,
+                       'SELECTED_PLAYER' as rel_type,
+                       1 as path_length
+                LIMIT 5
+            """
+            
+            fallback_results = db.query(fallback_query, {"name": player_name})
+            
+            for r in fallback_results:
+                node_name = r.get('node_name')
+                if node_name and not any(n.id == node_name for n in nodes):
+                    node = GraphNode(
+                        id=node_name,
+                        name=node_name,
+                        type=r.get('node_type', 'player'),
+                        properties={"level": 1, "hops": 1}
+                    )
+                    nodes.append(node)
+                    
+                    edge = GraphEdge(
+                        source=node_name,
+                        target=player_name,
+                        relationship=r.get('rel_type', 'connected'),
+                        weight=3
+                    )
+                    edges.append(edge)
         
         return GraphResponse(
             nodes=nodes,

@@ -54,80 +54,89 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
       <NuxtLink to="/h2h" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
-        <div class="flex justify-between items-start w-full">
-          <div class="flex flex-col pr-2">
-            <h3 class="text-label text-slate-500 mb-1 group-hover:text-blue-600 transition-colors">Total Matches</h3>
-            <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_matches }}</p>
+        <div class="flex justify-between items-start w-full gap-3">
+          <div class="flex flex-col min-w-0 flex-1">
+            <h3 class="text-label text-slate-500 mb-2 group-hover:text-blue-600 transition-colors">Total Matches</h3>
+            <div class="h-12 flex items-center">
+              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">{{ overview.total_matches }}</p>
+            </div>
           </div>
           <div class="p-2 bg-blue-50 rounded-lg shrink-0">
-             <CricketStadiumIcon class="w-8 h-8 text-blue-600" />
+             <CricketStadiumIcon class="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
           </div>
         </div>
         <div class="h-1 w-12 bg-blue-500 mt-4 rounded-full"></div>
       </NuxtLink>
       
       <NuxtLink to="/player-search" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
-        <div class="flex justify-between items-start w-full">
-          <div class="flex flex-col pr-2">
-            <h3 class="text-label text-slate-500 mb-1 group-hover:text-green-600 transition-colors">Total Players</h3>
-            <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_players }}</p>
+        <div class="flex justify-between items-start w-full gap-3">
+          <div class="flex flex-col min-w-0 flex-1">
+            <h3 class="text-label text-slate-500 mb-2 group-hover:text-green-600 transition-colors">Total Players</h3>
+            <div class="h-12 flex items-center">
+              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">{{ overview.total_players }}</p>
+            </div>
           </div>
           <div class="p-2 bg-green-50 rounded-lg shrink-0">
-             <CricketHelmetIcon class="w-8 h-8 text-green-600" />
+             <CricketHelmetIcon class="w-7 h-7 sm:w-8 sm:h-8 text-green-600" />
           </div>
         </div>
         <div class="h-1 w-12 bg-green-500 mt-4 rounded-full"></div>
       </NuxtLink>
       
       <NuxtLink to="/teams" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
-        <div class="flex justify-between items-start w-full">
-          <div class="flex flex-col pr-2">
-            <h3 class="text-label text-slate-500 mb-1 group-hover:text-orange-600 transition-colors">Teams</h3>
-            <div class="flex flex-col">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight">{{ overview.active_teams }}</p>
-              <span class="text-[10px] text-slate-400 font-medium">({{ overview.defunct_teams }} defunct)</span>
+        <div class="flex justify-between items-start w-full gap-3">
+          <div class="flex flex-col min-w-0 flex-1">
+            <h3 class="text-label text-slate-500 mb-2 group-hover:text-orange-600 transition-colors">Total Teams</h3>
+            <div class="h-12 flex flex-col justify-center">
+              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">{{ overview.active_teams }} <span class="text-[10px] text-slate-400 font-medium leading-tight mt-0.5">({{ overview.defunct_teams }} defunct)</span></p>
             </div>
           </div>
           <div class="p-2 bg-orange-50 rounded-lg shrink-0">
-             <CricketJerseyIcon class="w-8 h-8 text-orange-600" />
+             <CricketJerseyIcon class="w-7 h-7 sm:w-8 sm:h-8 text-orange-600" />
           </div>
         </div>
         <div class="h-1 w-12 bg-orange-500 mt-4 rounded-full"></div>
       </NuxtLink>
 
       <NuxtLink to="/batsmen" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
-        <div class="flex justify-between items-start w-full">
-          <div class="flex flex-col pr-2 min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-1 group-hover:text-yellow-600 transition-colors">Total Runs</h3>
-            <p class="text-xl xl:text-3xl font-bold text-slate-900 tracking-tight truncate">{{ formatNumber(overview.total_runs) }}</p>
+        <div class="flex justify-between items-start w-full gap-3">
+          <div class="flex flex-col min-w-0 flex-1">
+            <h3 class="text-label text-slate-500 mb-2 group-hover:text-yellow-600 transition-colors">Total Runs Scored</h3>
+            <div class="h-12 flex items-center">
+              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap text-ellipsis">{{ formatNumber(overview.total_runs) }}</p>
+            </div>
           </div>
           <div class="p-2 bg-yellow-50 rounded-lg shrink-0">
-             <CricketBatIcon class="w-8 h-8 text-yellow-600" />
+             <CricketBatIcon class="w-7 h-7 sm:w-8 sm:h-8 text-yellow-600" />
           </div>
         </div>
         <div class="h-1 w-12 bg-yellow-500 mt-4 rounded-full"></div>
       </NuxtLink>
       
       <NuxtLink to="/bowlers" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
-        <div class="flex justify-between items-start w-full">
-          <div class="flex flex-col pr-2 min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-1 group-hover:text-red-600 transition-colors">Total Deliveries</h3>
-            <p class="text-xl xl:text-3xl font-bold text-slate-900 tracking-tight truncate">{{ formatNumber(overview.total_deliveries) }}</p>
+        <div class="flex justify-between items-start w-full gap-3">
+          <div class="flex flex-col min-w-0 flex-1">
+            <h3 class="text-label text-slate-500 mb-2 group-hover:text-red-600 transition-colors">Total Deliveries</h3>
+            <div class="h-12 flex items-center">
+              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap text-ellipsis">{{ formatNumber(overview.total_deliveries) }}</p>
+            </div>
           </div>
           <div class="p-2 bg-red-50 rounded-lg shrink-0">
-             <CricketBallIcon class="w-8 h-8 text-red-600" />
+             <CricketBallIcon class="w-7 h-7 sm:w-8 sm:h-8 text-red-600" />
           </div>
         </div>
         <div class="h-1 w-12 bg-red-500 mt-4 rounded-full"></div>
       </NuxtLink>
       <NuxtLink to="/venues" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
-        <div class="flex justify-between items-start w-full">
-          <div class="flex flex-col pr-2">
-            <h3 class="text-label text-slate-500 mb-1 group-hover:text-purple-600 transition-colors">Venues</h3>
-            <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight">36+</p>
+        <div class="flex justify-between items-start w-full gap-3">
+          <div class="flex flex-col min-w-0 flex-1">
+            <h3 class="text-label text-slate-500 mb-2 group-hover:text-purple-600 transition-colors">Total Venues</h3>
+            <div class="h-12 flex items-center">
+              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">36+</p>
+            </div>
           </div>
           <div class="p-2 bg-purple-50 rounded-lg shrink-0">
-             <MapPinIcon class="w-8 h-8 text-purple-600" />
+             <MapPinIcon class="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" />
           </div>
         </div>
         <div class="h-1 w-12 bg-purple-500 mt-4 rounded-full"></div>
@@ -288,7 +297,20 @@ const loadingDetails = ref(false)
 const selectedSeasonDetails = ref<any>(null)
 
 const formatNumber = (num: number) => {
-  return num ? num.toLocaleString('en-IN') : 0
+  if (!num) return 0
+  
+  // For very large numbers, use abbreviations
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+  }
+  
+  return num.toLocaleString('en-IN')
 }
 
 const openSeasonModal = async (season: any) => {
