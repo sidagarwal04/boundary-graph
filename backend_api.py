@@ -29,9 +29,9 @@ app = FastAPI(
 
 # CORS configuration - allow only your Netlify domain in production
 ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Local development
-    "http://localhost:8000",  # Local backend
-    "https://ipl-dashboard.netlify.app",  # Your Netlify domain (update this)
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "https://boundary-graph.netlify.app",
 ]
 
 app.add_middleware(
