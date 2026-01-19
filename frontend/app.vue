@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 
 const config = useRuntimeConfig()
 
 onMounted(() => {
   // Initial "Wake up" call to Render backend
   const wakeUpBackend = () => {
-    const apiBase = config.public.apiBase
+    const apiBase = config.public.apiBase as string
     if (apiBase && apiBase.includes('render.com')) {
       console.log('💓 Sending heartbeat to Render backend...')
       $fetch(`${apiBase}/health`).catch(() => {})

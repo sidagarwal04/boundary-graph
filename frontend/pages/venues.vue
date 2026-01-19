@@ -173,34 +173,56 @@
               <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
                 <span class="text-lg">🔮</span>
               </div>
-              <h4 class="text-lg font-bold">AI Venue Oracle</h4>
+              <h4 class="text-lg font-bold text-white">AI Venue Oracle</h4>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20">
-                <p class="text-xs text-purple-300 font-bold uppercase tracking-widest mb-2">Next Match Prediction</p>
-                <p class="text-sm leading-relaxed">
-                  <span v-if="selectedVenue.chase_win_pct > selectedVenue.bat_first_win_pct">
-                    🎯 <strong>CHASE to WIN!</strong> This venue has a {{ selectedVenue.chase_win_pct }}% chase success rate. 
-                    {{ selectedVenue.chase_win_pct > 60 ? 'Captains should bowl first!' : "Toss doesn't matter much here." }}
+                <p class="text-xs text-white font-bold uppercase tracking-widest mb-2">Next Match Prediction</p>
+                <p class="text-sm leading-relaxed text-white">
+                  <span v-if="selectedVenue.chase_win_pct > 45 && selectedVenue.chase_win_pct > selectedVenue.bat_first_win_pct + 10">
+                    🎯 <strong>CHASE MASTERS!</strong> {{ selectedVenue.chase_win_pct }}% chase success rate means captains should bowl first and hunt!
+                  </span>
+                  <span v-else-if="selectedVenue.bat_first_win_pct > 45 && selectedVenue.bat_first_win_pct > selectedVenue.chase_win_pct + 10">
+                    🛡️ <strong>FORTRESS MODE!</strong> {{ selectedVenue.bat_first_win_pct }}% defend rate - always bat first and build pressure!
+                  </span>
+                  <span v-else-if="selectedVenue.chase_win_pct > 35 && selectedVenue.avg_first_innings > 165">
+                    ⚡ <strong>SHOOTOUT ZONE!</strong> High scores ({{ selectedVenue.avg_first_innings }}) + decent chasing ({{ selectedVenue.chase_win_pct }}%) = fireworks expected!
+                  </span>
+                  <span v-else-if="selectedVenue.bat_first_win_pct < 25 && selectedVenue.chase_win_pct < 35">
+                    🎲 <strong>CHAOS CRICKET!</strong> Neither strategy works well here - expect wild, unpredictable matches!
+                  </span>
+                  <span v-else-if="Math.abs(selectedVenue.chase_win_pct - selectedVenue.bat_first_win_pct) < 8">
+                    ⚖️ <strong>TOSS IRRELEVANT!</strong> {{ selectedVenue.chase_win_pct }}% vs {{ selectedVenue.bat_first_win_pct }}% - pure skill will decide!
                   </span>
                   <span v-else>
-                    🛡️ <strong>BAT FIRST POWER!</strong> Teams defending here win {{ selectedVenue.bat_first_win_pct }}% of the time. 
-                    {{ selectedVenue.bat_first_win_pct > 60 ? 'Always bat first if you win the toss!' : 'Setting a target gives you an edge.' }}
+                    🤔 <strong>TACTICAL PUZZLE!</strong> {{ selectedVenue.chase_win_pct }}% chase rate suggests careful planning required.
                   </span>
                 </p>
               </div>
               
               <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20">
-                <p class="text-xs text-cyan-300 font-bold uppercase tracking-widest mb-2">Strategic Wisdom</p>
-                <p class="text-sm leading-relaxed">
-                  <span v-if="selectedVenue.avg_first_innings > 170">
-                    🚀 <strong>HIGH SCORING ARENA!</strong> Bowlers beware - batsmen love this pitch. Expect 180+ regularly.
+                <p class="text-xs text-white font-bold uppercase tracking-widest mb-2">Strategic Wisdom</p>
+                <p class="text-sm leading-relaxed text-white">
+                  <span v-if="selectedVenue.avg_first_innings > 168 && selectedVenue.chase_win_pct > 40">
+                    🚀 <strong>RUN FEST GUARANTEED!</strong> {{ selectedVenue.avg_first_innings }} avg + {{ selectedVenue.chase_win_pct }}% chases = boundaries galore!
                   </span>
-                  <span v-else-if="selectedVenue.avg_first_innings > 150">
-                    ⚖️ <strong>BALANCED BATTLEFIELD!</strong> Both bat and ball have equal chances. Perfect T20 cricket!
+                  <span v-else-if="selectedVenue.avg_first_innings < 150 && selectedVenue.bat_first_win_pct > 35">
+                    🏏 <strong>GRIND IT OUT!</strong> Low scores ({{ selectedVenue.avg_first_innings }}) favor patient batting and clever bowling.
+                  </span>
+                  <span v-else-if="selectedVenue.avg_first_innings > 165 && selectedVenue.chase_win_pct < 30">
+                    😱 <strong>PRESSURE COOKER!</strong> High scores ({{ selectedVenue.avg_first_innings }}) but tough chasing - mental game crucial!
+                  </span>
+                  <span v-else-if="selectedVenue.total_matches > 60 && Math.abs(selectedVenue.chase_win_pct - selectedVenue.bat_first_win_pct) < 5">
+                    🎯 <strong>PURE CRICKET THEATER!</strong> {{ selectedVenue.total_matches }} matches prove this venue tests every skill equally!
+                  </span>
+                  <span v-else-if="selectedVenue.avg_first_innings > 155 && selectedVenue.avg_first_innings < 165">
+                    ⚖️ <strong>GOLDILOCKS GROUND!</strong> Not too high, not too low - {{ selectedVenue.avg_first_innings }} is just right for T20!
+                  </span>
+                  <span v-else-if="selectedVenue.chase_win_pct < 25">
+                    🛡️ <strong>DEFEND OR DIE!</strong> Only {{ selectedVenue.chase_win_pct }}% chases succeed - set big totals early!
                   </span>
                   <span v-else>
-                    🏏 <strong>BOWLERS' PARADISE!</strong> Low scores win here. Spin and swing will dominate.
+                    🎪 <strong>WILDCARD VENUE!</strong> This ground writes its own rules - expect the unexpected every time!
                   </span>
                 </p>
               </div>
@@ -256,9 +278,24 @@
                 <span class="text-lg flex-shrink-0">🏆</span>
                 <p class="text-sm text-amber-800 leading-relaxed">
                   <strong>Stadium Superpower:</strong> 
-                  <span v-if="selectedVenue.chase_win_pct > 65">This is a CHASER'S PARADISE! Teams batting second have supernatural powers here.</span>
-                  <span v-else-if="selectedVenue.bat_first_win_pct > 65">This ground is a FORTRESS for teams batting first. Set a target and watch magic happen!</span>
-                  <span v-else>Perfect balance between bat and ball - a true cricket purist's dream venue!</span>
+                  <span v-if="selectedVenue.chase_win_pct > 50 && selectedVenue.avg_first_innings > 165">
+                    CHASE MASTER'S HEAVEN! High scores ({{ selectedVenue.avg_first_innings }}) + {{ selectedVenue.chase_win_pct }}% chase success = second innings magic!
+                  </span>
+                  <span v-else-if="selectedVenue.bat_first_win_pct > 40 && selectedVenue.avg_first_innings < 155">
+                    BOWLER'S SANCTUARY! Low totals ({{ selectedVenue.avg_first_innings }}) + {{ selectedVenue.bat_first_win_pct }}% defend rate = spin twins' paradise!
+                  </span>
+                  <span v-else-if="selectedVenue.total_matches > 70">
+                    LEGENDARY COLOSSEUM! {{ selectedVenue.total_matches }} epic battles have made this hallowed ground of cricket history!
+                  </span>
+                  <span v-else-if="selectedVenue.chase_win_pct < 25">
+                    PRESSURE FORTRESS! Only {{ selectedVenue.chase_win_pct }}% chases succeed - where dreams come to die!
+                  </span>
+                  <span v-else-if="Math.abs(selectedVenue.chase_win_pct - selectedVenue.bat_first_win_pct) < 5">
+                    PURE SKILL ARENA! {{ selectedVenue.chase_win_pct }}% vs {{ selectedVenue.bat_first_win_pct }}% - toss is meaningless, talent decides!
+                  </span>
+                  <span v-else>
+                    MYSTERY GROUND! This venue has its own personality that defies conventional cricket wisdom!
+                  </span>
                 </p>
               </div>
               
@@ -266,10 +303,21 @@
                 <span class="text-lg flex-shrink-0">⚡</span>
                 <p class="text-sm text-amber-800 leading-relaxed">
                   <strong>Batting Mood:</strong> 
-                  <span v-if="selectedVenue.avg_first_innings > 180">EXPLOSIVE! Boundaries fly here like confetti. Bowlers need therapy after playing here.</span>
-                  <span v-else-if="selectedVenue.avg_first_innings > 160">AGGRESSIVE! Big hits are common, but bowlers still have a fighting chance.</span>
-                  <span v-else-if="selectedVenue.avg_first_innings > 140">TACTICAL! Every run is earned through skill and strategy.</span>
-                  <span v-else>SURVIVAL MODE! Batsmen pray to cricket gods before entering this bowling paradise.</span>
+                  <span v-if="selectedVenue.avg_first_innings > 168">
+                    FIREWORKS GUARANTEED! {{ selectedVenue.avg_first_innings }} average means sixes rain like monsoon!
+                  </span>
+                  <span v-else-if="selectedVenue.avg_first_innings < 145">
+                    GRIND FEST! {{ selectedVenue.avg_first_innings }} average - every boundary is earned through blood and sweat!
+                  </span>
+                  <span v-else-if="selectedVenue.avg_first_innings > 155 && selectedVenue.avg_first_innings < 165">
+                    TEXTBOOK T20! {{ selectedVenue.avg_first_innings }} average is cricket perfection - not too easy, not too tough!
+                  </span>
+                  <span v-else-if="selectedVenue.chase_win_pct < 30 && selectedVenue.avg_first_innings > 160">
+                    SCOREBOARD PRESSURE! High totals ({{ selectedVenue.avg_first_innings }}) but tough chasing creates mind games!
+                  </span>
+                  <span v-else>
+                    WILDCARD WICKET! This pitch writes its own rules - expect anything from 120 to 200!
+                  </span>
                 </p>
               </div>
               
@@ -277,11 +325,23 @@
                 <span class="text-lg flex-shrink-0">🎯</span>
                 <p class="text-sm text-amber-800 leading-relaxed">
                   <strong>Captain&apos;s Dilemma:</strong> 
-                  <span v-if="Math.abs(selectedVenue.chase_win_pct - selectedVenue.bat_first_win_pct) < 10">
-                    Toss doesn&apos;t matter! Both choices are equally risky/rewarding. Pure cricket chaos!
+                  <span v-if="selectedVenue.chase_win_pct > selectedVenue.bat_first_win_pct + 15">
+                    BOWL FIRST OR GO HOME! {{ selectedVenue.chase_win_pct }}% vs {{ selectedVenue.bat_first_win_pct }}% - chasing is the only way!
+                  </span>
+                  <span v-else-if="selectedVenue.bat_first_win_pct > selectedVenue.chase_win_pct + 15">
+                    BAT FIRST AND DOMINATE! {{ selectedVenue.bat_first_win_pct }}% vs {{ selectedVenue.chase_win_pct }}% - set the target, win the game!
+                  </span>
+                  <span v-else-if="selectedVenue.chase_win_pct < 25 && selectedVenue.bat_first_win_pct < 25">
+                    TOSS IS CURSED! Neither strategy works - coin flip decides your doom!
+                  </span>
+                  <span v-else-if="selectedVenue.total_matches < 20">
+                    UNCHARTED TERRITORY! Too few matches to predict - pure gamble awaits!
+                  </span>
+                  <span v-else-if="Math.abs(selectedVenue.chase_win_pct - selectedVenue.bat_first_win_pct) < 8">
+                    FLIP A COIN! {{ selectedVenue.chase_win_pct }}% vs {{ selectedVenue.bat_first_win_pct }}% - even the stats are confused!
                   </span>
                   <span v-else>
-                    {{ selectedVenue.chase_win_pct > selectedVenue.bat_first_win_pct ? 'Bowl first or regret forever!' : 'Bat first and put pressure!' }}
+                    TRUST YOUR INSTINCT! Numbers suggest {{ selectedVenue.chase_win_pct > selectedVenue.bat_first_win_pct ? 'chasing' : 'defending' }} but gut feeling matters here!
                   </span>
                 </p>
               </div>
