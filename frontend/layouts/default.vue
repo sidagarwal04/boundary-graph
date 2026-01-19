@@ -43,7 +43,7 @@ const closeMenu = () => {
             </div>
             <div class="hidden sm:block">
               <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-none">Boundary Graph</h1>
-              <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wide mt-1">Gentlemen and Madmen</p>
+              <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wide mt-1">IPL Graph Analytics for Gentlemen and Madmen</p>
             </div>
           </NuxtLink>
         </div>

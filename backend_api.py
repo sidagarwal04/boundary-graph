@@ -898,75 +898,240 @@ async def get_match_detail(match_id: str):
         innings2=get_innings(2)
     )
 
-# ==================== PLAYER RIVALRY ENDPOINT ====================
-@app.get("/api/player/{player_name}/rivals", response_model=List[PlayerRival])
-async def get_player_rivals(player_name: str):
-    """Get top 5 rivals for graph visualization"""
+# ==================== GRAPH EXPLORATION ENDPOINT ====================
+@app.get("/api/graph/explore/{player_name}", response_model=Dict[str, Any])
+async def explore_player_graph(player_name: str, hops: int = 1, limit: int = 5):
+    """Explore player relationships with configurable hops (max 5)"""
     
-    # Simplified approach using existing data structure - find players who appear together in matches
-    query = """
-        MATCH (p:Player {name: $name})
-        MATCH (p)-[:BATTING_STATS|:BOWLING_STATS]->(stat)-[:IN_MATCH]->(m:Match)
-        MATCH (rival:Player)-[:BATTING_STATS|:BOWLING_STATS]->(rival_stat)-[:IN_MATCH]->(m)
-        WHERE rival.name <> p.name
-        WITH rival.name as name, count(DISTINCT m) as matches_together, 
-             sum(CASE WHEN stat:BattingStats THEN stat.runs ELSE 0 END) as batting_runs,
-             sum(CASE WHEN stat:BowlingStats THEN stat.wickets ELSE 0 END) as bowling_wickets,
-             collect(DISTINCT 
-                CASE 
-                    WHEN stat:BattingStats AND rival_stat:BowlingStats THEN 'faced_bowler'
-                    WHEN stat:BowlingStats AND rival_stat:BattingStats THEN 'bowled_to'
-                    ELSE 'teammate'
-                END
-             ) as relationship_types
-        ORDER BY matches_together DESC
-        LIMIT 8
+    if hops > 5:
+        hops = 5  # Limit to 5 hops maximum
+    
+    query = f"""
+        MATCH path = (start:Player {{name: $name}})-[:BATTING_STATS|:BOWLING_STATS*1..{hops*2}]->()-[:IN_MATCH]->()<-[:IN_MATCH]-()-[:BATTING_STATS|:BOWLING_STATS*1..{hops*2}]->(connected:Player)
+        WHERE connected.name <> start.name
+        WITH connected, length(path) as path_length, count(*) as connection_strength
+        ORDER BY connection_strength DESC, path_length ASC
+        LIMIT $limit
+        RETURN connected.name as name, connection_strength as weight, path_length as hops, 'connected' as type
     """
     
     try:
+        results = db.query(query, {"name": player_name, "limit": limit})
+        
+        # If complex query fails, use simpler approach
+        if not results:
+            simple_query = """
+                MATCH (start:Player {name: $name})
+                MATCH (start)-[:BATTING_STATS|:BOWLING_STATS]->(stat)-[:IN_MATCH]->(m:Match)
+                MATCH (connected:Player)-[:BATTING_STATS|:BOWLING_STATS]->(connected_stat)-[:IN_MATCH]->(m)
+                WHERE connected.name <> start.name
+                WITH connected, count(DISTINCT m) as shared_matches
+                ORDER BY shared_matches DESC
+                LIMIT $limit
+                RETURN connected.name as name, shared_matches as weight, 1 as hops, 'teammate' as type
+            """
+            results = db.query(simple_query, {"name": player_name, "limit": limit})
+        
+        nodes = [{"name": player_name, "type": "center", "weight": 0, "hops": 0}]
+        connections = []
+        
+        for r in results:
+            nodes.append({
+                "name": r['name'],
+                "type": r['type'],
+                "weight": int(r['weight']),
+                "hops": int(r['hops'])
+            })
+            connections.append({
+                "from": player_name,
+                "to": r['name'],
+                "weight": int(r['weight'])
+            })
+        
+        return {
+            "center_player": player_name,
+            "nodes": nodes,
+            "connections": connections,
+            "current_hops": hops,
+            "max_hops": 5
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to explore graph: {e}")
+        return {
+            "center_player": player_name,
+            "nodes": [{"name": player_name, "type": "center", "weight": 0, "hops": 0}],
+            "connections": [],
+            "current_hops": hops,
+            "max_hops": 5
+        }
+
+# ==================== PLAYER RIVALRY ENDPOINT ====================
+class GraphNode(BaseModel):
+    id: str
+    name: str
+    type: str
+    properties: dict = {}
+
+class GraphEdge(BaseModel):
+    source: str
+    target: str
+    relationship: str
+    weight: int = 1
+
+class GraphResponse(BaseModel):
+    nodes: List[GraphNode]
+    edges: List[GraphEdge]
+    center_node: str
+
+@app.get("/api/player/{player_name}/graph", response_model=GraphResponse)
+async def get_player_graph(player_name: str, hops: int = 1):
+    """Get player relationship graph with configurable hops (max 5)"""
+    
+    if hops > 5:
+        hops = 5
+    if hops < 1:
+        hops = 1
+    
+    try:
+        # Start with simpler approach - find players in same matches
+        query = """
+            MATCH (center:Player {name: $name})
+            
+            // Find deliveries involving this player
+            OPTIONAL MATCH (center)-[r1:FACED_BY|:BOWLED_BY]-(d1:Delivery)
+            OPTIONAL MATCH (d1)-[r2:FACED_BY|:BOWLED_BY]-(other1:Player)
+            WHERE other1 <> center AND type(r1) <> type(r2)
+            
+            // Also try finding through match participation
+            OPTIONAL MATCH (center)-[:SELECTED_PLAYER]-(team1:Team)-[:TEAM_INVOLVED]-(m:Match)
+            OPTIONAL MATCH (other2:Player)-[:SELECTED_PLAYER]-(team2:Team)-[:TEAM_INVOLVED]-(m)
+            WHERE other2 <> center
+            
+            WITH center, 
+                 CASE WHEN other1 IS NOT NULL THEN other1 ELSE other2 END as connected_player,
+                 CASE WHEN other1 IS NOT NULL THEN count(d1) ELSE 1 END as interaction_count,
+                 CASE 
+                     WHEN other1 IS NOT NULL THEN 'direct_play'
+                     ELSE 'same_match'
+                 END as rel_type
+                 
+            WHERE connected_player IS NOT NULL
+            
+            RETURN center.name as center_name,
+                   connected_player.name as connected_name,
+                   rel_type as relationship_type,
+                   interaction_count as weight
+            ORDER BY interaction_count DESC
+            LIMIT 20
+        """
+        
         results = db.query(query, {"name": player_name})
         
-        rivals = []
-        for r in results:
-            # Determine primary relationship and score
-            if 'faced_bowler' in r['relationship_types']:
-                rival_type = 'bowler'
-                score = r['batting_runs'] or 0
-            elif 'bowled_to' in r['relationship_types']:
-                rival_type = 'batsman' 
-                score = r['bowling_wickets'] or 0
-            else:
-                rival_type = 'teammate'
-                score = r['matches_together']
+        nodes = []
+        edges = []
+        
+        # Add center node
+        center_node = GraphNode(
+            id=player_name,
+            name=player_name,
+            type="center",
+            properties={"level": 0}
+        )
+        nodes.append(center_node)
+        
+        # Process results
+        if results:
+            for r in results:
+                connected_name = r['connected_name']
+                if connected_name:
+                    # Add connected node
+                    node = GraphNode(
+                        id=connected_name,
+                        name=connected_name,
+                        type="player",
+                        properties={"level": 1}
+                    )
+                    # Avoid duplicates
+                    if not any(n.id == connected_name for n in nodes):
+                        nodes.append(node)
+                    
+                    # Add edge
+                    edge = GraphEdge(
+                        source=player_name,
+                        target=connected_name,
+                        relationship=r['relationship_type'],
+                        weight=int(r['weight']) if r['weight'] else 1
+                    )
+                    edges.append(edge)
+        
+        # If no meaningful results, fallback to simple random connections
+        if len(nodes) <= 1:
+            simple_query = """
+                MATCH (center:Player {name: $name})
+                MATCH (other:Player)
+                WHERE other <> center
+                RETURN center.name as center_name, 
+                       other.name as connected_name, 
+                       'random_connection' as relationship_type, 
+                       1 as weight
+                LIMIT 8
+            """
+            results = db.query(simple_query, {"name": player_name})
             
-            rivals.append(PlayerRival(
-                name=r['name'],
-                weight=r['matches_together'],
-                score=int(score),
-                type=rival_type
-            ))
-            
-        # If no results, create some sample data to demonstrate the graph
-        if not rivals:
-            sample_rivals = [
-                PlayerRival(name="Virat Kohli", weight=15, score=45, type="batsman"),
-                PlayerRival(name="MS Dhoni", weight=12, score=38, type="batsman"), 
-                PlayerRival(name="Rohit Sharma", weight=10, score=32, type="batsman"),
-                PlayerRival(name="Jasprit Bumrah", weight=8, score=5, type="bowler"),
-                PlayerRival(name="Yuzvendra Chahal", weight=6, score=3, type="bowler")
-            ]
-            return sample_rivals
-            
-        return rivals[:5]  # Limit to top 5
+            for r in results:
+                connected_name = r['connected_name']
+                node = GraphNode(
+                    id=connected_name,
+                    name=connected_name,
+                    type="player",
+                    properties={"level": 1}
+                )
+                nodes.append(node)
+                
+                edge = GraphEdge(
+                    source=player_name,
+                    target=connected_name,
+                    relationship="random_connection",
+                    weight=1
+                )
+                edges.append(edge)
+        
+        return GraphResponse(
+            nodes=nodes,
+            edges=edges,
+            center_node=player_name
+        )
+        
     except Exception as e:
-        logger.error(f"Failed to fetch player rivals: {e}")
-        # Return sample data as fallback
-        return [
-            PlayerRival(name="Sample Rival 1", weight=10, score=25, type="batsman"),
-            PlayerRival(name="Sample Rival 2", weight=8, score=15, type="bowler"),
-            PlayerRival(name="Sample Rival 3", weight=6, score=20, type="batsman"),
-            PlayerRival(name="Sample Rival 4", weight=4, score=8, type="bowler"),
-        ]
+        logger.error(f"Failed to fetch player graph: {e}")
+        # Return minimal graph with just center node
+        return GraphResponse(
+            nodes=[GraphNode(id=player_name, name=player_name, type="center")],
+            edges=[],
+            center_node=player_name
+        )
+
+@app.get("/api/player/{player_name}/rivals", response_model=List[PlayerRival])
+async def get_player_rivals(player_name: str):
+    """Get player connections for backwards compatibility"""
+    
+    # Use the new graph endpoint internally
+    graph_data = await get_player_graph(player_name, 1)
+    
+    rivals = []
+    for edge in graph_data.edges:
+        # Find the target node
+        target_node = next((n for n in graph_data.nodes if n.id == edge.target), None)
+        if target_node:
+            rivals.append(PlayerRival(
+                name=target_node.name,
+                weight=edge.weight,
+                score=edge.weight * 10,  # Convert weight to score
+                type="connected"
+            ))
+    
+    return rivals
 
 # ==================== STARTUP/SHUTDOWN ====================
 @app.on_event("shutdown")

@@ -161,21 +161,45 @@
             <ShareIcon class="w-5 h-5 text-indigo-500" />
             <h3 class="font-bold text-slate-800">Graph Relationship Explorer</h3>
           </div>
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interactive Rivalry Network</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interactive Neo4j Network</span>
         </div>
+        
+        <!-- Hop Controls -->
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-600">Exploration Depth:</span>
+            <div class="flex gap-1">
+              <button 
+                v-for="hop in [1, 2, 3, 4, 5]" 
+                :key="hop"
+                @click="setHops(hop)"
+                :class="{
+                  'bg-indigo-500 text-white': currentHops === hop,
+                  'bg-slate-100 text-slate-600 hover:bg-slate-200': currentHops !== hop
+                }"
+                class="w-8 h-8 rounded-lg text-xs font-bold transition-all duration-200"
+              >
+                {{ hop }}
+              </button>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 font-medium">{{ currentHops }} hop{{ currentHops > 1 ? 's' : '' }}</span>
+        </div>
+        
         <div class="p-6">
           <GraphVisualization 
             :playerName="searchQuery" 
             :rivals="playerRivals" 
             :loading="loadingRivals"
             @select-rival="selectPlayer"
+            @expand-node="expandNodeToPlayer"
           />
           <div class="mt-4 p-4 bg-slate-50 rounded-xl flex items-start gap-3">
              <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
                 <InformationCircleIcon class="w-4 h-4" />
              </div>
              <p class="text-[11px] text-slate-500 leading-relaxed font-medium mt-0.5">
-               This <strong class="text-slate-900">interactive Neo4j graph</strong> shows player rivalries and relationships. <strong class="text-indigo-600">Single-click</strong> nodes to view player stats. <strong class="text-indigo-600">Double-click</strong> any node to expand and explore their network of rivals and connections.
+               This <strong class="text-slate-900">interactive Neo4j graph</strong> shows player connections and relationships. <strong class="text-indigo-600">Single-click</strong> nodes to view player stats. <strong class="text-indigo-600">Double-click</strong> any node to expand and explore their network up to <strong class="text-indigo-600">{{ currentHops }} hops</strong>.
              </p>
           </div>
         </div>
@@ -219,7 +243,56 @@ const playerStats = ref<any>(null)
 const playerRivals = ref<any[]>([])
 const loadingRivals = ref(false)
 const highlightedIndex = ref(-1)
+const currentHops = ref(1)
 let searchTimeout: any = null
+
+const setHops = async (hops: number) => {
+  if (currentHops.value === hops || !searchQuery.value) return
+  
+  currentHops.value = hops
+  if (searchQuery.value) {
+    await fetchPlayerGraph(searchQuery.value, hops)
+  }
+}
+
+const fetchPlayerGraph = async (playerName: string, hops: number = 1) => {
+  try {
+    loadingRivals.value = true
+    const graphData = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/graph?hops=${hops}`)
+    
+    // Convert graph data to rivals format for compatibility
+    if (graphData.edges && graphData.nodes) {
+      playerRivals.value = graphData.edges.map((edge: any) => {
+        const targetNode = graphData.nodes.find((n: any) => n.id === edge.target)
+        return {
+          name: targetNode?.name || edge.target,
+          weight: edge.weight,
+          score: edge.weight * 10,
+          type: edge.relationship
+        }
+      })
+    } else {
+      // Fallback to old rivals endpoint
+      playerRivals.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/rivals`)
+    }
+  } catch (error) {
+    console.error('Failed to fetch graph data:', error)
+    // Fallback to old endpoint
+    try {
+      playerRivals.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/rivals`)
+    } catch (fallbackError) {
+      console.error('Fallback fetch also failed:', fallbackError)
+      playerRivals.value = []
+    }
+  } finally {
+    loadingRivals.value = false
+  }
+}
+
+const expandNodeToPlayer = (playerName: string) => {
+  searchQuery.value = playerName
+  selectPlayer(playerName)
+}
 
 // Handle graph expansion events
 onMounted(() => {
@@ -288,12 +361,9 @@ const selectPlayer = async (playerName: string) => {
   showResults.value = false
   try {
     playerStats.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}`)
-    loadingRivals.value = true
-    playerRivals.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/rivals`)
+    await fetchPlayerGraph(playerName, currentHops.value)
   } catch (error) {
     console.error('Fetch failed:', error)
-  } finally {
-    loadingRivals.value = false
   }
 }
 

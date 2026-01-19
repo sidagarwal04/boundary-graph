@@ -133,19 +133,16 @@ const props = defineProps<{
   loading: boolean
 }>()
 
-defineEmits(['select-rival', 'expand-node', 'expand-center'])
+const $emit = defineEmits(['select-rival', 'expand-node', 'expand-center'])
 
 const expandNode = (rivalName: string) => {
   console.log(`Expanding node: ${rivalName}`)
-  // You can emit this to parent component to handle the expansion
-  // For now, let's just switch to that player
-  document.dispatchEvent(new CustomEvent('expand-player', { detail: rivalName }))
+  $emit('expand-node', rivalName)
 }
 
 const expandCenter = () => {
   console.log(`Expanding center node: ${props.playerName}`)
-  // Could show more relationships, team connections, etc.
-  document.dispatchEvent(new CustomEvent('expand-center', { detail: props.playerName }))
+  $emit('expand-center', props.playerName)
 }
 
 const centerX = 250

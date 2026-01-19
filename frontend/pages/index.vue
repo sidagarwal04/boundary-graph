@@ -10,6 +10,11 @@
             <p class="text-slate-500 max-w-2xl leading-relaxed text-sm md:text-base">
               Welcome to the ultimate digital twin of the <strong class="text-slate-900">IPL</strong>. This platform processes every ball, wicket, and boundary since 2008 using high-performance graph technology. Dive deep into player trajectories and franchise rivalries powered by 17+ seasons of T20 data.
             </p>
+            <div class="mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+              <p class="text-xs text-amber-800 leading-relaxed">
+              <strong class="text-amber-900">Why not other leagues?</strong> While many leagues offer rich data, the IPL stands out for its scale, diversity, and continuous evolution—featuring global stars, frequent team changes, and high-stakes matches in a compressed window. This creates a uniquely complex, ever-changing network that’s ideal for graph analytics, letting us uncover dynamic relationships and trends that static datasets or less volatile leagues can’t reveal.
+              </p>
+            </div>
           </div>
           
           <!-- Tech Stack Pill -->
