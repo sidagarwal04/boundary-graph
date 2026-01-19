@@ -2,7 +2,7 @@
   <div class="space-y-8 pb-12">
     <!-- Header -->
     <div class="flex items-center gap-3">
-      <CricketStadiumIcon class="w-8 h-8 text-brand-primary" />
+      <UserGroupIcon class="w-8 h-8 text-brand-primary" />
       <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Teams & Statistics</h1>
     </div>
     
@@ -169,8 +169,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
-import { TrophyIcon } from '@heroicons/vue/24/outline'
+import { TrophyIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
 
 const config = useRuntimeConfig()
 const allTeams = ref<any[]>([])

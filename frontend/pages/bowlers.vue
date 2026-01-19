@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 bg-brand-accent/10 rounded-lg flex items-center justify-center">
-        <span class="text-xl">🎯</span>
+        <CricketBallIcon class="w-6 h-6 text-brand-accent" />
       </div>
       <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Bowling Masters</h1>
     </div>
@@ -74,6 +74,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
 
 const config = useRuntimeConfig()
 const bowlers = ref<any[]>([])

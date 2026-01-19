@@ -160,7 +160,7 @@
             <ShareIcon class="w-5 h-5 text-indigo-500" />
             <h3 class="font-bold text-slate-800">Graph Relationship Explorer</h3>
           </div>
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interactive H2H Network</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interactive Rivalry Network</span>
         </div>
         <div class="p-6">
           <GraphVisualization 
@@ -174,7 +174,7 @@
                 <InformationCircleIcon class="w-4 h-4" />
              </div>
              <p class="text-[11px] text-slate-500 leading-relaxed font-medium mt-0.5">
-               This network graph visualizes the direct relationships stored in our **Neo4j** database. The center node represents the current player, and the satellite nodes are the top 5 rivals they have faced most frequently.
+               This network graph visualizes the direct relationships stored in our <strong class="text-slate-900">Neo4j</strong> database. The center node represents the current player, and the satellite nodes are the top 5 rivals they have faced most frequently.
              </p>
           </div>
         </div>

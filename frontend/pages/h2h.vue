@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 bg-brand-primary/10 rounded-lg flex items-center justify-center">
-        <span class="text-xl">⚔️</span>
+        <CrossedBatsIcon class="w-6 h-6 text-brand-primary" />
       </div>
       <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Head-to-Head Analysis</h1>
     </div>
@@ -144,6 +144,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import CrossedBatsIcon from '~/components/icons/CrossedBatsIcon.vue'
 
 const config = useRuntimeConfig()
 const team1 = ref('')
