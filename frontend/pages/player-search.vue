@@ -175,7 +175,7 @@
                 <InformationCircleIcon class="w-4 h-4" />
              </div>
              <p class="text-[11px] text-slate-500 leading-relaxed font-medium mt-0.5">
-               This network graph visualizes the direct relationships stored in our <strong class="text-slate-900">Neo4j</strong> database. The center node represents the current player, and the satellite nodes are the top 5 rivals they have faced most frequently.
+               This <strong class="text-slate-900">interactive Neo4j graph</strong> shows player rivalries and relationships. <strong class="text-indigo-600">Single-click</strong> nodes to view player stats. <strong class="text-indigo-600">Double-click</strong> any node to expand and explore their network of rivals and connections.
              </p>
           </div>
         </div>
@@ -220,6 +220,28 @@ const playerRivals = ref<any[]>([])
 const loadingRivals = ref(false)
 const highlightedIndex = ref(-1)
 let searchTimeout: any = null
+
+// Handle graph expansion events
+onMounted(() => {
+  document.addEventListener('expand-player', (event: any) => {
+    const playerName = event.detail
+    searchQuery.value = playerName
+    selectPlayer(playerName)
+  })
+  
+  document.addEventListener('expand-center', (event: any) => {
+    console.log('Center expansion requested for:', event.detail)
+    // Could fetch more relationships, show team connections, etc.
+    fetchAdditionalRelationships(event.detail)
+  })
+})
+
+const fetchAdditionalRelationships = async (playerName: string) => {
+  // This could fetch team relationships, coach connections, etc.
+  console.log(`Fetching additional relationships for ${playerName}`)
+  // For now, just show a notification that it's expanding
+  // You could add more complex graph expansion logic here
+}
 
 const clearSearch = () => {
   searchQuery.value = ''

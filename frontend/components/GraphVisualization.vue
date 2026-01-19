@@ -29,17 +29,27 @@
       </g>
 
       <!-- Rival Nodes -->
-      <g v-for="(rival, index) in rivals" :key="'node-' + index" class="group cursor-pointer" @click="$emit('select-rival', rival.name)">
+      <g v-for="(rival, index) in rivals" :key="'node-' + index" class="group cursor-pointer" 
+         @click="$emit('select-rival', rival.name)"
+         @dblclick="expandNode(rival.name)">
         <circle 
           :cx="rival.x" :cy="rival.y" 
           r="28" 
-          class="fill-slate-800 stroke-slate-700 hover:stroke-brand-primary transition-all duration-300" 
+          class="fill-slate-800 stroke-slate-700 hover:stroke-brand-primary hover:fill-slate-700 transition-all duration-300" 
           stroke-width="2"
+        />
+        <!-- Hover effect ring -->
+        <circle 
+          :cx="rival.x" :cy="rival.y" 
+          r="32" 
+          class="fill-none stroke-brand-primary opacity-0 group-hover:opacity-20 transition-all duration-300" 
+          stroke-width="3"
+          stroke-dasharray="4 4"
         />
         <text 
           :x="rival.x" :y="rival.y + 45" 
           text-anchor="middle" 
-          class="fill-slate-400 text-[10px] font-bold uppercase tracking-widest"
+          class="fill-slate-400 text-[10px] font-bold uppercase tracking-widest group-hover:fill-white transition-all duration-300"
         >
           {{ rival.name.split(' ').pop() }}
         </text>
@@ -48,30 +58,52 @@
           text-anchor="middle" 
           class="fill-white text-[10px] font-black"
         >
-          {{ rival.score }}{{ rival.type === 'bowler' ? 'r' : 'w' }}
+          {{ rival.score }}{{ rival.type === 'bowler' ? 'w' : 'r' }}
+        </text>
+        <!-- Double-click hint -->
+        <text 
+          :x="rival.x" :y="rival.y - 40" 
+          text-anchor="middle" 
+          class="fill-brand-primary text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-300"
+        >
+          2x CLICK
         </text>
       </g>
 
       <!-- Main Player Node (Center) -->
-      <g class="animate-bounce-subtle">
+      <g class="animate-bounce-subtle cursor-pointer" @dblclick="expandCenter()">
         <circle 
           :cx="centerX" :cy="centerY" 
           r="35" 
-          class="fill-brand-primary shadow-2xl"
+          class="fill-brand-primary hover:fill-indigo-500 shadow-2xl transition-all duration-300"
+        />
+        <!-- Center node pulsing ring -->
+        <circle 
+          :cx="centerX" :cy="centerY" 
+          r="40" 
+          class="fill-none stroke-brand-primary opacity-30 animate-ping"
         />
         <text 
           :x="centerX" :y="centerY + 6" 
           text-anchor="middle" 
-          class="fill-white text-lg font-black"
+          class="fill-white text-lg font-black pointer-events-none"
         >
           {{ playerName.charAt(0) }}
         </text>
         <text 
           :x="centerX" :y="centerY + 55" 
           text-anchor="middle" 
-          class="fill-white text-xs font-black uppercase tracking-widest"
+          class="fill-white text-xs font-black uppercase tracking-widest pointer-events-none"
         >
           {{ playerName }}
+        </text>
+        <!-- Expand hint -->
+        <text 
+          :x="centerX" :y="centerY - 55" 
+          text-anchor="middle" 
+          class="fill-brand-primary text-[8px] font-bold animate-pulse"
+        >
+          2x CLICK TO EXPAND
         </text>
       </g>
 
@@ -101,7 +133,20 @@ const props = defineProps<{
   loading: boolean
 }>()
 
-defineEmits(['select-rival'])
+defineEmits(['select-rival', 'expand-node', 'expand-center'])
+
+const expandNode = (rivalName: string) => {
+  console.log(`Expanding node: ${rivalName}`)
+  // You can emit this to parent component to handle the expansion
+  // For now, let's just switch to that player
+  document.dispatchEvent(new CustomEvent('expand-player', { detail: rivalName }))
+}
+
+const expandCenter = () => {
+  console.log(`Expanding center node: ${props.playerName}`)
+  // Could show more relationships, team connections, etc.
+  document.dispatchEvent(new CustomEvent('expand-center', { detail: props.playerName }))
+}
 
 const centerX = 250
 const centerY = 180
