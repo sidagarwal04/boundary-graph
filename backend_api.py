@@ -85,6 +85,7 @@ db.connect()
 class OverviewStats(BaseModel):
     total_matches: int
     total_players: int
+    total_runs: int
     active_teams: int
     defunct_teams: int
     total_deliveries: int
@@ -137,6 +138,7 @@ async def get_overview():
     matches = db.query("MATCH (m:Match) RETURN COUNT(m) as count")
     players = db.query("MATCH (p:Player) RETURN COUNT(p) as count")
     deliveries = db.query("MATCH (d:Delivery) RETURN COUNT(d) as count")
+    runs = db.query("MATCH (d:Delivery) RETURN SUM(d.runs_total) as count")
     
     # Calculate Active vs Defunct Teams logic with Rebranding
     # 1. Get ALL teams ever
@@ -171,6 +173,7 @@ async def get_overview():
     return OverviewStats(
         total_matches=matches[0]['count'] if matches else 0,
         total_players=players[0]['count'] if players else 0,
+        total_runs=runs[0]['count'] if runs else 0,
         active_teams=active_count,
         defunct_teams=defunct_count,
         total_deliveries=deliveries[0]['count'] if deliveries else 0
@@ -547,20 +550,32 @@ async def get_h2h_matches(team1: str, team2: str, limit: int = 50):
         MATCH (m)-[:WON_BY]->(winner:Team)
         RETURN m.date as date, m.season as season,
                winner.name as winning_team_name,
-               m.venue as venue
+               m.venue as venue,
+               m.outcome_margin as outcome_margin,
+               m.outcome_type as outcome_type
         ORDER BY m.date DESC
         LIMIT {limit}
     """, {'names1': list(set(names1)), 'names2': list(set(names2))})
     
-    # Normalize winner name to team1 or team2 as used in display
+    # Normalize winner name and format margin
     for r in results:
         w_name = r['winning_team_name']
-        # If the actual winner's name maps to team1, set it to team1
         if w_name in names1:
             r['winner'] = team1
         else:
             r['winner'] = team2
+        
+        # Format margin (e.g., "12 runs")
+        margin_val = r.get('outcome_margin')
+        margin_type = r.get('outcome_type')
+        if margin_val and margin_type:
+            r['margin'] = f"{margin_val} {margin_type}"
+        else:
+            r['margin'] = "N/A"
+            
         del r['winning_team_name']
+        del r['outcome_margin']
+        del r['outcome_type']
         
     return results
 

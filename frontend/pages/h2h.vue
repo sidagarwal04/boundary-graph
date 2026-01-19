@@ -98,6 +98,7 @@
                 <th class="px-6 py-4">Date</th>
                 <th class="px-6 py-4">Season</th>
                 <th class="px-6 py-4">Winner</th>
+                <th class="px-6 py-4">Outcome</th>
                 <th class="px-6 py-4">Venue</th>
               </tr>
             </thead>
@@ -115,6 +116,11 @@
                     ]"
                   >
                     {{ match.winner }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-black rounded uppercase border border-yellow-100 italic">
+                    {{ match.margin }}
                   </span>
                 </td>
                 <td class="px-6 py-4 text-sm text-slate-400 truncate max-w-xs" :title="match.venue">{{ match.venue }}</td>

@@ -1,31 +1,31 @@
 <template>
   <div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div class="stat-card flex justify-between items-start">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <NuxtLink to="/h2h" class="stat-card flex justify-between items-start hover:scale-[1.02] transition-transform group">
         <div class="flex flex-col">
-          <h3 class="text-label text-slate-500 mb-1">Total Matches</h3>
+          <h3 class="text-label text-slate-500 mb-1 group-hover:text-blue-600 transition-colors">Total Matches</h3>
           <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_matches }}</p>
           <div class="h-1 w-12 bg-blue-500 mt-4 rounded-full"></div>
         </div>
         <div class="p-3 bg-blue-50 rounded-lg">
-           <CricketStadiumIcon class="w-8 h-8 text-blue-600" />
+           <CricketStadiumIcon class="w-10 h-10 text-blue-600" />
         </div>
-      </div>
+      </NuxtLink>
       
-      <div class="stat-card flex justify-between items-start">
+      <NuxtLink to="/player-search" class="stat-card flex justify-between items-start hover:scale-[1.02] transition-transform group">
         <div class="flex flex-col">
-          <h3 class="text-label text-slate-500 mb-1">Total Players</h3>
+          <h3 class="text-label text-slate-500 mb-1 group-hover:text-green-600 transition-colors">Total Players</h3>
           <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.total_players }}</p>
           <div class="h-1 w-12 bg-green-500 mt-4 rounded-full"></div>
         </div>
         <div class="p-3 bg-green-50 rounded-lg">
-           <CricketHelmetIcon class="w-8 h-8 text-green-600" />
+           <CricketHelmetIcon class="w-10 h-10 text-green-600" />
         </div>
-      </div>
+      </NuxtLink>
       
-      <div class="stat-card flex justify-between items-start">
+      <NuxtLink to="/teams" class="stat-card flex justify-between items-start hover:scale-[1.02] transition-transform group">
         <div class="flex flex-col">
-          <h3 class="text-label text-slate-500 mb-1">Teams</h3>
+          <h3 class="text-label text-slate-500 mb-1 group-hover:text-orange-600 transition-colors">Teams</h3>
           <div class="flex items-baseline gap-2">
             <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ overview.active_teams }}</p>
             <span class="text-xs text-slate-400 font-medium">({{ overview.defunct_teams }} defunct)</span>
@@ -33,20 +33,31 @@
           <div class="h-1 w-12 bg-orange-500 mt-4 rounded-full"></div>
         </div>
         <div class="p-3 bg-orange-50 rounded-lg">
-           <CricketJerseyIcon class="w-8 h-8 text-orange-600" />
+           <CricketJerseyIcon class="w-10 h-10 text-orange-600" />
         </div>
-      </div>
-      
-      <div class="stat-card flex justify-between items-start">
+      </NuxtLink>
+
+      <NuxtLink to="/batsmen" class="stat-card flex justify-between items-start hover:scale-[1.02] transition-transform group">
         <div class="flex flex-col">
-          <h3 class="text-label text-slate-500 mb-1">Total Deliveries</h3>
+          <h3 class="text-label text-slate-500 mb-1 group-hover:text-yellow-600 transition-colors">Total Runs</h3>
+          <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ formatNumber(overview.total_runs) }}</p>
+          <div class="h-1 w-12 bg-yellow-500 mt-4 rounded-full"></div>
+        </div>
+        <div class="p-3 bg-yellow-50 rounded-lg">
+           <CricketBatIcon class="w-10 h-10 text-yellow-600" />
+        </div>
+      </NuxtLink>
+      
+      <NuxtLink to="/bowlers" class="stat-card flex justify-between items-start hover:scale-[1.02] transition-transform group">
+        <div class="flex flex-col">
+          <h3 class="text-label text-slate-500 mb-1 group-hover:text-red-600 transition-colors">Total Deliveries</h3>
           <p class="text-3xl font-bold text-slate-900 tracking-tight">{{ formatNumber(overview.total_deliveries) }}</p>
           <div class="h-1 w-12 bg-red-500 mt-4 rounded-full"></div>
         </div>
         <div class="p-3 bg-red-50 rounded-lg">
-           <CricketBallIcon class="w-8 h-8 text-red-600" />
+           <CricketBallIcon class="w-10 h-10 text-red-600" />
         </div>
-      </div>
+      </NuxtLink>
     </div>
 
     <!-- Seasons Breakdown -->
@@ -161,12 +172,14 @@ import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
 import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
 import CricketJerseyIcon from '~/components/icons/CricketJerseyIcon.vue'
 import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
+import CricketBatIcon from '~/components/icons/CricketBatIcon.vue'
 import { TrophyIcon, ShieldCheckIcon, UserIcon } from '@heroicons/vue/24/outline'
 
 const config = useRuntimeConfig()
 const overview = ref<any>({
   total_matches: 0,
   total_players: 0,
+  total_runs: 0,
   active_teams: 0,
   defunct_teams: 0,
   total_deliveries: 0

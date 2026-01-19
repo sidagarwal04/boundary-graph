@@ -59,11 +59,21 @@
         </table>
       </div>
     </div>
+    <div class="flex justify-center">
+      <NuxtLink 
+        to="/player-search"
+        class="inline-flex items-center gap-2 px-8 py-4 bg-brand-primary text-white rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-brand-primary/20 group"
+      >
+        <MagnifyingGlassIcon class="w-5 h-5 group-hover:rotate-12 transition-transform" />
+        <span>Search all players</span>
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 
 const config = useRuntimeConfig()
 const batsmen = ref<any[]>([])

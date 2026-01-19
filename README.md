@@ -65,6 +65,10 @@ Create a `.env` file in the root and another in the `frontend` folder based on t
 - **Head-to-Head**: Compare historical performance between any two franchises.
 - **Team Insights**: Track rebranding history (e.g., Delhi Daredevils ➔ Delhi Capitals).
 - **Trends**: Visualizing runs and wickets scored across all IPL seasons.
+- **Ask BG (Classified)**: A prophetic new way to look at the future of the match (Coming soon).
+
+## 📊 Data Source
+All ball-by-ball IPL data used in this project is sourced from the incredible [Cricsheet.org](https://cricsheet.org/). We are grateful for their commitment to providing open-access cricket data.
 
 ## 📄 License
 This project is licensed under the [MIT License](LICENSE).

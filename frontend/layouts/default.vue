@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+
+const showDisclaimer = ref(true)
+
+const acceptDisclaimer = () => {
+  showDisclaimer.value = false
+}
+</script>
+
 <template>
   <div class="min-h-screen bg-slate-50 font-sans flex flex-col">
     <!-- Header Navigation -->
@@ -10,7 +21,7 @@
           </div>
           <div>
             <h1 class="text-xl font-bold tracking-tight text-slate-900">Boundary Graph</h1>
-            <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Where Numbers Meet the Boundary</p>
+            <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Deep Analytics for Gentlemen & Madmen</p>
           </div>
         </div>
         <nav class="hidden md:flex gap-8 items-center">
@@ -20,6 +31,10 @@
           <NuxtLink to="/teams" class="nav-link">Teams</NuxtLink>
           <NuxtLink to="/h2h" class="nav-link">Compare</NuxtLink>
           <NuxtLink to="/player-search" class="nav-link">Search</NuxtLink>
+          <NuxtLink to="/ask-bg" class="nav-link group flex items-center gap-1.5">
+            <span>Ask BG</span>
+            <div class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></div>
+          </NuxtLink>
         </nav>
       </div>
     </header>
@@ -28,6 +43,35 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
       <slot />
     </main>
+
+    <!-- Global Disclaimer Modal (Session-based) -->
+    <div v-if="showDisclaimer" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 space-y-6 border border-slate-100 animate-in zoom-in-95 duration-300">
+        <div class="flex flex-col items-center text-center space-y-4">
+          <div class="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center">
+            <ExclamationTriangleIcon class="w-8 h-8" />
+          </div>
+          <div>
+            <h2 class="text-2xl font-black text-slate-900">Legal Notice</h2>
+            <p class="text-slate-500 text-sm mt-2">
+              Before you proceed to Boundary Graph, please acknowledge our 
+              <NuxtLink to="/disclaimer" @click="showDisclaimer = false" class="text-brand-primary font-bold hover:underline">Legal Disclaimer</NuxtLink>.
+            </p>
+          </div>
+        </div>
+        
+        <div class="bg-slate-50 p-4 rounded-xl text-xs text-slate-500 leading-relaxed italic">
+          "Boundary Graph is for educational & entertainment purposes only. Data is sourced from Cricsheet.org and processed via Neo4j. We are not liable for any losses or betting outcomes."
+        </div>
+
+        <button 
+          @click="acceptDisclaimer"
+          class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black hover:bg-black transition-colors shadow-lg shadow-slate-200"
+        >
+          I Understand & Agree
+        </button>
+      </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200">
@@ -39,10 +83,12 @@
             <span class="font-semibold text-slate-800">Antigravity</span> and 
             <span class="font-semibold text-slate-800">Gemini</span>
           </p>
-          <div class="flex items-center gap-2 text-slate-400 text-xs">
+          <div class="flex items-center gap-4 text-slate-400 text-[10px] sm:text-xs">
             <span>© 2026 Boundary Graph</span>
             <span class="text-slate-300">•</span>
             <a href="https://meetsid.dev" target="_blank" class="text-brand-primary hover:underline font-medium italic">meetsid.dev</a>
+            <span class="text-slate-300">•</span>
+            <NuxtLink to="/disclaimer" class="hover:text-slate-600 underline underline-offset-2">Legal Disclaimer</NuxtLink>
           </div>
         </div>
       </div>
