@@ -32,13 +32,17 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200">
       <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="mb-4 md:mb-0 text-center md:text-left">
-            <h2 class="text-lg font-bold text-slate-800">Boundary Graph</h2>
-            <p class="text-slate-500 text-sm mt-1">Deep Analytics for Gentlemen & Madmen</p>
-          </div>
-          <div class="flex gap-4">
-             <span class="text-slate-400 text-sm">© 2026 Boundary Graph. All rights reserved.</span>
+        <div class="flex flex-col items-center text-center">
+          <p class="text-slate-600 text-sm mb-2">
+            Built with ❤️ for cricket fans and data enthusiasts using 
+            <span class="font-semibold text-slate-800">Neo4j</span>, 
+            <span class="font-semibold text-slate-800">Antigravity</span> and 
+            <span class="font-semibold text-slate-800">Gemini</span>
+          </p>
+          <div class="flex items-center gap-2 text-slate-400 text-xs">
+            <span>© 2026 Boundary Graph</span>
+            <span class="text-slate-300">•</span>
+            <a href="https://meetsid.dev" target="_blank" class="text-brand-primary hover:underline font-medium italic">meetsid.dev</a>
           </div>
         </div>
       </div>

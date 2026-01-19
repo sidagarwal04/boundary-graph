@@ -70,4 +70,4 @@ Create a `.env` file in the root and another in the `frontend` folder based on t
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-*Built with ❤️ for cricket fans and data enthusiasts.*
+*Built with ❤️ for cricket fans and data enthusiasts using **Neo4j**, **Antigravity** and **Gemini*** | [meetsid.dev](https://meetsid.dev)
