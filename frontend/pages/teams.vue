@@ -105,6 +105,42 @@
               </div>
             </div>
           </div>
+
+          <!-- Trophies Row -->
+          <div v-if="teamStats.trophies?.length" class="p-6 bg-yellow-50/50 border-t border-yellow-100 flex flex-wrap items-center gap-4">
+            <span class="text-xs font-black text-yellow-700 uppercase tracking-widest">IPL Champions</span>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="year in teamStats.trophies" :key="year" class="flex items-center gap-1.5 px-3 py-1 bg-white rounded-lg border border-yellow-200 text-yellow-700 shadow-sm">
+                <TrophyIcon class="w-3.5 h-3.5 fill-yellow-400" />
+                <span class="text-xs font-black">{{ year }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rivalry Intelligence -->
+        <div v-if="rivalries.length > 0" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center">
+             <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">H2H Rivalry Intelligence</h2>
+             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Win % vs Opponents</span>
+          </div>
+          <div class="divide-y divide-slate-50">
+            <div v-for="rival in rivalries" :key="rival.opponent" class="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-slate-800 truncate">{{ rival.opponent }}</p>
+                <p class="text-[10px] text-slate-400 font-medium uppercase">{{ rival.matches }} Matches Played</p>
+              </div>
+              <div class="flex items-center gap-6">
+                <div class="text-right">
+                  <p class="text-sm font-black text-slate-900">{{ rival.wins }}W - {{ rival.matches - rival.wins }}L</p>
+                  <p class="text-[10px] font-bold text-slate-400">{{ rival.win_pct }}% Win Ratio</p>
+                </div>
+                <div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-brand-primary rounded-full transition-all duration-700" :style="{ width: rival.win_pct + '%' }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Squad Section -->
@@ -134,12 +170,14 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
+import { TrophyIcon } from '@heroicons/vue/24/outline'
 
 const config = useRuntimeConfig()
 const allTeams = ref<any[]>([])
 const selectedTeam = ref<any>(null)
-const teamStats = ref<any>({ total_matches: 0, wins: 0, win_percentage: 0 })
+const teamStats = ref<any>({ total_matches: 0, wins: 0, win_percentage: 0, trophies: [] })
 const squad = ref<any[]>([])
+const rivalries = ref<any[]>([])
 
 const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
 const defunctTeams = computed(() => allTeams.value.filter(t => !t.is_active))
@@ -175,6 +213,14 @@ const selectTeam = async (team: any) => {
   } catch (error) {
     console.error('Failed to fetch squad data:', error)
     squad.value = []
+  }
+
+  try {
+    const rivalData = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/rivalries`)
+    rivalries.value = Array.isArray(rivalData) ? rivalData : []
+  } catch (error) {
+    console.error('Failed to fetch rivalry data:', error)
+    rivalries.value = []
   }
 }
 

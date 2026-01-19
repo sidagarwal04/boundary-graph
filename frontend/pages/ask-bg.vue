@@ -36,7 +36,10 @@
         </div>
       </div>
 
-      <div class="flex flex-col items-center gap-4 pt-4">
+      <div class="flex flex-col items-center gap-4 pt-4 relative">
+        <div class="absolute -top-12 -right-8 rotate-12 border-4 border-red-600/20 px-4 py-1 rounded text-red-600/20 font-black text-2xl select-none pointer-events-none uppercase tracking-widest">
+          Secret
+        </div>
         <div class="px-6 py-2 bg-slate-100 text-slate-500 rounded-full text-xs font-bold uppercase tracking-widest border border-slate-200">
           Coming Soon for IPL 2026
         </div>

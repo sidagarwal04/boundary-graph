@@ -150,6 +150,33 @@
           </div>
         </div>
       </div>
+
+      <!-- Graph View Expansion -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <ShareIcon class="w-5 h-5 text-indigo-500" />
+            <h3 class="font-bold text-slate-800">Graph Relationship Explorer</h3>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interactive H2H Network</span>
+        </div>
+        <div class="p-6">
+          <GraphVisualization 
+            :playerName="searchQuery" 
+            :rivals="playerRivals" 
+            :loading="loadingRivals"
+            @select-rival="selectPlayer"
+          />
+          <div class="mt-4 p-4 bg-slate-50 rounded-xl flex items-start gap-3">
+             <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                <InformationCircleIcon class="w-4 h-4" />
+             </div>
+             <p class="text-[11px] text-slate-500 leading-relaxed font-medium mt-0.5">
+               This network graph visualizes the direct relationships stored in our **Neo4j** database. The center node represents the current player, and the satellite nodes are the top 5 rivals they have faced most frequently. The numbers indicate total runs scored (r) or wickets taken (w) in these specific match-ups.
+             </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Placeholder State -->
@@ -172,7 +199,9 @@ import {
   UserIcon, 
   UserPlusIcon,
   PresentationChartLineIcon,
-  FireIcon
+  FireIcon,
+  ShareIcon,
+  InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
 import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
@@ -183,6 +212,8 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 const showResults = ref(false)
 const playerStats = ref<any>(null)
+const playerRivals = ref<any[]>([])
+const loadingRivals = ref(false)
 const highlightedIndex = ref(-1)
 let searchTimeout: any = null
 
@@ -242,6 +273,17 @@ const selectPlayer = async (playerName: string) => {
   } catch (error) {
     console.error('Failed to fetch player stats:', error)
     playerStats.value = null
+  }
+
+  // Fetch Rivalry Graph Data
+  loadingRivals.value = true
+  try {
+    playerRivals.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/rivals`)
+  } catch (error) {
+    console.error('Failed to fetch player rivals:', error)
+    playerRivals.value = []
+  } finally {
+    loadingRivals.value = false
   }
 }
 

@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
       <NuxtLink to="/h2h" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
         <div class="flex justify-between items-start w-full">
           <div class="flex flex-col pr-2">
@@ -115,6 +115,18 @@
         </div>
         <div class="h-1 w-12 bg-red-500 mt-4 rounded-full"></div>
       </NuxtLink>
+      <NuxtLink to="/venues" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+        <div class="flex justify-between items-start w-full">
+          <div class="flex flex-col pr-2">
+            <h3 class="text-label text-slate-500 mb-1 group-hover:text-purple-600 transition-colors">Venues</h3>
+            <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight">36+</p>
+          </div>
+          <div class="p-2 bg-purple-50 rounded-lg shrink-0">
+             <MapPinIcon class="w-8 h-8 text-purple-600" />
+          </div>
+        </div>
+        <div class="h-1 w-12 bg-purple-500 mt-4 rounded-full"></div>
+      </NuxtLink>
     </div>
 
     <!-- Seasons Breakdown -->
@@ -156,7 +168,20 @@
         <div v-else-if="selectedSeasonDetails" class="p-6">
           
           <!-- Winner Section -->
-          <div class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-100">
+          <NuxtLink 
+            v-if="selectedSeasonDetails.final_match_id"
+            :to="'/match/' + selectedSeasonDetails.final_match_id"
+            class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-100 hover:scale-[1.01] transition-transform cursor-pointer group"
+          >
+             <span class="text-xs font-bold text-yellow-600 uppercase tracking-widest mb-2">Season Winner</span>
+             <h2 class="text-3xl font-extrabold text-slate-900 flex items-center gap-3 group-hover:text-yellow-700 transition-colors">
+               <TrophyIcon class="w-8 h-8 text-yellow-500" />
+               {{ selectedSeasonDetails.winner }}
+             </h2>
+             <p class="text-sm text-slate-500 mt-2 font-medium">Won by {{ selectedSeasonDetails.margin }} • <span class="text-yellow-600">View Final Storyline</span></p>
+          </NuxtLink>
+
+          <div v-else class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-100">
              <span class="text-xs font-bold text-yellow-600 uppercase tracking-widest mb-2">Winner</span>
              <h2 class="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
                <TrophyIcon class="w-8 h-8 text-yellow-500" />
@@ -237,7 +262,8 @@ import {
   CircleStackIcon, 
   SparklesIcon, 
   BoltIcon,
-  CpuChipIcon
+  CpuChipIcon,
+  MapPinIcon
 } from '@heroicons/vue/24/outline'
 
 const config = useRuntimeConfig()
