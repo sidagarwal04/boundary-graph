@@ -1,11 +1,17 @@
 <template>
   <div class="space-y-8 pb-12">
     <!-- Header -->
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-brand-primary/10 rounded-lg flex items-center justify-center">
-        <CrossedBatsIcon class="w-6 h-6 text-brand-primary" />
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+          <CrossedBatsIcon class="w-3 h-3" />
+          Rivalry Intelligence
+        </div>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Head-to-Head <span class="text-brand-primary">Analysis</span></h1>
+        <p class="text-slate-500 max-w-xl">
+          Dive into epic franchise battles and historical matchups. Compare team records, analyze winning patterns, and discover which teams dominate specific rivalries.
+        </p>
       </div>
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Head-to-Head Analysis</h1>
     </div>
     
     <!-- Team Selection -->
@@ -143,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import CrossedBatsIcon from '~/components/icons/CrossedBatsIcon.vue'
 
 const config = useRuntimeConfig()

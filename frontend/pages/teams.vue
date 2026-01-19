@@ -1,9 +1,17 @@
 <template>
   <div class="space-y-8 pb-12">
     <!-- Header -->
-    <div class="flex items-center gap-3">
-      <CricketTeamIcon class="w-8 h-8 text-brand-primary" />
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Teams & Statistics</h1>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+          <CricketTeamIcon class="w-3 h-3" />
+          Team Intelligence
+        </div>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Teams & <span class="text-brand-primary">Statistics</span></h1>
+        <p class="text-slate-500 max-w-xl">
+          Explore the dynasties and rivalries that define the IPL. Track team's evolution, squad compositions, and head-to-head battle records across all seasons.
+        </p>
+      </div>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">

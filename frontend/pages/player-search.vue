@@ -1,15 +1,16 @@
 <template>
   <div class="space-y-8 animate-in fade-in duration-500">
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100">
-          <MagnifyingGlassIcon class="w-6 h-6" />
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600/10 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-widest">
+          <MagnifyingGlassIcon class="w-3 h-3" />
+          Player Intelligence
         </div>
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Player Intelligence</h1>
-          <p class="text-slate-500 text-sm font-medium">Search the database for deep performance metrics</p>
-        </div>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="text-indigo-600">Search Engine</span></h1>
+        <p class="text-slate-500 max-w-xl">
+          Deep dive into individual player careers with comprehensive analytics. Search any player to unlock batting, bowling, and rivalry insights powered by graph technology.
+        </p>
       </div>
     </div>
 

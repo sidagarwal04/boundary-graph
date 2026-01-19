@@ -1,11 +1,17 @@
 <template>
   <div class="space-y-8 pb-12">
     <!-- Header -->
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-brand-primary/10 rounded-lg flex items-center justify-center">
-        <span class="text-xl">🏏</span>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+          <CricketBatIcon class="w-3 h-3" />
+          Batting Intelligence
+        </div>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="text-brand-primary">Elite Batsmen</span></h1>
+        <p class="text-slate-500 max-w-xl">
+          Meet the run-machine legends who've dominated IPL pitches. From explosive strike rates to consistent performances, these are the batsmen who redefined T20 cricket.
+        </p>
       </div>
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Elite Batsmen</h1>
     </div>
     
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -74,6 +80,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import CricketBatIcon from '~/components/icons/CricketBatIcon.vue'
 
 const config = useRuntimeConfig()
 const batsmen = ref<any[]>([])

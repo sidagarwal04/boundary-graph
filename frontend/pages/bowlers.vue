@@ -1,11 +1,17 @@
 <template>
   <div class="space-y-8 pb-12">
     <!-- Header -->
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-brand-accent/10 rounded-lg flex items-center justify-center">
-        <CricketBallIcon class="w-6 h-6 text-brand-accent" />
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-accent/10 text-brand-accent rounded-full text-xs font-bold uppercase tracking-widest">
+          <CricketBallIcon class="w-3 h-3" />
+          Bowling Intelligence
+        </div>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="text-brand-accent">Bowling Masters</span></h1>
+        <p class="text-slate-500 max-w-xl">
+          Discover the wicket-taking legends of the IPL. From economy rates to strike rates, explore the bowlers who've shaped cricket's most exciting league.
+        </p>
       </div>
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Bowling Masters</h1>
     </div>
     
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
