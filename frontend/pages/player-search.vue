@@ -27,7 +27,7 @@
           @input="searchPlayers"
           @keydown="handleKeydown"
         />
-        <div v-if="searchQuery" @click="searchQuery = ''; playerStats = null; showResults = false" class="pr-3 text-slate-400 hover:text-slate-600 cursor-pointer">
+        <div v-if="searchQuery" @click="clearSearch" class="pr-3 text-slate-400 hover:text-slate-600 cursor-pointer">
           <XMarkIcon class="w-5 h-5" />
         </div>
       </div>
@@ -76,7 +76,9 @@
           <h2 class="text-3xl font-bold text-slate-900 tracking-tight">{{ searchQuery }}</h2>
           <div class="flex gap-4 mt-2">
             <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-bold uppercase tracking-wider border border-green-100">Pro Athlete</span>
-            <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold uppercase tracking-wider border border-slate-200 italic">{{ playerStats.batting_matches > 0 ? (playerStats.bowling_matches > 0 ? 'All Rounder' : 'Batsman') : 'Bowler' }}</span>
+            <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold uppercase tracking-wider border border-slate-200 italic">
+              {{ playerStats.batting_matches > 0 ? (playerStats.bowling_matches > 0 ? 'All Rounder' : 'Batsman') : 'Bowler' }}
+            </span>
           </div>
         </div>
       </div>
@@ -172,7 +174,7 @@
                 <InformationCircleIcon class="w-4 h-4" />
              </div>
              <p class="text-[11px] text-slate-500 leading-relaxed font-medium mt-0.5">
-               This network graph visualizes the direct relationships stored in our **Neo4j** database. The center node represents the current player, and the satellite nodes are the top 5 rivals they have faced most frequently. The numbers indicate total runs scored (r) or wickets taken (w) in these specific match-ups.
+               This network graph visualizes the direct relationships stored in our **Neo4j** database. The center node represents the current player, and the satellite nodes are the top 5 rivals they have faced most frequently.
              </p>
           </div>
         </div>
@@ -185,7 +187,7 @@
         <UserPlusIcon class="w-10 h-10" />
       </div>
       <h3 class="text-xl font-bold text-slate-800">No Intelligence Selected</h3>
-      <p class="text-slate-500 max-w-sm mx-auto mt-2 font-medium">Use the search box above to lookup any player's career statistics and performance metrics.</p>
+      <p class="text-slate-500 max-w-sm mx-auto mt-2 font-medium">Use the search box above to lookup any player's statistics.</p>
     </div>
   </div>
 </template>
@@ -205,6 +207,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
 import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
+import GraphVisualization from '~/components/GraphVisualization.vue'
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -217,80 +220,61 @@ const loadingRivals = ref(false)
 const highlightedIndex = ref(-1)
 let searchTimeout: any = null
 
+const clearSearch = () => {
+  searchQuery.value = ''
+  playerStats.value = null
+  showResults.value = false
+}
+
 const searchPlayers = () => {
   if (searchTimeout) clearTimeout(searchTimeout)
-  
   if (searchQuery.value.length < 2) {
     searchResults.value = []
     showResults.value = false
-    highlightedIndex.value = -1
     return
   }
-  
   searchTimeout = setTimeout(async () => {
     try {
-      searchResults.value = await $fetch(`${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`)
+      const data: any = await $fetch(`${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`)
+      searchResults.value = data
       showResults.value = searchResults.value.length > 0
-      highlightedIndex.value = -1
     } catch (error) {
       console.error('Search failed:', error)
-      searchResults.value = []
     }
   }, 300)
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
   if (!showResults.value || searchResults.value.length === 0) return
-
-  switch (e.key) {
-    case 'ArrowDown':
-      e.preventDefault()
-      highlightedIndex.value = (highlightedIndex.value + 1) % searchResults.value.length
-      break
-    case 'ArrowUp':
-      e.preventDefault()
-      highlightedIndex.value = (highlightedIndex.value - 1 + searchResults.value.length) % searchResults.value.length
-      break
-    case 'Enter':
-      e.preventDefault()
-      if (highlightedIndex.value >= 0) {
-        selectPlayer(searchResults.value[highlightedIndex.value])
-      }
-      break
-    case 'Escape':
-      showResults.value = false
-      break
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    highlightedIndex.value = (highlightedIndex.value + 1) % searchResults.value.length
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    highlightedIndex.value = (highlightedIndex.value - 1 + searchResults.value.length) % searchResults.value.length
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    if (highlightedIndex.value >= 0) selectPlayer(searchResults.value[highlightedIndex.value])
+  } else if (e.key === 'Escape') {
+    showResults.value = false
   }
 }
 
 const selectPlayer = async (playerName: string) => {
   searchQuery.value = playerName
   showResults.value = false
-  highlightedIndex.value = -1
-  
   try {
     playerStats.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}`)
-  } catch (error) {
-    console.error('Failed to fetch player stats:', error)
-    playerStats.value = null
-  }
-
-  // Fetch Rivalry Graph Data
-  loadingRivals.value = true
-  try {
+    loadingRivals.value = true
     playerRivals.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/rivals`)
   } catch (error) {
-    console.error('Failed to fetch player rivals:', error)
-    playerRivals.value = []
+    console.error('Fetch failed:', error)
   } finally {
     loadingRivals.value = false
   }
 }
 
 onMounted(() => {
-  // Check if player name is in query params
-  if (route.query.name) {
-    selectPlayer(route.query.name as string)
-  }
+  if (route.query.name) selectPlayer(route.query.name as string)
 })
 </script>

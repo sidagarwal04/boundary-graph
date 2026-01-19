@@ -92,6 +92,7 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
 import { ShareIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
@@ -99,6 +100,8 @@ const props = defineProps<{
   rivals: any[]
   loading: boolean
 }>()
+
+defineEmits(['select-rival'])
 
 const centerX = 250
 const centerY = 180
@@ -109,8 +112,6 @@ const getLinePath = (x1: number, y1: number, x2: number, y2: number) => {
 
 watch(() => props.rivals, (newRivals) => {
   if (!newRivals) return
-  
-  // Arrange rivals in a circle
   const radius = 140
   newRivals.forEach((rival, index) => {
     const angle = (index / newRivals.length) * 2 * Math.PI - Math.PI / 2
