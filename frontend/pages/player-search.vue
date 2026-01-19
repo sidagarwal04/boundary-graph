@@ -9,7 +9,7 @@
         </div>
         <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="text-indigo-600">Search Engine</span></h1>
         <p class="text-slate-500 max-w-xl">
-          Deep dive into individual player careers with comprehensive analytics. Search any player to unlock batting, bowling, and rivalry insights powered by graph technology.
+            Deep dive into individual player careers with comprehensive analytics. Search any player to unlock batting and bowling insights.
         </p>
       </div>
     </div>
@@ -155,35 +155,12 @@
       </div>
 
       <!-- Graph View Expansion -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-          <div class="flex items-center gap-2">
-            <ShareIcon class="w-5 h-5 text-indigo-500" />
-            <h3 class="font-bold text-slate-800">Graph Relationship Explorer</h3>
+      <!-- <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-6 pb-4 border-b border-slate-100/60 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex flex-col">
+            <h2 class="text-xl font-black text-slate-900">Graph Visualization</h2>
+            <p class="text-slate-500 text-sm font-medium">Interactive relationship explorer for {{ searchQuery }}</p>
           </div>
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Interactive Neo4j Network</span>
-        </div>
-        
-        <!-- Hop Controls -->
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-600">Exploration Depth:</span>
-            <div class="flex gap-1">
-              <button 
-                v-for="hop in [1, 2, 3, 4, 5]" 
-                :key="hop"
-                @click="setHops(hop)"
-                :class="{
-                  'bg-indigo-500 text-white': currentHops === hop,
-                  'bg-slate-100 text-slate-600 hover:bg-slate-200': currentHops !== hop
-                }"
-                class="w-8 h-8 rounded-lg text-xs font-bold transition-all duration-200"
-              >
-                {{ hop }}
-              </button>
-            </div>
-          </div>
-          <span class="text-[10px] text-slate-400 font-medium">{{ currentHops }} hop{{ currentHops > 1 ? 's' : '' }}</span>
         </div>
         
         <div class="p-6">
@@ -192,18 +169,17 @@
             :rivals="playerRivals" 
             :loading="loadingRivals"
             @select-rival="selectPlayer"
-            @expand-node="expandNodeToPlayer"
           />
           <div class="mt-4 p-4 bg-slate-50 rounded-xl flex items-start gap-3">
              <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
                 <InformationCircleIcon class="w-4 h-4" />
              </div>
              <p class="text-[11px] text-slate-500 leading-relaxed font-medium mt-0.5">
-               This <strong class="text-slate-900">interactive Neo4j graph</strong> shows player connections and relationships. <strong class="text-indigo-600">Single-click</strong> nodes to view player stats. <strong class="text-indigo-600">Double-click</strong> any node to expand and explore their network up to <strong class="text-indigo-600">{{ currentHops }} hops</strong>.
+               This <strong class="text-slate-900">interactive graph</strong> shows player connections and relationships. <strong class="text-indigo-600">Click</strong> nodes to view player stats. <strong class="text-indigo-600">Drag</strong> any node to move it around and explore the network layout.
              </p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Placeholder State -->
@@ -243,22 +219,17 @@ const playerStats = ref<any>(null)
 const playerRivals = ref<any[]>([])
 const loadingRivals = ref(false)
 const highlightedIndex = ref(-1)
-const currentHops = ref(1)
 let searchTimeout: any = null
 
-const setHops = async (hops: number) => {
-  if (currentHops.value === hops || !searchQuery.value) return
-  
-  currentHops.value = hops
-  if (searchQuery.value) {
-    await fetchPlayerGraph(searchQuery.value, hops)
-  }
+type GraphData = {
+  edges: Array<any>,
+  nodes: Array<any>
 }
 
-const fetchPlayerGraph = async (playerName: string, hops: number = 1) => {
+const fetchPlayerGraph = async (playerName: string) => {
   try {
     loadingRivals.value = true
-    const graphData = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/graph?hops=${hops}`)
+    const graphData = await $fetch<GraphData>(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/graph`)
     
     // Convert graph data to rivals format for compatibility
     if (graphData.edges && graphData.nodes) {
@@ -287,33 +258,6 @@ const fetchPlayerGraph = async (playerName: string, hops: number = 1) => {
   } finally {
     loadingRivals.value = false
   }
-}
-
-const expandNodeToPlayer = (playerName: string) => {
-  searchQuery.value = playerName
-  selectPlayer(playerName)
-}
-
-// Handle graph expansion events
-onMounted(() => {
-  document.addEventListener('expand-player', (event: any) => {
-    const playerName = event.detail
-    searchQuery.value = playerName
-    selectPlayer(playerName)
-  })
-  
-  document.addEventListener('expand-center', (event: any) => {
-    console.log('Center expansion requested for:', event.detail)
-    // Could fetch more relationships, show team connections, etc.
-    fetchAdditionalRelationships(event.detail)
-  })
-})
-
-const fetchAdditionalRelationships = async (playerName: string) => {
-  // This could fetch team relationships, coach connections, etc.
-  console.log(`Fetching additional relationships for ${playerName}`)
-  // For now, just show a notification that it's expanding
-  // You could add more complex graph expansion logic here
 }
 
 const clearSearch = () => {
@@ -361,7 +305,7 @@ const selectPlayer = async (playerName: string) => {
   showResults.value = false
   try {
     playerStats.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}`)
-    await fetchPlayerGraph(playerName, currentHops.value)
+    await fetchPlayerGraph(playerName)
   } catch (error) {
     console.error('Fetch failed:', error)
   }

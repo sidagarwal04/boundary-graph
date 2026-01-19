@@ -29,9 +29,9 @@
       </g>
 
       <!-- Rival Nodes -->
-      <g v-for="(rival, index) in rivals" :key="'node-' + index" class="group cursor-pointer" 
-         @click="$emit('select-rival', rival.name)"
-         @dblclick="expandNode(rival.name)">
+      <g v-for="(rival, index) in rivals" :key="'node-' + index" class="group cursor-move" 
+         @mousedown="startDrag(rival, $event)"
+         @mouseup="handleMouseUp(rival, $event)">
         <circle 
           :cx="rival.x" :cy="rival.y" 
           r="28" 
@@ -49,29 +49,21 @@
         <text 
           :x="rival.x" :y="rival.y + 45" 
           text-anchor="middle" 
-          class="fill-slate-400 text-[10px] font-bold uppercase tracking-widest group-hover:fill-white transition-all duration-300"
+          class="fill-slate-400 text-[10px] font-bold uppercase tracking-widest group-hover:fill-white transition-all duration-300 pointer-events-none"
         >
           {{ rival.name.split(' ').pop() }}
         </text>
         <text 
           :x="rival.x" :y="rival.y + 4" 
           text-anchor="middle" 
-          class="fill-white text-[10px] font-black"
+          class="fill-white text-[10px] font-black pointer-events-none"
         >
           {{ rival.score }}{{ rival.type === 'bowler' ? 'w' : 'r' }}
-        </text>
-        <!-- Double-click hint -->
-        <text 
-          :x="rival.x" :y="rival.y - 40" 
-          text-anchor="middle" 
-          class="fill-brand-primary text-[8px] font-bold opacity-0 group-hover:opacity-100 transition-all duration-300"
-        >
-          2x CLICK
         </text>
       </g>
 
       <!-- Main Player Node (Center) -->
-      <g class="animate-bounce-subtle cursor-pointer" @dblclick="expandCenter()">
+      <g class="animate-bounce-subtle cursor-move" @mousedown="startDrag(centerNode, $event)">
         <circle 
           :cx="centerX" :cy="centerY" 
           r="35" 
@@ -97,14 +89,6 @@
         >
           {{ playerName }}
         </text>
-        <!-- Expand hint -->
-        <text 
-          :x="centerX" :y="centerY - 55" 
-          text-anchor="middle" 
-          class="fill-brand-primary text-[8px] font-bold animate-pulse"
-        >
-          2x CLICK TO EXPAND
-        </text>
       </g>
 
       <!-- Gradients -->
@@ -124,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch, ref, onMounted, onUnmounted } from 'vue'
 import { ShareIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
@@ -133,34 +117,108 @@ const props = defineProps<{
   loading: boolean
 }>()
 
-const $emit = defineEmits(['select-rival', 'expand-node', 'expand-center'])
+const $emit = defineEmits(['select-rival'])
 
-const expandNode = (rivalName: string) => {
-  console.log(`Expanding node: ${rivalName}`)
-  $emit('expand-node', rivalName)
-}
-
-const expandCenter = () => {
-  console.log(`Expanding center node: ${props.playerName}`)
-  $emit('expand-center', props.playerName)
-}
-
-const centerX = 250
-const centerY = 180
+const centerX = ref(250)
+const centerY = ref(180)
+const centerNode = ref({ x: centerX.value, y: centerY.value, name: 'center' })
+const isDragging = ref(false)
+const dragNode = ref<any>(null)
+const dragOffset = ref({ x: 0, y: 0 })
+const dragStartPosition = ref({ x: 0, y: 0 })
+const hasDragged = ref(false)
 
 const getLinePath = (x1: number, y1: number, x2: number, y2: number) => {
   return `M ${x1} ${y1} L ${x2} ${y2}`
 }
+
+const startDrag = (node: any, event: MouseEvent) => {
+  event.preventDefault()
+  isDragging.value = true
+  dragNode.value = node
+  hasDragged.value = false
+  
+  const rect = (event.target as Element).closest('svg')?.getBoundingClientRect()
+  if (rect) {
+    const svgX = (event.clientX - rect.left) * (500 / rect.width)
+    const svgY = (event.clientY - rect.top) * (400 / rect.height)
+    dragOffset.value = {
+      x: svgX - node.x,
+      y: svgY - node.y
+    }
+    dragStartPosition.value = { x: svgX, y: svgY }
+  }
+}
+
+const handleMouseUp = (node: any, event: MouseEvent) => {
+  if (isDragging.value && !hasDragged.value && node.name) {
+    // This was a click, not a drag
+    $emit('select-rival', node.name)
+  }
+  isDragging.value = false
+  dragNode.value = null
+  hasDragged.value = false
+}
+
+const handleMouseMove = (event: MouseEvent) => {
+  if (!isDragging.value || !dragNode.value) return
+  
+  const rect = document.querySelector('svg')?.getBoundingClientRect()
+  if (rect) {
+    const svgX = (event.clientX - rect.left) * (500 / rect.width)
+    const svgY = (event.clientY - rect.top) * (400 / rect.height)
+    
+    // Check if we've moved enough to consider this a drag
+    const dragDistance = Math.sqrt(
+      Math.pow(svgX - dragStartPosition.value.x, 2) + 
+      Math.pow(svgY - dragStartPosition.value.y, 2)
+    )
+    
+    if (dragDistance > 3) {
+      hasDragged.value = true
+    }
+    
+    dragNode.value.x = Math.max(35, Math.min(465, svgX - dragOffset.value.x))
+    dragNode.value.y = Math.max(35, Math.min(365, svgY - dragOffset.value.y))
+    
+    if (dragNode.value.name === 'center') {
+      centerX.value = dragNode.value.x
+      centerY.value = dragNode.value.y
+    }
+  }
+}
+
+const handleGlobalMouseUp = () => {
+  isDragging.value = false
+  dragNode.value = null
+  hasDragged.value = false
+}
+
+onMounted(() => {
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleGlobalMouseUp)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousemove', handleMouseMove)
+  document.removeEventListener('mouseup', handleGlobalMouseUp)
+})
 
 watch(() => props.rivals, (newRivals) => {
   if (!newRivals) return
   const radius = 140
   newRivals.forEach((rival, index) => {
     const angle = (index / newRivals.length) * 2 * Math.PI - Math.PI / 2
-    rival.x = centerX + radius * Math.cos(angle)
-    rival.y = centerY + radius * Math.sin(angle)
+    rival.x = centerX.value + radius * Math.cos(angle)
+    rival.y = centerY.value + radius * Math.sin(angle)
   })
 }, { immediate: true })
+
+// Update rival positions when center moves
+watch([centerX, centerY], ([newCenterX, newCenterY]) => {
+  centerNode.value.x = newCenterX
+  centerNode.value.y = newCenterY
+})
 </script>
 
 <style scoped>
