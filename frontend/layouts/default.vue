@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ExclamationTriangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { ExclamationTriangleIcon, Bars3Icon, XMarkIcon, CodeBracketIcon } from '@heroicons/vue/24/outline'
 
 const showDisclaimer = ref(true)
 const isMenuOpen = ref(false)
@@ -30,7 +30,7 @@ const closeMenu = () => {
           </div>
           <div>
             <h1 class="text-xl font-bold tracking-tight text-slate-900">Boundary Graph</h1>
-            <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wide">Deep Analytics for Gentlemen & Madmen</p>
+            <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wide">IPL Graph Analytics for Gentlemen & Madmen</p>
           </div>
         </NuxtLink>
 
@@ -46,6 +46,15 @@ const closeMenu = () => {
             <span>Ask BG</span>
             <div class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></div>
           </NuxtLink>
+          <div class="w-px h-6 bg-slate-200 ml-2 mr-2"></div>
+          <a 
+            href="https://github.com/sidagarwal04/boundary-graph" 
+            target="_blank" 
+            class="p-2 text-slate-400 hover:text-slate-900 transition-colors"
+            title="GitHub Repository"
+          >
+            <CodeBracketIcon class="w-5 h-5" />
+          </a>
         </nav>
 
         <!-- Mobile Menu Toggle -->
@@ -71,6 +80,15 @@ const closeMenu = () => {
             <span>Ask BG</span>
             <div class="w-2 h-2 rounded-full bg-brand-primary animate-pulse"></div>
           </NuxtLink>
+          <a 
+            href="https://github.com/sidagarwal04/boundary-graph" 
+            target="_blank" 
+            class="nav-link-mobile flex items-center justify-between text-slate-500"
+            @click="closeMenu"
+          >
+            <span>GitHub Repository</span>
+            <CodeBracketIcon class="w-5 h-5" />
+          </a>
         </nav>
       </div>
     </header>
@@ -114,10 +132,7 @@ const closeMenu = () => {
       <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="flex flex-col items-center text-center">
           <p class="text-slate-600 text-sm mb-2">
-            Built with ❤️ for cricket fans and data enthusiasts using 
-            <span class="font-semibold text-slate-800">Neo4j</span>, 
-            <span class="font-semibold text-slate-800">Antigravity</span> and 
-            <span class="font-semibold text-slate-800">Gemini</span>
+            Built with ❤️ for cricket fans and data enthusiasts
           </p>
           <div class="flex items-center gap-4 text-slate-400 text-[10px] sm:text-xs">
             <span>© 2026 Boundary Graph</span>

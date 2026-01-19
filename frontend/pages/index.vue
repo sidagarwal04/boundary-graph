@@ -1,5 +1,52 @@
 <template>
   <div>
+    <!-- Project Intro -->
+    <div class="mb-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden relative animate-in fade-in slide-in-from-top-4 duration-700">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full -mr-16 -mt-16"></div>
+      <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-4">
+          <div class="space-y-1">
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">The Indian Premier League <span class="text-brand-primary">Graph</span></h2>
+            <p class="text-slate-500 max-w-2xl leading-relaxed text-sm md:text-base">
+              Welcome to the ultimate digital twin of the <strong class="text-slate-900">IPL</strong>. This platform processes every ball, wicket, and boundary since 2008 using high-performance graph technology. Dive deep into player trajectories and franchise rivalries powered by 17+ seasons of T20 data.
+            </p>
+          </div>
+          
+          <!-- Tech Stack Pill -->
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Engineered With</span>
+            <div class="flex gap-3">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Graph Database">
+                <CircleStackIcon class="w-3.5 h-3.5 text-blue-600" />
+                <span class="text-[10px] font-bold text-slate-700">Neo4j</span>
+              </div>
+              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Frontend Framework">
+                <SparklesIcon class="w-3.5 h-3.5 text-emerald-600" />
+                <span class="text-[10px] font-bold text-slate-700">Nuxt 3</span>
+              </div>
+              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="API Backend">
+                <BoltIcon class="w-3.5 h-3.5 text-orange-600" />
+                <span class="text-[10px] font-bold text-slate-700">FastAPI</span>
+              </div>
+              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="AI Coding Assistant">
+                <CpuChipIcon class="w-3.5 h-3.5 text-indigo-600" />
+                <span class="text-[10px] font-bold text-slate-700">Antigravity</span>
+              </div>
+              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="LLM Technology">
+                <SparklesIcon class="w-3.5 h-3.5 text-purple-600" />
+                <span class="text-[10px] font-bold text-slate-700">Gemini</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+          <div class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-slate-200">
+            IPL 2008 - 2025
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
       <NuxtLink to="/h2h" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
         <div class="flex justify-between items-start w-full">
@@ -183,7 +230,15 @@ import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
 import CricketJerseyIcon from '~/components/icons/CricketJerseyIcon.vue'
 import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
 import CricketBatIcon from '~/components/icons/CricketBatIcon.vue'
-import { TrophyIcon, ShieldCheckIcon, UserIcon } from '@heroicons/vue/24/outline'
+import { 
+  TrophyIcon, 
+  ShieldCheckIcon, 
+  UserIcon, 
+  CircleStackIcon, 
+  SparklesIcon, 
+  BoltIcon,
+  CpuChipIcon
+} from '@heroicons/vue/24/outline'
 
 const config = useRuntimeConfig()
 const overview = ref<any>({
