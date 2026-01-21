@@ -32,15 +32,6 @@
           <XMarkIcon class="w-5 h-5" />
         </div>
       </div>
-
-      <!-- Debug Panel -->
-      <div v-if="searchQuery.length >= 2" class="mt-2 p-3 bg-gray-100 rounded text-sm">
-        <div>Query: "{{ searchQuery }}"</div>
-        <div>Results count: {{ searchResults.length }}</div>
-        <div>Show results: {{ showResults }}</div>
-        <div>API Base: {{ config.public.apiBase }}</div>
-        <div v-if="searchResults.length > 0">First result: {{ searchResults[0] }}</div>
-      </div>
       
       <!-- Autocomplete Dropdown -->
       <transition 
@@ -193,11 +184,6 @@
                   <span class="font-bold text-slate-800 text-lg">{{ season }}</span>
                   <span v-if="stats.team" class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs font-bold">{{ stats.team }}</span>
                 </div>
-                <div class="text-sm text-slate-600">
-                  <span v-if="stats.batting?.innings">{{ stats.batting.innings }} bat</span>
-                  <span v-if="stats.batting?.innings && stats.bowling?.innings"> • </span>
-                  <span v-if="stats.bowling?.innings">{{ stats.bowling.innings }} bowl</span>
-                </div>
               </div>
               <div class="p-4">
                 <!-- Batting Performance -->
@@ -235,7 +221,7 @@
                 </div>
                 
                 <!-- Bowling Performance -->
-                <div v-if="stats.bowling?.wickets > 0">
+                <div v-if="stats.bowling && (stats.bowling.wickets >= 0 || stats.bowling.runs >= 0 || stats.bowling.innings > 0)">
                   <h4 class="text-sm font-semibold text-rose-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <CricketBallIcon class="w-4 h-4" />
                     Bowling Performance
@@ -390,14 +376,9 @@ const searchPlayers = () => {
   }
   searchTimeout = setTimeout(async () => {
     try {
-      console.log('Searching for:', searchQuery.value)
-      const url = `${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`
-      console.log('API URL:', url)
-      const data: any = await $fetch(url)
-      console.log('API response:', data)
+      const data: any = await $fetch(`${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`)
       searchResults.value = data || []
       showResults.value = searchResults.value.length > 0
-      console.log('Search results set:', searchResults.value, 'showResults:', showResults.value)
     } catch (error) {
       console.error('Search failed:', error)
       searchResults.value = []

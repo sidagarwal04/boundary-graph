@@ -634,17 +634,17 @@ async def get_player_stats(player_name: str):
         // Get team relationships (limit to avoid memory issues)
         OPTIONAL MATCH (t:Team)-[sp:SELECTED_PLAYER]->(p)
         WHERE sp.season IS NOT NULL
-        WITH p, collect(DISTINCT {team: t.name, season: sp.season})[..20] as team_history
         
-        // Get batting statistics (limit results)
-        OPTIONAL MATCH (p)-[bs:BATTING_STATS]->(m:Match)
-        WHERE bs.runs IS NOT NULL
-        WITH p, team_history, collect({runs: bs.runs, balls: bs.balls, fours: bs.fours, sixes: bs.sixes, season: m.season, out: bs.out})[..100] as batting_innings
+        // Get batting and bowling statistics together (more comprehensive filtering)
+        OPTIONAL MATCH (p)-[bs:BATTING_STATS]->(m1:Match)
         
-        // Get bowling statistics (limit results)  
         OPTIONAL MATCH (p)-[bow:BOWLING_STATS]->(m2:Match)
-        WHERE bow.wickets IS NOT NULL OR bow.runs IS NOT NULL
-        WITH p, team_history, batting_innings, collect({wickets: bow.wickets, runs: bow.runs, balls: bow.balls, season: m2.season})[..100] as bowling_innings
+        
+        // Aggregate everything together (comprehensive data collection)
+        WITH p, 
+             collect(DISTINCT {team: t.name, season: sp.season})[..50] as team_history,
+             collect(DISTINCT {runs: bs.runs, balls: bs.balls, fours: bs.fours, sixes: bs.sixes, season: m1.season, out: bs.out}) as batting_innings,
+             collect(DISTINCT {wickets: bow.wickets, runs: bow.runs, balls: bow.balls, season: m2.season}) as bowling_innings
         
         // Calculate basic aggregated stats
         WITH p, team_history, batting_innings, bowling_innings,
@@ -661,12 +661,10 @@ async def get_player_stats(player_name: str):
              reduce(total = 0, bowl in bowling_innings | total + coalesce(bowl.wickets, 0)) as total_wickets,
              reduce(total = 0, bowl in bowling_innings | total + coalesce(bowl.runs, 0)) as bowling_runs,
              reduce(total = 0, bowl in bowling_innings | total + coalesce(bowl.balls, 0)) as bowling_balls,
-             size([bowl in bowling_innings WHERE bowl.wickets IS NOT NULL]) as bowling_innings_count
+             size([bowl in bowling_innings WHERE bowl.wickets IS NOT NULL OR bowl.runs IS NOT NULL]) as bowling_innings_count
         
         RETURN p.name as name,
-               team_history[..10] as team_history, // Limit team history
-               batting_innings[..50] as batting_innings, // Limit batting data
-               bowling_innings[..50] as bowling_innings, // Limit bowling data  
+               team_history, batting_innings, bowling_innings,
                total_runs, total_balls, total_fours, total_sixes, highest_score,
                innings, fifties, centuries,
                CASE WHEN innings > 0 THEN round((total_runs * 1.0) / innings, 2) ELSE 0 END as average,
@@ -684,13 +682,25 @@ async def get_player_stats(player_name: str):
         
         player_data = result[0]
         
-        # Process season-wise stats (simplified to avoid memory issues)
+        # Debug logging for RG Sharma specifically
+        if 'rohit' in player_name.lower() or 'rg' in player_name.lower():
+            bowling_innings = player_data.get('bowling_innings', [])
+            wickets_data = [b for b in bowling_innings if b.get('wickets') is not None and b.get('wickets') > 0]
+            logger.info(f"=== DEBUG: RG Sharma Bowling Data ===")
+            logger.info(f"Total bowling innings with wickets: {len(wickets_data)}")
+            for w in wickets_data:
+                logger.info(f"Season {w.get('season')}: {w.get('wickets')} wickets")
+            total_debug_wickets = sum(w.get('wickets', 0) for w in wickets_data)
+            logger.info(f"Total wickets (debug calculation): {total_debug_wickets}")
+            logger.info(f"Total wickets (backend calculation): {player_data.get('total_wickets', 0)}")
+        
+        # Process season-wise stats (include all seasons where player has data)
         season_wise_stats = {}
         batting_innings = player_data.get('batting_innings', [])
         bowling_innings = player_data.get('bowling_innings', [])
         team_history = {str(th['season']): th['team'] for th in player_data.get('team_history', []) if th.get('season') and th.get('team')}
         
-        # Process only the last 5 seasons to avoid memory issues
+        # Get ALL seasons where player has any data (don't limit seasons)
         recent_seasons = set()
         for innings in batting_innings:
             if innings.get('season'):
@@ -699,12 +709,13 @@ async def get_player_stats(player_name: str):
             if innings.get('season'):
                 recent_seasons.add(str(innings['season']))
         
-        # Sort and limit to most recent seasons
-        sorted_seasons = sorted(recent_seasons, reverse=True)[:5]
+        # Sort all seasons (no limit to ensure complete coverage)
+        sorted_seasons = sorted(recent_seasons, reverse=True)
         
         for season in sorted_seasons:
-            season_batting = [i for i in batting_innings if str(i.get('season', '')) == season and i.get('runs') is not None]
-            season_bowling = [i for i in bowling_innings if str(i.get('season', '')) == season and i.get('wickets') is not None]
+            # More inclusive filtering - include any batting record with season data
+            season_batting = [i for i in batting_innings if str(i.get('season', '')) == season]
+            season_bowling = [i for i in bowling_innings if str(i.get('season', '')) == season]
             
             if not season_batting and not season_bowling:
                 continue
@@ -713,47 +724,56 @@ async def get_player_stats(player_name: str):
                 'team': normalize_team_name(team_history.get(season, 'Unknown'))
             }
             
-            # Process batting stats
+            # Process batting stats - handle null values properly
             if season_batting:
-                season_runs = sum(i.get('runs', 0) for i in season_batting)
-                season_balls = sum(i.get('balls', 0) for i in season_batting)
-                season_fours = sum(i.get('fours', 0) for i in season_batting)
-                season_sixes = sum(i.get('sixes', 0) for i in season_batting)
-                season_innings = len(season_batting)
-                season_highest = max(i.get('runs', 0) for i in season_batting)
-                season_fifties = sum(1 for i in season_batting if 50 <= i.get('runs', 0) < 100)
-                season_centuries = sum(1 for i in season_batting if i.get('runs', 0) >= 100)
+                season_runs = sum((i.get('runs') or 0) for i in season_batting)
+                season_balls = sum((i.get('balls') or 0) for i in season_batting)
+                season_fours = sum((i.get('fours') or 0) for i in season_batting)
+                season_sixes = sum((i.get('sixes') or 0) for i in season_batting)
+                season_innings = len([i for i in season_batting if i.get('runs') is not None or i.get('balls') is not None])
+                season_highest = max((i.get('runs') or 0) for i in season_batting) if season_batting else 0
+                season_fifties = sum(1 for i in season_batting if (i.get('runs') or 0) >= 50 and (i.get('runs') or 0) < 100)
+                season_centuries = sum(1 for i in season_batting if (i.get('runs') or 0) >= 100)
                 
-                season_stats['batting'] = {
-                    'runs': season_runs,
-                    'balls': season_balls,
-                    'innings': season_innings,
-                    'average': round(season_runs / season_innings, 2) if season_innings > 0 else 0,
-                    'strikeRate': round((season_runs * 100.0) / season_balls, 2) if season_balls > 0 else 0,
-                    'highest': season_highest,
-                    'fifties': season_fifties,
-                    'centuries': season_centuries,
-                    'fours': season_fours,
-                    'sixes': season_sixes
-                }
+                # Only add batting stats if there's meaningful data
+                if season_innings > 0 or season_runs > 0:
+                    season_stats['batting'] = {
+                        'runs': season_runs,
+                        'balls': season_balls,
+                        'innings': season_innings,
+                        'average': round(season_runs / season_innings, 2) if season_innings > 0 else 0,
+                        'strikeRate': round((season_runs * 100.0) / season_balls, 2) if season_balls > 0 else 0,
+                        'highest': season_highest,
+                        'fifties': season_fifties,
+                        'centuries': season_centuries,
+                        'fours': season_fours,
+                        'sixes': season_sixes
+                    }
             
-            # Process bowling stats
+            # Process bowling stats - handle null values properly and ALWAYS display bowling stats
+            season_wickets = 0
+            season_bowling_runs = 0
+            season_bowling_balls = 0
+            season_bowling_innings = 0
+            best_bowling = 0
+            
             if season_bowling:
-                season_wickets = sum(i.get('wickets', 0) for i in season_bowling)
-                season_bowling_runs = sum(i.get('runs', 0) for i in season_bowling)
-                season_bowling_balls = sum(i.get('balls', 0) for i in season_bowling)
-                season_bowling_innings = len(season_bowling)
-                best_bowling = max(i.get('wickets', 0) for i in season_bowling)
-                
-                season_stats['bowling'] = {
-                    'wickets': season_wickets,
-                    'runs': season_bowling_runs,
-                    'balls': season_bowling_balls,
-                    'innings': season_bowling_innings,
-                    'average': round(season_bowling_runs / season_wickets, 2) if season_wickets > 0 else 0,
-                    'economy': round((season_bowling_runs * 6.0) / season_bowling_balls, 2) if season_bowling_balls > 0 else 0,
-                    'bestBowling': best_bowling
-                }
+                season_wickets = sum((i.get('wickets') or 0) for i in season_bowling)
+                season_bowling_runs = sum((i.get('runs') or 0) for i in season_bowling)
+                season_bowling_balls = sum((i.get('balls') or 0) for i in season_bowling)
+                season_bowling_innings = len([i for i in season_bowling if i.get('wickets') is not None or i.get('runs') is not None or i.get('balls') is not None])
+                best_bowling = max((i.get('wickets') or 0) for i in season_bowling) if season_bowling else 0
+            
+            # Always add bowling stats (even if 0)
+            season_stats['bowling'] = {
+                'wickets': season_wickets,
+                'runs': season_bowling_runs,
+                'balls': season_bowling_balls,
+                'innings': season_bowling_innings,
+                'average': round(season_bowling_runs / season_wickets, 2) if season_wickets > 0 else 0,
+                'economy': round((season_bowling_runs * 6.0) / season_bowling_balls, 2) if season_bowling_balls > 0 else 0,
+                'bestBowling': best_bowling
+            }
             
             season_wise_stats[season] = season_stats
         
@@ -800,7 +820,7 @@ def normalize_team_name(team_name: str) -> str:
         'Pune Warriors': 'Pune Warriors',  # Keep as is for historical accuracy
         'Gujarat Lions': 'Gujarat Lions',  # Keep as is for historical accuracy
         'Kochi Tuskers Kerala': 'Kochi Tuskers Kerala',  # Keep as is for historical accuracy
-        'Deccan Chargers': 'Sunrisers Hyderabad'  # This is the actual succession
+        'Deccan Chargers': 'Deccan Chargers'  # Keep as separate franchise for historical accuracy
     }
     
     return team_mapping.get(team_name, team_name)
@@ -1309,23 +1329,24 @@ async def get_player_graph(player_name: str, hops: int = 1):
         hops = 1
     
     try:
-        # Path-finding query inspired by: MATCH path = (n)-[*0..5]->(p:Player {name: "SP Narine"})
+        # Path-finding query - simplified to avoid variable scope issues
         query = f"""
-            MATCH path = (start_node)-[*1..{hops}]->(target:Player {{name: $name}})
-            WHERE start_node <> target
+            MATCH (target_player:Player {{name: $name}})
+            MATCH path = (start_node)-[*1..{hops}]->(target_player)
+            WHERE start_node <> target_player
             
-            WITH path, length(path) as path_length, nodes(path) as path_nodes, relationships(path) as path_rels
+            WITH path, length(path) as path_length, nodes(path) as path_nodes, relationships(path) as path_rels, target_player
             WHERE path_length <= {hops}
             
             // Get the first node in the path (connected to target)
-            WITH path_nodes[0] as connected_node, target, path_length, path_rels[0] as first_rel
+            WITH path_nodes[0] as connected_node, target_player, path_length, path_rels[0] as first_rel
             WHERE connected_node:Player OR connected_node:Team OR connected_node:Match
             
             RETURN DISTINCT 
                    connected_node.name as node_name,
                    labels(connected_node)[0] as node_type,
                    type(first_rel) as rel_type,
-                   target.name as target_name,
+                   target_player.name as target_name,
                    path_length
             ORDER BY path_length ASC, node_name
             LIMIT 25
