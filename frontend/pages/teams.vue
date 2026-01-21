@@ -44,7 +44,7 @@
                       : 'bg-white text-slate-600 hover:bg-slate-50 border-transparent'
                   ]"
                 >
-                  {{ getTeamLabel(team) }}
+                  <TeamLogo :teamName="team.name" size="sm" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-600'" />
                 </button>
               </div>
             </div>
@@ -71,8 +71,10 @@
                       : 'bg-white text-slate-500 hover:bg-slate-50 border-transparent'
                   ]"
                 >
-                  {{ getTeamLabel(team) }}
-                  <span v-if="selectedTeam?.name === team.name" class="ml-1 text-[10px] opacity-60">(Defunct)</span>
+                  <div class="flex items-center justify-between w-full">
+                    <TeamLogo :teamName="team.name" size="sm" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-500'" />
+                    <span v-if="selectedTeam?.name === team.name" class="text-[10px] opacity-60">(Defunct)</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -86,7 +88,10 @@
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <h2 class="text-2xl font-bold text-slate-900">{{ selectedTeam.name }}</h2>
+              <div class="flex items-center gap-3 mb-2">
+                <TeamLogo :teamName="selectedTeam.name" size="lg" :showName="false" />
+                <h2 class="text-2xl font-bold text-slate-900">{{ selectedTeam.name }}</h2>
+              </div>
               <p class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">
                 {{ selectedTeam.is_active ? 'Currently Active' : 'Defunct Franchise' }}
               </p>
@@ -135,8 +140,10 @@
           <div class="divide-y divide-slate-50">
             <div v-for="rival in rivalries" :key="rival.opponent" class="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
               <div class="flex-1 min-w-0">
-                <p class="font-bold text-slate-800 truncate">{{ rival.opponent }}</p>
-                <p class="text-[10px] text-slate-400 font-medium uppercase">{{ rival.matches }} Matches Played</p>
+                <div class="flex items-center gap-2">
+                  <TeamLogo :teamName="rival.opponent" size="md" :showName="true" textClass="font-bold text-slate-800 truncate" />
+                  <span class="text-[10px] text-slate-400 font-medium uppercase">• {{ rival.matches }} Matches Played</span>
+                </div>
               </div>
               <div class="flex items-center gap-6">
                 <div class="text-right">
@@ -179,6 +186,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { TrophyIcon } from '@heroicons/vue/24/outline'
 import CricketTeamIcon from '~/components/icons/CricketTeamIcon.vue'
+import TeamLogo from '~/components/TeamLogo.vue'
 
 const config = useRuntimeConfig()
 const allTeams = ref<any[]>([])

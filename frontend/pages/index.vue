@@ -188,19 +188,21 @@
             class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-100 hover:scale-[1.01] transition-transform cursor-pointer group"
           >
              <span class="text-xs font-bold text-yellow-600 uppercase tracking-widest mb-2">Season Winner</span>
-             <h2 class="text-3xl font-extrabold text-slate-900 flex items-center gap-3 group-hover:text-yellow-700 transition-colors">
+             <div class="flex items-center gap-3 group-hover:text-yellow-700 transition-colors">
                <TrophyIcon class="w-8 h-8 text-yellow-500" />
-               {{ selectedSeasonDetails.winner }}
-             </h2>
+               <TeamLogo :teamName="selectedSeasonDetails.winner" size="lg" :showName="false" />
+               <h2 class="text-3xl font-extrabold text-slate-900">{{ selectedSeasonDetails.winner }}</h2>
+             </div>
              <p class="text-sm text-slate-500 mt-2 font-medium">Won by {{ selectedSeasonDetails.margin }} • <span class="text-yellow-600">View Final Storyline</span></p>
           </NuxtLink>
 
           <div v-else class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-100">
              <span class="text-xs font-bold text-yellow-600 uppercase tracking-widest mb-2">Winner</span>
-             <h2 class="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
+             <div class="flex items-center gap-3">
                <TrophyIcon class="w-8 h-8 text-yellow-500" />
-               {{ selectedSeasonDetails.winner }}
-             </h2>
+               <TeamLogo :teamName="selectedSeasonDetails.winner" size="lg" :showName="false" />
+               <h2 class="text-3xl font-extrabold text-slate-900">{{ selectedSeasonDetails.winner }}</h2>
+             </div>
              <p class="text-sm text-slate-500 mt-2 font-medium">Won by {{ selectedSeasonDetails.margin }}</p>
           </div>
 
@@ -209,7 +211,10 @@
              <!-- Runner Up -->
              <div class="p-4 bg-slate-50 rounded-lg border border-slate-100 min-h-[90px] flex flex-col justify-center">
                 <p class="text-xs text-slate-400 font-medium mb-1">Runner Up</p>
-                <p class="text-lg font-bold text-slate-800 leading-tight">{{ selectedSeasonDetails.runner_up }}</p>
+                <div class="flex items-center gap-2">
+                  <TeamLogo :teamName="selectedSeasonDetails.runner_up" size="sm" :showName="false" />
+                  <p class="text-lg font-bold text-slate-800 leading-tight">{{ selectedSeasonDetails.runner_up }}</p>
+                </div>
              </div>
              
              <!-- Venue -->
@@ -269,6 +274,7 @@ import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
 import CricketJerseyIcon from '~/components/icons/CricketJerseyIcon.vue'
 import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
 import CricketBatIcon from '~/components/icons/CricketBatIcon.vue'
+import TeamLogo from '~/components/TeamLogo.vue'
 import { 
   TrophyIcon, 
   ShieldCheckIcon, 

@@ -10,9 +10,15 @@
         <div class="text-center md:text-left flex-1">
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary mb-2">{{ match.date }} • {{ match.venue }}</p>
           <div class="flex items-center justify-center md:justify-start gap-4">
-             <h1 class="text-2xl md:text-3xl font-black tracking-tighter">{{ match.team1 }}</h1>
+             <div class="flex items-center gap-2">
+               <TeamLogo :teamName="match.team1" size="lg" :showName="false" />
+               <h1 class="text-2xl md:text-3xl font-black tracking-tighter">{{ match.team1 }}</h1>
+             </div>
              <span class="text-slate-500 font-bold">vs</span>
-             <h1 class="text-2xl md:text-3xl font-black tracking-tighter">{{ match.team2 }}</h1>
+             <div class="flex items-center gap-2">
+               <TeamLogo :teamName="match.team2" size="lg" :showName="false" />
+               <h1 class="text-2xl md:text-3xl font-black tracking-tighter">{{ match.team2 }}</h1>
+             </div>
           </div>
           <div class="mt-6 inline-flex items-center gap-3 px-4 py-2 bg-white/10 rounded-full border border-white/10">
             <TrophyIcon class="w-4 h-4 text-brand-primary" />
@@ -56,8 +62,18 @@
             <thead>
               <tr class="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <th class="px-6 py-4">Over</th>
-                <th class="px-6 py-4">{{ match.team1 }}</th>
-                <th class="px-6 py-4">{{ match.team2 }}</th>
+                <th class="px-6 py-4">
+                  <div class="flex items-center gap-1">
+                    <TeamLogo :teamName="match.team1" size="sm" :showName="false" />
+                    {{ match.team1 }}
+                  </div>
+                </th>
+                <th class="px-6 py-4">
+                  <div class="flex items-center gap-1">
+                    <TeamLogo :teamName="match.team2" size="sm" :showName="false" />
+                    {{ match.team2 }}
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-50">
@@ -76,6 +92,7 @@
 <script setup lang="ts">
 import { TrophyIcon } from '@heroicons/vue/24/solid'
 import CricketStadiumIcon from '~/components/icons/CricketStadiumIcon.vue'
+import TeamLogo from '~/components/TeamLogo.vue'
 import Chart from 'chart.js/auto'
 
 const route = useRoute()

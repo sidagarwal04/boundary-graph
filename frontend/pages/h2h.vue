@@ -80,13 +80,19 @@
         </div>
         
         <div class="bg-white p-6 rounded-2xl border-l-4 border-l-brand-primary border border-slate-100 shadow-sm text-center">
-          <p class="text-brand-primary font-bold text-[10px] uppercase tracking-widest mb-1 line-clamp-1">{{ team1 }}</p>
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <TeamLogo :teamName="team1" size="sm" :showName="false" />
+            <p class="text-brand-primary font-bold text-[10px] uppercase tracking-widest line-clamp-1">{{ team1 }}</p>
+          </div>
           <p class="text-slate-400 text-[10px] font-medium uppercase mb-2">Victories</p>
           <p class="text-5xl font-black text-slate-900">{{ h2hStats.team1_wins }}</p>
         </div>
         
         <div class="bg-white p-6 rounded-2xl border-l-4 border-l-brand-accent border border-slate-100 shadow-sm text-center">
-          <p class="text-brand-accent font-bold text-[10px] uppercase tracking-widest mb-1 line-clamp-1">{{ team2 }}</p>
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <TeamLogo :teamName="team2" size="sm" :showName="false" />
+            <p class="text-brand-accent font-bold text-[10px] uppercase tracking-widest line-clamp-1">{{ team2 }}</p>
+          </div>
           <p class="text-slate-400 text-[10px] font-medium uppercase mb-2">Victories</p>
           <p class="text-5xl font-black text-slate-900">{{ h2hStats.team2_wins }}</p>
         </div>
@@ -115,14 +121,17 @@
                   <span class="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase">{{ match.season }}</span>
                 </td>
                 <td class="px-6 py-4">
-                  <span 
-                    :class="[
-                      'text-sm font-bold',
-                      match.winner === team1 ? 'text-brand-primary' : 'text-brand-accent'
-                    ]"
-                  >
-                    {{ match.winner }}
-                  </span>
+                  <div class="flex items-center gap-2">
+                    <TeamLogo :teamName="match.winner" size="sm" :showName="false" />
+                    <span 
+                      :class="[
+                        'text-sm font-bold',
+                        match.winner === team1 ? 'text-brand-primary' : 'text-brand-accent'
+                      ]"
+                    >
+                      {{ match.winner }}
+                    </span>
+                  </div>
                 </td>
                 <td class="px-6 py-4">
                   <span class="px-2 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-black rounded uppercase border border-yellow-100 italic">
@@ -151,6 +160,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
 import CrossedBatsIcon from '~/components/icons/CrossedBatsIcon.vue'
+import TeamLogo from '~/components/TeamLogo.vue'
 
 const config = useRuntimeConfig()
 const team1 = ref('')
