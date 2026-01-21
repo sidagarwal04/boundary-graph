@@ -502,8 +502,8 @@ const selectTeam = async (team: any) => {
   teamStats.value = { total_matches: 0, wins: 0, win_percentage: 0 }
   squad.value = []
   
-  // Refresh player database weekly
-  await refreshPlayerDatabase()
+  // Skip refresh if database was recently loaded (non-blocking background refresh)
+  setTimeout(() => refreshPlayerDatabase(), 100)
   
   try {
     const stats = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`)
@@ -572,25 +572,8 @@ const selectTeam = async (team: any) => {
 
 onMounted(async () => {
   try {
-    // Try to load from cache first (1-hour cache)
-    console.log('Loading player database...')
-    let loaded = await loadFromCacheIfValid()
-    
-    if (!loaded) {
-      // If no valid cache, fetch from API
-      loaded = await loadPlayerDatabase()
-    }
-    
-    if (loaded) {
-      console.log(`✅ Player database ready: ${Object.keys(PLAYER_DATABASE).length} players`)
-      populateAllSeasonSquads()
-      // Run weekly refresh check in background
-      setTimeout(() => refreshPlayerDatabase(), 1000)
-    } else {
-      console.error('❌ Failed to load player database')
-    }
-
-    // Then load teams data
+    // Load teams data first (faster, smaller dataset)
+    console.log('Loading teams...')
     const teamsData = await $fetch(`${config.public.apiBase}/api/teams`)
     allTeams.value = Array.isArray(teamsData) ? teamsData : []
     
@@ -598,6 +581,39 @@ onMounted(async () => {
       // Find First active team to select by default
       const firstActive = allTeams.value.find(t => t.is_active) || allTeams.value[0]
       await selectTeam(firstActive)
+    }
+
+    // Load player database in the background (non-blocking)
+    setTimeout(async () => {
+      try {
+        console.log('Loading player database in background...')
+        let loaded = await loadFromCacheIfValid()
+        
+        if (!loaded) {
+          // If no valid cache, fetch from API with timeout
+          loaded = await Promise.race([
+            loadPlayerDatabase(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Database load timeout')), 15000))
+          ]) as boolean
+        }
+        
+        if (loaded) {
+          console.log(`✅ Player database ready: ${Object.keys(PLAYER_DATABASE).length} players`)
+          populateAllSeasonSquads()
+          // Run weekly refresh check in background
+          setTimeout(() => refreshPlayerDatabase(), 1000)
+        } else {
+          console.warn('⚠️ Player database not loaded, some features may be limited')
+        }
+      } catch (dbError) {
+        console.warn('⚠️ Player database load failed, continuing without it:', dbError)
+      }
+    }, 100) // Small delay to ensure teams load first
+    
+  } catch (error) {
+    console.error('Error in onMounted:', error)
+  }
+})
     }
   } catch (error) {
     console.error('Failed to fetch teams:', error)
