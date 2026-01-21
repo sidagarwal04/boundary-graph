@@ -35,7 +35,7 @@
               <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Action</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-50">
+          <tbody v-if="!isLoading && !loadError && venues.length > 0" class="divide-y divide-slate-50">
             <tr v-for="venue in venues" :key="venue.name" class="hover:bg-slate-50/50 transition-colors group">
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
@@ -79,6 +79,61 @@
                 >
                   View Intelligence
                 </button>
+              </td>
+            </tr>
+          </tbody>
+          <!-- Loading State -->
+          <tbody v-else-if="isLoading">
+            <tr v-for="n in 8" :key="n">
+              <td class="px-6 py-4" colspan="6">
+                <div class="flex items-center gap-3 animate-pulse">
+                  <div class="w-10 h-10 bg-slate-200 rounded-xl"></div>
+                  <div class="space-y-2 flex-1">
+                    <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+                  </div>
+                  <div class="h-6 bg-slate-200 rounded w-16"></div>
+                  <div class="h-6 bg-slate-200 rounded w-12"></div>
+                  <div class="h-6 bg-slate-200 rounded w-12"></div>
+                  <div class="h-8 bg-slate-200 rounded w-24"></div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <!-- Error State -->
+          <tbody v-else-if="loadError">
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center gap-4">
+                  <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div class="text-center">
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Failed to Load Venues</h3>
+                    <p class="text-slate-500 mb-4">{{ loadError }}</p>
+                    <button @click="fetchVenues" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors">
+                      Retry Loading
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <!-- Empty State -->
+          <tbody v-else-if="venues.length === 0">
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center gap-4">
+                  <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center">
+                    <BuildingLibraryIcon class="w-8 h-8 text-slate-400" />
+                  </div>
+                  <div class="text-center">
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">No Venues Found</h3>
+                    <p class="text-slate-500">No venue data is currently available.</p>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -362,6 +417,8 @@ import { useHead } from 'nuxt/app'
 const config = useRuntimeConfig()
 const venues = ref<any[]>([])
 const selectedVenue = ref<any>(null)
+const isLoading = ref(true)
+const loadError = ref<string | null>(null)
 
 const showVenueDetails = (venue: any) => {
   selectedVenue.value = venue
@@ -373,15 +430,63 @@ const closeModal = () => {
 
 const fetchVenues = async () => {
   try {
-    const data = await $fetch(`${config.public.apiBase}/api/venues`)
+    isLoading.value = true
+    loadError.value = null
+    
+    // Try to load from cache first (30 minutes cache)
+    const cachedVenues = localStorage.getItem('venues_cache')
+    if (cachedVenues) {
+      try {
+        const cacheData = JSON.parse(cachedVenues)
+        if (cacheData.expires > Date.now()) {
+          console.log('📦 Using cached venues data')
+          venues.value = Array.isArray(cacheData.data) ? cacheData.data : []
+          isLoading.value = false
+          return
+        }
+      } catch (cacheError) {
+        console.error('Cache parse error:', cacheError)
+      }
+    }
+    
+    // Fetch from API with timeout
+    const data = await Promise.race([
+      $fetch(`${config.public.apiBase}/api/venues`),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 10000))
+    ])
+    
     venues.value = Array.isArray(data) ? data : []
+    
+    // Cache the results
+    const cacheData = {
+      data: venues.value,
+      timestamp: Date.now(),
+      expires: Date.now() + (30 * 60 * 1000) // 30 minutes
+    }
+    localStorage.setItem('venues_cache', JSON.stringify(cacheData))
+    console.log(`✅ Venues loaded: ${venues.value.length} venues`)
+    
   } catch (e) {
     console.error("Failed to fetch venues", e)
+    loadError.value = e instanceof Error ? e.message : 'Failed to load venues'
+    
+    // Try to use stale cache as fallback
+    const staleCache = localStorage.getItem('venues_cache')
+    if (staleCache) {
+      try {
+        const cacheData = JSON.parse(staleCache)
+        venues.value = Array.isArray(cacheData.data) ? cacheData.data : []
+        console.log('📦 Using stale cache as fallback')
+      } catch {}
+    }
+  } finally {
+    isLoading.value = false
   }
 }
 
-onMounted(() => {
-  fetchVenues()
+onMounted(async () => {
+  // Start loading venues immediately (non-blocking)
+  fetchVenues().catch(console.error)
 })
 
 useHead({
