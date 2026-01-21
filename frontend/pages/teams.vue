@@ -292,7 +292,7 @@ let DATABASE_LAST_UPDATED: string = ''
 const loadPlayerDatabase = async () => {
   try {
     console.log('Fetching player database from API...')
-    const data = await $fetch(`${config.public.apiBase}/api/players/all`)
+    const data = await $fetch<{ players: Record<string, any>, lastUpdated?: string, totalPlayers?: number }>(`${config.public.apiBase}/api/players/all`)
     
     if (data && data.players) {
       PLAYER_DATABASE = data.players
