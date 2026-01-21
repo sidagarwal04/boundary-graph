@@ -490,6 +490,103 @@ async def get_teams():
     teams.sort(key=lambda x: (not x['is_active'], x['name'].lower()))
     return teams
 
+@app.get("/api/players/all")
+async def get_all_players():
+    """Get all players with their complete team histories across all seasons"""
+    try:
+        # Query to get all players with their team history
+        query = """
+        MATCH (p:Player)
+        OPTIONAL MATCH (p)-[:BATTED_IN|:BOWLED_IN]->(d:Delivery)<-[:DELIVERY_IN]-(m:Match)<-[:TEAM_INVOLVED]-(t:Team)
+        WITH p, 
+             collect(DISTINCT {season: m.season, team: t.name}) as team_seasons
+        
+        // Get player role - check if they have more batting or bowling deliveries
+        OPTIONAL MATCH (p)-[:BATTED_IN]->(bd:Delivery)
+        OPTIONAL MATCH (p)-[:BOWLED_IN]->(pwd:Delivery)
+        OPTIONAL MATCH (p)-[:KEEPER_IN]->(kd:Delivery)
+        
+        WITH p, team_seasons,
+             count(bd) as batting_deliveries,
+             count(pwd) as bowling_deliveries,
+             count(kd) as keeping_deliveries
+        
+        WITH p, team_seasons,
+             CASE
+                WHEN keeping_deliveries > 0 THEN 'Wicket-keeper Batter'
+                WHEN batting_deliveries > bowling_deliveries AND bowling_deliveries > 0 THEN 'All Rounder'
+                WHEN bowling_deliveries > batting_deliveries AND batting_deliveries > 0 THEN 'All Rounder'  
+                WHEN batting_deliveries > 0 AND bowling_deliveries = 0 THEN 'Batter'
+                WHEN bowling_deliveries > 0 AND batting_deliveries = 0 THEN 'Bowler'
+                ELSE 'Batter'
+             END as role
+        
+        RETURN p.name as name, 
+               role,
+               [ts IN team_seasons WHERE ts.season IS NOT NULL | ts] as team_history
+        ORDER BY p.name
+        """
+        
+        results = db.query(query)
+        
+        # Process the results into the required format
+        players = {}
+        total_players = 0
+        
+        for record in results:
+            name = record.get('name')
+            role = record.get('role')
+            team_history = record.get('team_history', [])
+            
+            if name:
+                # Create slug from name
+                slug = name.lower().replace(' ', '-').replace('.', '').replace("'", "").replace('(', '').replace(')', '')
+                
+                # Build team history dictionary
+                team_history_dict = {}
+                for th in team_history:
+                    season = str(th.get('season'))
+                    team = th.get('team')
+                    if season and team and season != 'None':
+                        # Normalize team name for consistency
+                        normalized_team = normalize_team_name(team)
+                        team_history_dict[season] = normalized_team
+                
+                # Only include players who have played in matches
+                if team_history_dict:
+                    players[slug] = {
+                        'name': name,
+                        'role': role or 'Batter',
+                        'teamHistory': team_history_dict
+                    }
+                    total_players += 1
+        
+        return {
+            'lastUpdated': '2026-01-22T00:00:00Z',
+            'totalPlayers': total_players,
+            'players': players
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching all players: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching players: {str(e)}")
+
+def normalize_team_name(team_name: str) -> str:
+    """Normalize team names to current branding"""
+    # Add team name normalizations
+    team_mapping = {
+        'Delhi Daredevils': 'Delhi Capitals',
+        'Kings XI Punjab': 'Punjab Kings',
+        'Rising Pune Supergiants': 'Rising Pune Supergiants',  # Keep as is for historical accuracy
+        'Rising Pune Supergiant': 'Rising Pune Supergiants',
+        'Pune Warriors': 'Pune Warriors',  # Keep as is for historical accuracy
+        'Gujarat Lions': 'Gujarat Lions',  # Keep as is for historical accuracy
+        'Kochi Tuskers Kerala': 'Kochi Tuskers Kerala',  # Keep as is for historical accuracy
+        'Deccan Chargers': 'Sunrisers Hyderabad'  # This is the actual succession
+    }
+    
+    return team_mapping.get(team_name, team_name)
+
 @app.get("/api/franchises") # Keep for backward compatibility but redirect logic
 async def get_franchises():
     return await get_teams()

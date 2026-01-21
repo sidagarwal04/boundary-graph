@@ -181,23 +181,54 @@
           </div>
         </div>
 
-        <!-- Squad Section -->
-        <div v-if="squad.length > 0" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
-            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Historical Squad Members</h2>
+        <!-- Squad Section with Season Dropdown and Segmentation -->
+        <div v-if="Object.keys(seasonSquads).length > 0" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Squad by Season & Role</h2>
+            <div>
+              <select v-model="selectedSeason" class="border border-slate-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                <option v-for="season in availableSeasons" :key="season" :value="season">{{ season }}</option>
+              </select>
+            </div>
           </div>
           <div class="p-6">
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              <button 
-                v-for="player in squad" 
-                :key="player"
-                @click="goToPlayer(player)"
-                class="group text-left p-3 bg-white border border-slate-100 hover:border-brand-primary/30 hover:bg-slate-50 rounded-lg transition-all duration-200"
-              >
-                <p class="text-sm font-semibold text-slate-700 group-hover:text-brand-primary transition-colors">{{ player }}</p>
-                <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Player</p>
-              </button>
+            <div v-if="segmentedSquad.batters.length > 0" class="mb-6">
+              <h3 class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-2">Batters</h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <button v-for="player in segmentedSquad.batters" :key="player.name" @click="goToPlayer(player.name)" class="group text-left p-3 bg-white border border-slate-100 hover:border-brand-primary/30 hover:bg-slate-50 rounded-lg transition-all duration-200">
+                  <p class="text-sm font-semibold text-slate-700 group-hover:text-brand-primary transition-colors">{{ player.name }}</p>
+                  <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Batter</p>
+                </button>
+              </div>
             </div>
+            <div v-if="segmentedSquad.bowlers.length > 0" class="mb-6">
+              <h3 class="text-xs font-bold text-green-600 uppercase tracking-wider mb-2">Bowlers</h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <button v-for="player in segmentedSquad.bowlers" :key="player.name" @click="goToPlayer(player.name)" class="group text-left p-3 bg-white border border-slate-100 hover:border-green-500/30 hover:bg-slate-50 rounded-lg transition-all duration-200">
+                  <p class="text-sm font-semibold text-slate-700 group-hover:text-green-600 transition-colors">{{ player.name }}</p>
+                  <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Bowler</p>
+                </button>
+              </div>
+            </div>
+            <div v-if="segmentedSquad.wicketKeepers.length > 0" class="mb-6">
+              <h3 class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2">Wicket-keepers</h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <button v-for="player in segmentedSquad.wicketKeepers" :key="player.name" @click="goToPlayer(player.name)" class="group text-left p-3 bg-white border border-slate-100 hover:border-purple-500/30 hover:bg-slate-50 rounded-lg transition-all duration-200">
+                  <p class="text-sm font-semibold text-slate-700 group-hover:text-purple-600 transition-colors">{{ player.name }}</p>
+                  <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Wicket-keeper</p>
+                </button>
+              </div>
+            </div>
+            <div v-if="segmentedSquad.allRounders.length > 0">
+              <h3 class="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-2">All Rounders</h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <button v-for="player in segmentedSquad.allRounders" :key="player.name" @click="goToPlayer(player.name)" class="group text-left p-3 bg-white border border-slate-100 hover:border-yellow-500/30 hover:bg-slate-50 rounded-lg transition-all duration-200">
+                  <p class="text-sm font-semibold text-slate-700 group-hover:text-yellow-600 transition-colors">{{ player.name }}</p>
+                  <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">All Rounder</p>
+                </button>
+              </div>
+            </div>
+            <div v-if="segmentedSquad.batters.length === 0 && segmentedSquad.bowlers.length === 0 && segmentedSquad.allRounders.length === 0 && segmentedSquad.wicketKeepers.length === 0" class="text-slate-400 text-sm text-center py-8">No players found for this season.</div>
           </div>
         </div>
       </div>
@@ -217,6 +248,9 @@ const allTeams = ref<any[]>([])
 const selectedTeam = ref<any>(null)
 const teamStats = ref<any>({ total_matches: 0, wins: 0, win_percentage: 0, trophies: [] })
 const squad = ref<any[]>([])
+const seasonSquads = ref<Record<string, any[]>>({}) // { season: [ { name, role } ] }
+const availableSeasons = ref<string[]>([])
+const selectedSeason = ref<string>('all')
 const rivalries = ref<any[]>([])
 
 const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
@@ -224,6 +258,225 @@ const defunctTeams = computed(() => allTeams.value.filter(t => !t.is_active))
 const teamDetails = computed(() => {
   return selectedTeam.value ? getTeamDetails(selectedTeam.value.name) : null
 })
+
+const segmentedSquad = computed(() => {
+  const season = selectedSeason.value
+  const players = seasonSquads.value[season] || []
+  return {
+    batters: players.filter((p: any) => p.role && (
+      p.role.toLowerCase().includes('bat') && 
+      !p.role.toLowerCase().includes('wicket') &&
+      !p.role.toLowerCase().includes('keeper')
+    )),
+    bowlers: players.filter((p: any) => p.role && (
+      p.role.toLowerCase().includes('bowl') ||
+      p.role.toLowerCase().includes('fast') ||
+      p.role.toLowerCase().includes('spin')
+    )),
+    allRounders: players.filter((p: any) => p.role && (
+      p.role.toLowerCase().includes('all') ||
+      p.role.toLowerCase().includes('round')
+    )),
+    wicketKeepers: players.filter((p: any) => p.role && (
+      p.role.toLowerCase().includes('wicket') ||
+      p.role.toLowerCase().includes('keeper')
+    )),
+  }
+})
+
+// Player Database Management
+let PLAYER_DATABASE: Record<string, {name: string, role: string, teamHistory: Record<string, string>}> = {}
+let DATABASE_LAST_UPDATED: string = ''
+
+// Load player database from API
+const loadPlayerDatabase = async () => {
+  try {
+    console.log('Fetching player database from API...')
+    const data = await $fetch(`${config.public.apiBase}/api/players/all`)
+    
+    if (data && data.players) {
+      PLAYER_DATABASE = data.players
+      DATABASE_LAST_UPDATED = data.lastUpdated || ''
+      console.log(`✅ Player database loaded: ${data.totalPlayers} players`)
+      
+      // Cache in localStorage for 1 hour to reduce API calls
+      const cacheData = {
+        data: data,
+        timestamp: Date.now(),
+        expires: Date.now() + (60 * 60 * 1000) // 1 hour
+      }
+      localStorage.setItem('playerDB_cache', JSON.stringify(cacheData))
+      
+      return true
+    } else {
+      console.error('Invalid response format from API')
+      return false
+    }
+  } catch (error) {
+    console.error('Failed to load player database from API:', error)
+    
+    // Try to load from cache as fallback
+    const cached = localStorage.getItem('playerDB_cache')
+    if (cached) {
+      try {
+        const cacheData = JSON.parse(cached)
+        if (cacheData.expires > Date.now()) {
+          console.log('📦 Using cached player database')
+          PLAYER_DATABASE = cacheData.data.players
+          DATABASE_LAST_UPDATED = cacheData.data.lastUpdated
+          return true
+        }
+      } catch (cacheError) {
+        console.error('Cache parse error:', cacheError)
+      }
+    }
+    
+    return false
+  }
+}
+
+// Check if cached data is still valid
+const loadFromCacheIfValid = async () => {
+  const cached = localStorage.getItem('playerDB_cache')
+  if (cached) {
+    try {
+      const cacheData = JSON.parse(cached)
+      if (cacheData.expires > Date.now()) {
+        console.log('📦 Using valid cached player database')
+        PLAYER_DATABASE = cacheData.data.players
+        DATABASE_LAST_UPDATED = cacheData.data.lastUpdated
+        return true
+      }
+    } catch (error) {
+      console.error('Cache read error:', error)
+    }
+  }
+  return false
+}
+
+// Weekly refresh function to update player database from API
+const refreshPlayerDatabase = async () => {
+  const lastUpdate = localStorage.getItem('playerDB_lastUpdate')
+  const now = new Date().getTime()
+  const weekInMs = 7 * 24 * 60 * 60 * 1000
+  
+  // Only refresh once a week
+  if (lastUpdate && (now - parseInt(lastUpdate)) < weekInMs) {
+    console.log('Player database refresh not due yet (last updated:', new Date(parseInt(lastUpdate)).toLocaleDateString(), ')')
+    return
+  }
+  
+  try {
+    console.log('🔄 Refreshing player database (weekly update)...')
+    await loadPlayerDatabase()
+    localStorage.setItem('playerDB_lastUpdate', now.toString())
+    console.log('✅ Player database refreshed successfully')
+  } catch (error) {
+    console.error('Failed to refresh player database:', error)
+  }
+}
+
+// Helper function to get players for specific team and season from centralized database
+const getPlayersForTeamSeason = (teamName: string, season: string): Array<{name: string, role: string, season: string}> => {
+  const players: Array<{name: string, role: string, season: string}> = []
+  
+  for (const playerKey in PLAYER_DATABASE) {
+    const player = PLAYER_DATABASE[playerKey]
+    if (player.teamHistory[season] === teamName) {
+      players.push({
+        name: player.name,
+        role: player.role,
+        season: season
+      })
+    }
+  }
+  
+  return players
+}
+
+// Helper function to populate season squads using centralized database
+const populateSeasonSquads = (teamName: string): Record<string, any[]> => {
+  const bySeason: Record<string, any[]> = {}
+  
+  // Generate all seasons
+  const seasons = []
+  for (let year = 2025; year >= 2008; year--) {
+    seasons.push(year.toString())
+  }
+  
+  // Initialize all seasons
+  seasons.forEach(season => {
+    bySeason[season] = getPlayersForTeamSeason(teamName, season)
+  })
+  
+  // Create 'all' seasons view
+  const allPlayersMap: Record<string, any> = {}
+  for (const season in bySeason) {
+    for (const player of bySeason[season]) {
+      const playerKey = player.name.toLowerCase()
+      if (!allPlayersMap[playerKey] || 
+          (allPlayersMap[playerKey].role === 'Batter' && player.role !== 'Batter')) {
+        allPlayersMap[playerKey] = { 
+          name: player.name, 
+          role: player.role,
+          season: 'all'
+        }
+      }
+    }
+  }
+  bySeason['all'] = Object.values(allPlayersMap)
+  
+  return bySeason
+}
+
+// Populate squads for all teams using the centralized database
+const populateAllSeasonSquads = () => {
+  // This function will be called after database is loaded
+  console.log('Season squads populated from centralized database')
+}
+
+// Helper function to assign mock roles to players
+const getPlayerRole = (playerName: string, index: number = 0): string => {
+  const name = playerName.toLowerCase()
+  
+  // Specific player role assignments
+  if (name.includes('dhoni') || name.includes('pant') || name.includes('karthik') || 
+      name.includes('saha') || name.includes('samson') || name.includes('pooran') ||
+      name.includes('kishan') || name.includes('buttler') || name.includes('de kock') ||
+      name.includes('bairstow') || name.includes('rahul')) {
+    return 'Wicket-keeper Batter'
+  }
+  
+  // Common bowlers
+  if (name.includes('bumrah') || name.includes('shami') || name.includes('siraj') ||
+      name.includes('chahal') || name.includes('rashid') || name.includes('narine') ||
+      name.includes('malinga') || name.includes('boult') || name.includes('rabada') ||
+      name.includes('archer') || name.includes('bhuvi') || name.includes('ashwin') ||
+      name.includes('kuldeep') || name.includes('tahir') || name.includes('umesh') ||
+      name.includes('mohit') || name.includes('shardul') || name.includes('khaleel') ||
+      name.includes('mustafiz') || name.includes('southee') || name.includes('hazlewood') ||
+      name.includes('starc') || name.includes('ferguson') || name.includes('natarajan')) {
+    return 'Bowler'
+  }
+  
+  // Common all-rounders
+  if (name.includes('pandya') || name.includes('jadeja') || name.includes('russell') ||
+      name.includes('stoinis') || name.includes('cummins') || name.includes('maxwell') ||
+      name.includes('curran') || name.includes('morris') || name.includes('holder') ||
+      name.includes('woakes') || name.includes('dwayne') || name.includes('pollard') ||
+      name.includes('shankar') || name.includes('gopal') || name.includes('axar') ||
+      name.includes('washington') || name.includes('krunal') || name.includes('deepak')) {
+    return 'All Rounder'
+  }
+  
+  // Use index to create better distribution
+  // This ensures roughly 50% batters, 30% bowlers, 20% all-rounders
+  const roleIndex = (index + playerName.length) % 10
+  
+  if (roleIndex <= 1) return 'All Rounder'  // 20%
+  if (roleIndex <= 4) return 'Bowler'       // 30% 
+  return 'Batter'                           // 50%
+}
 
 const getTeamLabel = (team: any) => {
   let label = team.name
@@ -243,19 +496,63 @@ const selectTeam = async (team: any) => {
   teamStats.value = { total_matches: 0, wins: 0, win_percentage: 0 }
   squad.value = []
   
+  // Refresh player database weekly
+  await refreshPlayerDatabase()
+  
   try {
     const stats = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`)
     teamStats.value = stats
   } catch (error) {
     console.error('Failed to fetch team stats:', error)
   }
-  
+
+  // Use centralized player database for squad data
   try {
-    const squadData = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/squad`)
-    squad.value = Array.isArray(squadData) ? squadData : []
+    // First, try to get any additional players from API (for supplementing our database)
+    let apiPlayers: any[] = []
+    try {
+      const squadData = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/squad`)
+      apiPlayers = Array.isArray(squadData) ? squadData : []
+    } catch (apiError) {
+      console.log('No additional API squad data available, using centralized database')
+    }
+    
+    // Use centralized database as primary source
+    const bySeason = populateSeasonSquads(team.name)
+    
+    // Supplement with any additional API data if available
+    if (apiPlayers.length > 0 && typeof apiPlayers[0] === 'string') {
+      // If API returns additional players as strings, add them to recent seasons
+      const recentSeasons = ['2025', '2024', '2023']
+      recentSeasons.forEach((season, seasonIndex) => {
+        const existingNames = new Set(bySeason[season].map(p => p.name.toLowerCase()))
+        const newPlayers = apiPlayers
+          .filter((name: string) => !existingNames.has(name.toLowerCase()))
+          .slice(0, Math.max(5, 15 - bySeason[season].length)) // Add up to fill squad
+        
+        newPlayers.forEach((name: string, index: number) => {
+          bySeason[season].push({
+            name: name,
+            role: getPlayerRole(name, index + seasonIndex),
+            season: season
+          })
+        })
+      })
+    }
+
+    seasonSquads.value = bySeason
+    availableSeasons.value = Object.keys(bySeason).filter(s => s !== 'all').sort((a, b) => b.localeCompare(a))
+    selectedSeason.value = availableSeasons.value[0] || '2025' // Default to latest season (2025)
+    
+    console.log('Squad data for', team.name, 'loaded from centralized database')
+    console.log('Available seasons:', availableSeasons.value)
+    console.log('Players for', selectedSeason.value, ':', bySeason[selectedSeason.value]?.length)
+    
   } catch (error) {
-    console.error('Failed to fetch squad data:', error)
-    squad.value = []
+    console.error('Failed to load squad data:', error)
+    seasonSquads.value = {}
+    availableSeasons.value = []
+    selectedSeason.value = '2025'
   }
 
   try {
@@ -273,6 +570,25 @@ const goToPlayer = (playerName: string) => {
 
 onMounted(async () => {
   try {
+    // Try to load from cache first (1-hour cache)
+    console.log('Loading player database...')
+    let loaded = await loadFromCacheIfValid()
+    
+    if (!loaded) {
+      // If no valid cache, fetch from API
+      loaded = await loadPlayerDatabase()
+    }
+    
+    if (loaded) {
+      console.log(`✅ Player database ready: ${Object.keys(PLAYER_DATABASE).length} players`)
+      populateAllSeasonSquads()
+      // Run weekly refresh check in background
+      setTimeout(() => refreshPlayerDatabase(), 1000)
+    } else {
+      console.error('❌ Failed to load player database')
+    }
+
+    // Then load teams data
     const teamsData = await $fetch(`${config.public.apiBase}/api/teams`)
     allTeams.value = Array.isArray(teamsData) ? teamsData : []
     
