@@ -86,18 +86,41 @@
       <div v-if="selectedTeam" class="lg:col-span-8 space-y-8">
         <!-- Main Stats -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-            <div>
+          <div class="px-6 py-5 border-b border-slate-100 flex items-start justify-between">
+            <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3 mb-2">
                 <TeamLogo :teamName="selectedTeam.name" size="lg" :showName="false" />
-                <h2 class="text-2xl font-bold text-slate-900">{{ selectedTeam.name }}</h2>
+                <h2 class="text-2xl font-extrabold text-slate-900">{{ selectedTeam.name }}</h2>
               </div>
               <p class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">
                 {{ selectedTeam.is_active ? 'Currently Active' : 'Defunct Franchise' }}
               </p>
             </div>
-            <div v-if="!selectedTeam.is_active" class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase">
-              Historical
+            <div class="ml-6 flex-shrink-0">
+              <div v-if="!selectedTeam.is_active" class="px-2 py-1 mb-2 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase text-center">
+                Historical
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-lg px-4 py-3 shadow-sm w-64 min-w-[25rem] max-w-[25rem]">
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">Team Information</div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                  <div class="flex flex-col items-start">
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase"><span class="w-2 h-2 rounded-full bg-brand-primary"></span>Captain</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ teamDetails?.captain || 'N/A' }}</span>
+                  </div>
+                  <div class="flex flex-col items-start">
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase"><span class="w-2 h-2 rounded-full bg-green-500"></span>Coach</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ teamDetails?.coach || 'N/A' }}</span>
+                  </div>
+                  <div class="flex flex-col items-start">
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase"><span class="w-2 h-2 rounded-full bg-yellow-500"></span>Owner</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ teamDetails?.owner || 'N/A' }}</span>
+                  </div>
+                  <div class="flex flex-col items-start">
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase"><span class="w-2 h-2 rounded-full bg-purple-500"></span>Venue</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ teamDetails?.venue || 'N/A' }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -187,6 +210,7 @@ import { ref, onMounted, computed } from 'vue'
 import { TrophyIcon } from '@heroicons/vue/24/outline'
 import CricketTeamIcon from '~/components/icons/CricketTeamIcon.vue'
 import TeamLogo from '~/components/TeamLogo.vue'
+import { getTeamDetails } from '~/utils/teamLogos'
 
 const config = useRuntimeConfig()
 const allTeams = ref<any[]>([])
@@ -197,6 +221,9 @@ const rivalries = ref<any[]>([])
 
 const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
 const defunctTeams = computed(() => allTeams.value.filter(t => !t.is_active))
+const teamDetails = computed(() => {
+  return selectedTeam.value ? getTeamDetails(selectedTeam.value.name) : null
+})
 
 const getTeamLabel = (team: any) => {
   let label = team.name

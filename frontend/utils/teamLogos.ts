@@ -69,6 +69,147 @@ export const teamColorMap: TeamColorMapping = {
   'Kings XI Punjab': '#d71920',
 }
 
+export interface TeamDetailsMapping {
+  [key: string]: {
+    captain: string
+    coach: string 
+    owner: string
+    venue: string
+  }
+}
+
+export const teamDetailsMap: TeamDetailsMapping = {
+  // Active Teams
+  'Chennai Super Kings': {
+    captain: 'MS Dhoni',
+    coach: 'Stephen Fleming',
+    owner: 'Chennai Super Kings Cricket Limited',
+    venue: 'M. A. Chidambaram Stadium'
+  },
+  'Delhi Capitals': {
+    captain: 'Axar Patel',
+    coach: 'Hemang Badani', 
+    owner: 'JSW GMR Cricket Pvt Ltd',
+    venue: 'Arun Jaitley Stadium'
+  },
+  'Gujarat Titans': {
+    captain: 'Shubman Gill',
+    coach: 'Ashish Nehra',
+    owner: 'Irelia Sports India Private Limited',
+    venue: 'Narendra Modi Stadium'
+  },
+  'Kolkata Knight Riders': {
+    captain: 'Ajinkya Rahane',
+    coach: 'Abhishek Nayar',
+    owner: 'Knight Riders Sports Private Limited',
+    venue: 'Eden Gardens'
+  },
+  'Lucknow Super Giants': {
+    captain: 'Rishabh Pant',
+    coach: 'Justin Langer',
+    owner: 'RPSG Sports Private Limited',
+    venue: 'BRSABV Ekana Cricket Stadium'
+  },
+  'Mumbai Indians': {
+    captain: 'Hardik Pandya',
+    coach: 'Mahela Jayawardene',
+    owner: 'Indiawin Sports Pvt. Ltd',
+    venue: 'Wankhede Stadium'
+  },
+  'Punjab Kings': {
+    captain: 'Shreyas Iyer',
+    coach: 'Ricky Ponting',
+    owner: 'K.P.H. Dream Cricket Private Limited',
+    venue: 'PCA New Stadium, Mullanpur'
+  },
+  'Royal Challengers Bangalore': {
+    captain: 'Rajat Patidar',
+    coach: 'Andy Flower',
+    owner: 'Royal Challengers Sports Private Ltd',
+    venue: 'M. Chinnaswamy Stadium'
+  },
+  'Royal Challengers Bengaluru': {
+    captain: 'Rajat Patidar',
+    coach: 'Andy Flower',
+    owner: 'Royal Challengers Sports Private Ltd',
+    venue: 'M. Chinnaswamy Stadium'
+  },
+  'Rajasthan Royals': {
+    captain: 'Sanju Samson',
+    coach: 'Kumar Sangakkara',
+    owner: 'Royal Multisport Private Limited',
+    venue: 'Sawai Mansingh Stadium'
+  },
+  'Sunrisers Hyderabad': {
+    captain: 'Pat Cummins',
+    coach: 'Daniel Vettori',
+    owner: 'Sun TV Network Limited',
+    venue: 'Rajiv Gandhi Intl. Cricket Stadium'
+  },
+
+  // Abbreviated forms
+  'CSK': {
+    captain: 'MS Dhoni',
+    coach: 'Stephen Fleming',
+    owner: 'Chennai Super Kings Cricket Limited',
+    venue: 'M. A. Chidambaram Stadium'
+  },
+  'DC': {
+    captain: 'Axar Patel',
+    coach: 'Hemang Badani',
+    owner: 'JSW GMR Cricket Pvt Ltd', 
+    venue: 'Arun Jaitley Stadium'
+  },
+  'GT': {
+    captain: 'Shubman Gill',
+    coach: 'Ashish Nehra',
+    owner: 'Irelia Sports India Private Limited',
+    venue: 'Narendra Modi Stadium'
+  },
+  'KKR': {
+    captain: 'Ajinkya Rahane',
+    coach: 'Abhishek Nayar',
+    owner: 'Knight Riders Sports Private Limited',
+    venue: 'Eden Gardens'
+  },
+  'LSG': {
+    captain: 'Rishabh Pant',
+    coach: 'Justin Langer',
+    owner: 'RPSG Sports Private Limited',
+    venue: 'BRSABV Ekana Cricket Stadium'
+  },
+  'MI': {
+    captain: 'Hardik Pandya',
+    coach: 'Mahela Jayawardene',
+    owner: 'Indiawin Sports Pvt. Ltd',
+    venue: 'Wankhede Stadium'
+  },
+  'PBKS': {
+    captain: 'Shreyas Iyer',
+    coach: 'Ricky Ponting',
+    owner: 'K.P.H. Dream Cricket Private Limited',
+    venue: 'PCA New Stadium, Mullanpur'
+  },
+  'RCB': {
+    captain: 'Rajat Patidar',
+    coach: 'Andy Flower',
+    owner: 'Royal Challengers Sports Private Ltd',
+    venue: 'M. Chinnaswamy Stadium'
+  },
+  'RR': {
+    captain: 'Sanju Samson',
+    coach: 'Kumar Sangakkara',
+    owner: 'Royal Multisport Private Limited',
+    venue: 'Sawai Mansingh Stadium'
+  },
+  'SRH': {
+    captain: 'Pat Cummins',
+    coach: 'Daniel Vettori',
+    owner: 'Sun TV Network Limited',
+    venue: 'Rajiv Gandhi Intl. Cricket Stadium'
+  }
+}
+
 /**
  * Get team color for a given team name
  * @param teamName - Team name to get color for
@@ -167,4 +308,40 @@ export function getTeamAbbreviation(teamName: string): string {
   }
   
   return abbreviations[teamName] || teamName
+}
+
+/**
+ * Get team details (captain, coach, owner, venue) for a given team name
+ * @param teamName - Team name to get details for
+ * @returns Team details or null if not found
+ */
+export function getTeamDetails(teamName: string): TeamDetailsMapping[string] | null {
+  if (!teamName) return null
+  
+  // Direct match
+  if (teamDetailsMap[teamName]) {
+    return teamDetailsMap[teamName]
+  }
+  
+  // Try partial matches for teams that might have slight variations
+  const detailsPartialMatches: Array<[string, TeamDetailsMapping[string]]> = [
+    ['Chennai', teamDetailsMap['Chennai Super Kings']],
+    ['Delhi', teamDetailsMap['Delhi Capitals']],
+    ['Gujarat Titans', teamDetailsMap['Gujarat Titans']], // Only Gujarat Titans
+    ['Kolkata', teamDetailsMap['Kolkata Knight Riders']],
+    ['Lucknow', teamDetailsMap['Lucknow Super Giants']],
+    ['Mumbai', teamDetailsMap['Mumbai Indians']],
+    ['Punjab', teamDetailsMap['Punjab Kings']],
+    ['Royal Challengers', teamDetailsMap['Royal Challengers Bangalore']],
+    ['Rajasthan', teamDetailsMap['Rajasthan Royals']],
+    ['Sunrisers', teamDetailsMap['Sunrisers Hyderabad']],
+  ]
+  
+  for (const [keyword, details] of detailsPartialMatches) {
+    if (teamName.includes(keyword)) {
+      return details
+    }
+  }
+  
+  return null
 }
