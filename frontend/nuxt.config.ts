@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/guide/concepts/auto-imports
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-04-03',
@@ -22,13 +24,15 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    '@nuxtjs/color-mode',
+    [
+      '@nuxtjs/color-mode',
+      {
+        preference: 'light',
+        fallback: 'light',
+        classSuffix: '',
+      }
+    ],
   ],
-  colorMode: {
-    preference: 'light',
-    fallback: 'light',
-    classSuffix: '',
-  },
   imports: {
     autoImport: true,
   },
