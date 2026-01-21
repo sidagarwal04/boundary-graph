@@ -646,11 +646,6 @@ onMounted(async () => {
     console.error('Error in onMounted:', error)
   }
 })
-    }
-  } catch (error) {
-    console.error('Failed to fetch teams:', error)
-  }
-})
 </script>
 
 <style scoped>
