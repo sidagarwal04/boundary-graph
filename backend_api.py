@@ -521,7 +521,7 @@ async def debug_players_schema():
 
 @app.get("/api/players/all")
 async def get_all_players():
-    """Get all players with their complete team histories using SELECTED_PLAYER relationships"""
+    """Get all players with their complete team histories"""
     try:
         # Use the correct Team -> Player SELECTED_PLAYER relationships with season data
         query = """
@@ -567,7 +567,6 @@ async def get_all_players():
         ORDER BY p.name
         LIMIT 1000
         """
-        
         results = db.query(query)
         
         # Process the results into the required format
@@ -585,16 +584,12 @@ async def get_all_players():
                 
                 # Build team history dictionary
                 team_history_dict = {}
-                
-                # Handle team history from SELECTED_PLAYER relationships
                 if isinstance(team_history, list):
                     for th in team_history:
                         if isinstance(th, dict):
                             season = th.get('season')
                             team = th.get('team')
-                            
                             if season and team and str(season) != 'None' and str(team) != 'None':
-                                # Convert season to string and normalize team name
                                 season_str = str(season)
                                 normalized_team = normalize_team_name(str(team))
                                 team_history_dict[season_str] = normalized_team
@@ -619,6 +614,180 @@ async def get_all_players():
     except Exception as e:
         logger.error(f"Error fetching all players: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching players: {str(e)}")
+
+@app.get("/api/players/{player_name}/stats")
+async def get_player_stats(player_name: str):
+    """Get detailed batting and bowling statistics for a specific player"""
+    try:
+        # Convert slug back to potential player names for search
+        potential_names = [
+            player_name.replace('-', ' ').title(),
+            player_name.replace('-', ' ').upper(),
+            player_name.replace('-', ' ')
+        ]
+        
+        # Simplified query to avoid memory issues
+        query = """
+        MATCH (p:Player)
+        WHERE toLower(p.name) = toLower($name) OR p.name IN $names
+        
+        // Get team relationships (limit to avoid memory issues)
+        OPTIONAL MATCH (t:Team)-[sp:SELECTED_PLAYER]->(p)
+        WHERE sp.season IS NOT NULL
+        WITH p, collect(DISTINCT {team: t.name, season: sp.season})[..20] as team_history
+        
+        // Get batting statistics (limit results)
+        OPTIONAL MATCH (p)-[bs:BATTING_STATS]->(m:Match)
+        WHERE bs.runs IS NOT NULL
+        WITH p, team_history, collect({runs: bs.runs, balls: bs.balls, fours: bs.fours, sixes: bs.sixes, season: m.season, out: bs.out})[..100] as batting_innings
+        
+        // Get bowling statistics (limit results)  
+        OPTIONAL MATCH (p)-[bow:BOWLING_STATS]->(m2:Match)
+        WHERE bow.wickets IS NOT NULL OR bow.runs IS NOT NULL
+        WITH p, team_history, batting_innings, collect({wickets: bow.wickets, runs: bow.runs, balls: bow.balls, season: m2.season})[..100] as bowling_innings
+        
+        // Calculate basic aggregated stats
+        WITH p, team_history, batting_innings, bowling_innings,
+             reduce(total = 0, bi in batting_innings | total + coalesce(bi.runs, 0)) as total_runs,
+             reduce(total = 0, bi in batting_innings | total + coalesce(bi.balls, 0)) as total_balls,
+             reduce(total = 0, bi in batting_innings | total + coalesce(bi.fours, 0)) as total_fours,
+             reduce(total = 0, bi in batting_innings | total + coalesce(bi.sixes, 0)) as total_sixes,
+             reduce(max = 0, bi in batting_innings | 
+                 CASE WHEN coalesce(bi.runs, 0) > max THEN coalesce(bi.runs, 0) ELSE max END
+             ) as highest_score,
+             size([bi in batting_innings WHERE bi.runs IS NOT NULL]) as innings,
+             size([bi in batting_innings WHERE coalesce(bi.runs, 0) >= 50 AND coalesce(bi.runs, 0) < 100]) as fifties,
+             size([bi in batting_innings WHERE coalesce(bi.runs, 0) >= 100]) as centuries,
+             reduce(total = 0, bowl in bowling_innings | total + coalesce(bowl.wickets, 0)) as total_wickets,
+             reduce(total = 0, bowl in bowling_innings | total + coalesce(bowl.runs, 0)) as bowling_runs,
+             reduce(total = 0, bowl in bowling_innings | total + coalesce(bowl.balls, 0)) as bowling_balls,
+             size([bowl in bowling_innings WHERE bowl.wickets IS NOT NULL]) as bowling_innings_count
+        
+        RETURN p.name as name,
+               team_history[..10] as team_history, // Limit team history
+               batting_innings[..50] as batting_innings, // Limit batting data
+               bowling_innings[..50] as bowling_innings, // Limit bowling data  
+               total_runs, total_balls, total_fours, total_sixes, highest_score,
+               innings, fifties, centuries,
+               CASE WHEN innings > 0 THEN round((total_runs * 1.0) / innings, 2) ELSE 0 END as average,
+               CASE WHEN total_balls > 0 THEN round((total_runs * 100.0) / total_balls, 2) ELSE 0 END as strike_rate,
+               total_wickets, bowling_runs, bowling_balls, bowling_innings_count,
+               CASE WHEN total_wickets > 0 THEN round((bowling_runs * 1.0) / total_wickets, 2) ELSE 0 END as bowling_average,
+               CASE WHEN bowling_balls > 0 THEN round((bowling_runs * 6.0) / bowling_balls, 2) ELSE 0 END as economy_rate
+        LIMIT 1
+        """
+        
+        result = db.query(query, {"name": player_name.replace('-', ' '), "names": potential_names})
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        player_data = result[0]
+        
+        # Process season-wise stats (simplified to avoid memory issues)
+        season_wise_stats = {}
+        batting_innings = player_data.get('batting_innings', [])
+        bowling_innings = player_data.get('bowling_innings', [])
+        team_history = {str(th['season']): th['team'] for th in player_data.get('team_history', []) if th.get('season') and th.get('team')}
+        
+        # Process only the last 5 seasons to avoid memory issues
+        recent_seasons = set()
+        for innings in batting_innings:
+            if innings.get('season'):
+                recent_seasons.add(str(innings['season']))
+        for innings in bowling_innings:
+            if innings.get('season'):
+                recent_seasons.add(str(innings['season']))
+        
+        # Sort and limit to most recent seasons
+        sorted_seasons = sorted(recent_seasons, reverse=True)[:5]
+        
+        for season in sorted_seasons:
+            season_batting = [i for i in batting_innings if str(i.get('season', '')) == season and i.get('runs') is not None]
+            season_bowling = [i for i in bowling_innings if str(i.get('season', '')) == season and i.get('wickets') is not None]
+            
+            if not season_batting and not season_bowling:
+                continue
+                
+            season_stats = {
+                'team': normalize_team_name(team_history.get(season, 'Unknown'))
+            }
+            
+            # Process batting stats
+            if season_batting:
+                season_runs = sum(i.get('runs', 0) for i in season_batting)
+                season_balls = sum(i.get('balls', 0) for i in season_batting)
+                season_fours = sum(i.get('fours', 0) for i in season_batting)
+                season_sixes = sum(i.get('sixes', 0) for i in season_batting)
+                season_innings = len(season_batting)
+                season_highest = max(i.get('runs', 0) for i in season_batting)
+                season_fifties = sum(1 for i in season_batting if 50 <= i.get('runs', 0) < 100)
+                season_centuries = sum(1 for i in season_batting if i.get('runs', 0) >= 100)
+                
+                season_stats['batting'] = {
+                    'runs': season_runs,
+                    'balls': season_balls,
+                    'innings': season_innings,
+                    'average': round(season_runs / season_innings, 2) if season_innings > 0 else 0,
+                    'strikeRate': round((season_runs * 100.0) / season_balls, 2) if season_balls > 0 else 0,
+                    'highest': season_highest,
+                    'fifties': season_fifties,
+                    'centuries': season_centuries,
+                    'fours': season_fours,
+                    'sixes': season_sixes
+                }
+            
+            # Process bowling stats
+            if season_bowling:
+                season_wickets = sum(i.get('wickets', 0) for i in season_bowling)
+                season_bowling_runs = sum(i.get('runs', 0) for i in season_bowling)
+                season_bowling_balls = sum(i.get('balls', 0) for i in season_bowling)
+                season_bowling_innings = len(season_bowling)
+                best_bowling = max(i.get('wickets', 0) for i in season_bowling)
+                
+                season_stats['bowling'] = {
+                    'wickets': season_wickets,
+                    'runs': season_bowling_runs,
+                    'balls': season_bowling_balls,
+                    'innings': season_bowling_innings,
+                    'average': round(season_bowling_runs / season_wickets, 2) if season_wickets > 0 else 0,
+                    'economy': round((season_bowling_runs * 6.0) / season_bowling_balls, 2) if season_bowling_balls > 0 else 0,
+                    'bestBowling': best_bowling
+                }
+            
+            season_wise_stats[season] = season_stats
+        
+        return {
+            'name': player_data['name'],
+            'battingStats': {
+                'totalRuns': player_data.get('total_runs', 0),
+                'ballsFaced': player_data.get('total_balls', 0),
+                'highestScore': player_data.get('highest_score', 0),
+                'average': player_data.get('average', 0),
+                'strikeRate': player_data.get('strike_rate', 0),
+                'innings': player_data.get('innings', 0),
+                'centuries': player_data.get('centuries', 0),
+                'fifties': player_data.get('fifties', 0),
+                'fours': player_data.get('total_fours', 0),
+                'sixes': player_data.get('total_sixes', 0)
+            },
+            'bowlingStats': {
+                'totalWickets': player_data.get('total_wickets', 0),
+                'runsConceded': player_data.get('bowling_runs', 0),
+                'ballsBowled': player_data.get('bowling_balls', 0),
+                'innings': player_data.get('bowling_innings_count', 0),
+                'average': player_data.get('bowling_average', 0),
+                'economyRate': player_data.get('economy_rate', 0),
+                'bestBowling': player_data.get('total_wickets', 0)  # Simplified since we removed best_bowling_wickets
+            },
+            'seasonWiseStats': season_wise_stats
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player stats for {player_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching player stats: {str(e)}")
 
 def normalize_team_name(team_name: str) -> str:
     """Normalize team names to current branding"""

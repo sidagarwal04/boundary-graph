@@ -32,6 +32,15 @@
           <XMarkIcon class="w-5 h-5" />
         </div>
       </div>
+
+      <!-- Debug Panel -->
+      <div v-if="searchQuery.length >= 2" class="mt-2 p-3 bg-gray-100 rounded text-sm">
+        <div>Query: "{{ searchQuery }}"</div>
+        <div>Results count: {{ searchResults.length }}</div>
+        <div>Show results: {{ showResults }}</div>
+        <div>API Base: {{ config.public.apiBase }}</div>
+        <div v-if="searchResults.length > 0">First result: {{ searchResults[0] }}</div>
+      </div>
       
       <!-- Autocomplete Dropdown -->
       <transition 
@@ -42,7 +51,7 @@
         leave-from-class="transform scale-100 opacity-100"
         leave-to-class="transform scale-95 opacity-0"
       >
-        <div v-if="searchResults.length > 0 && showResults" class="absolute z-50 mt-3 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm bg-white/95">
+        <div v-if="showResults && searchResults.length > 0" class="absolute z-50 mt-3 w-full bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm bg-white/95">
           <div class="py-2">
             <button 
               v-for="(player, index) in searchResults" 
@@ -78,7 +87,8 @@
           <div class="flex gap-4 mt-2">
             <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-bold uppercase tracking-wider border border-green-100">Pro Athlete</span>
             <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold uppercase tracking-wider border border-slate-200 italic">
-              {{ playerStats.batting_matches > 0 ? (playerStats.bowling_matches > 0 ? 'All Rounder' : 'Batsman') : 'Bowler' }}
+              {{ (playerStats.battingStats?.totalRuns > 0 && playerStats.bowlingStats?.totalWickets > 0) ? 'All Rounder' : 
+                   (playerStats.battingStats?.totalRuns > 0 ? 'Batsman' : 'Bowler') }}
             </span>
           </div>
         </div>
@@ -97,24 +107,32 @@
           <div class="p-6 grid grid-cols-2 gap-4 flex-grow">
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Runs</p>
-              <p class="text-2xl font-black text-slate-900">{{ playerStats.total_runs || 0 }}</p>
+              <p class="text-2xl font-black text-slate-900">{{ playerStats.battingStats?.totalRuns || 0 }}</p>
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Strike Rate</p>
-              <p class="text-2xl font-black text-indigo-600">{{ playerStats.strike_rate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
+              <p class="text-2xl font-black text-indigo-600">{{ playerStats.battingStats?.strikeRate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Average</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.battingStats?.average || '0.00' }}</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Highest Score</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.battingStats?.highestScore || 0 }}</p>
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Fours (4s)</p>
-              <p class="text-2xl font-black text-slate-800">{{ playerStats.total_fours || 0 }}</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.battingStats?.fours || 0 }}</p>
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Sixes (6s)</p>
-              <p class="text-2xl font-black text-slate-800">{{ playerStats.total_sixes || 0 }}</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.battingStats?.sixes || 0 }}</p>
             </div>
             <div class="col-span-2 p-4 bg-indigo-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-indigo-100">
                <div>
-                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Participating Matches</p>
-                 <p class="text-xl font-black">{{ playerStats.batting_matches || 0 }}</p>
+                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Innings Played</p>
+                 <p class="text-xl font-black">{{ playerStats.battingStats?.innings || 0 }}</p>
                </div>
                <PresentationChartLineIcon class="w-8 h-8 opacity-20" />
             </div>
@@ -133,22 +151,119 @@
           <div class="p-6 grid grid-cols-2 gap-4 flex-grow">
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Wickets</p>
-              <p class="text-2xl font-black text-slate-900">{{ playerStats.total_wickets || 0 }}</p>
+              <p class="text-2xl font-black text-slate-900">{{ playerStats.bowlingStats?.totalWickets || 0 }}</p>
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy</p>
-              <p class="text-2xl font-black text-rose-600">{{ playerStats.economy || '0.00' }}</p>
+              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy Rate</p>
+              <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate || '0.00' }}</p>
             </div>
-            <div class="col-span-2 p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Bowling Average</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.average || '0.00' }}</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Runs Conceded</p>
-              <p class="text-2xl font-black text-slate-800">{{ playerStats.runs_conceded || 0 }}</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.runsConceded || 0 }}</p>
             </div>
             <div class="col-span-2 p-4 bg-rose-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-rose-100">
                <div>
-                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Participating Matches</p>
-                 <p class="text-xl font-black">{{ playerStats.bowling_matches || 0 }}</p>
+                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Bowling Innings</p>
+                 <p class="text-xl font-black">{{ playerStats.bowlingStats?.innings || 0 }}</p>
                </div>
                <FireIcon class="w-8 h-8 opacity-20" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Season-wise Performance -->
+      <div v-if="Object.keys(playerStats.seasonWiseStats || {}).length > 0" class="col-span-1 lg:col-span-2">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <PresentationChartLineIcon class="w-5 h-5 text-purple-500" />
+              <h3 class="font-bold text-slate-800">Season-wise Performance</h3>
+            </div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Career Timeline</span>
+          </div>
+          <div class="p-6 space-y-4">
+            <div v-for="(stats, season) in playerStats.seasonWiseStats" :key="season" class="border border-slate-200 rounded-lg overflow-hidden">
+              <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-slate-800 text-lg">{{ season }}</span>
+                  <span v-if="stats.team" class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs font-bold">{{ stats.team }}</span>
+                </div>
+                <div class="text-sm text-slate-600">
+                  <span v-if="stats.batting?.innings">{{ stats.batting.innings }} bat</span>
+                  <span v-if="stats.batting?.innings && stats.bowling?.innings"> • </span>
+                  <span v-if="stats.bowling?.innings">{{ stats.bowling.innings }} bowl</span>
+                </div>
+              </div>
+              <div class="p-4">
+                <!-- Batting Performance -->
+                <div v-if="stats.batting?.runs > 0" class="mb-4">
+                  <h4 class="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <CricketHelmetIcon class="w-4 h-4" />
+                    Batting Performance
+                  </h4>
+                  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <div class="text-center p-3 bg-indigo-50 rounded-lg">
+                      <p class="text-lg font-bold text-indigo-800">{{ stats.batting.runs }}</p>
+                      <p class="text-xs text-indigo-600 font-medium">Runs</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.batting.average }}</p>
+                      <p class="text-xs text-slate-600 font-medium">Average</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.batting.strikeRate }}</p>
+                      <p class="text-xs text-slate-600 font-medium">SR</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.batting.highest }}</p>
+                      <p class="text-xs text-slate-600 font-medium">Highest</p>
+                    </div>
+                    <div class="text-center p-3 bg-green-50 rounded-lg">
+                      <p class="text-lg font-bold text-green-800">{{ stats.batting.centuries }}</p>
+                      <p class="text-xs text-green-600 font-medium">100s</p>
+                    </div>
+                    <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                      <p class="text-lg font-bold text-yellow-800">{{ stats.batting.fifties }}</p>
+                      <p class="text-xs text-yellow-600 font-medium">50s</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Bowling Performance -->
+                <div v-if="stats.bowling?.wickets > 0">
+                  <h4 class="text-sm font-semibold text-rose-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <CricketBallIcon class="w-4 h-4" />
+                    Bowling Performance
+                  </h4>
+                  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div class="text-center p-3 bg-rose-50 rounded-lg">
+                      <p class="text-lg font-bold text-rose-800">{{ stats.bowling.wickets }}</p>
+                      <p class="text-xs text-rose-600 font-medium">Wickets</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.average }}</p>
+                      <p class="text-xs text-slate-600 font-medium">Average</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.economy }}</p>
+                      <p class="text-xs text-slate-600 font-medium">Economy</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.runs }}</p>
+                      <p class="text-xs text-slate-600 font-medium">Runs</p>
+                    </div>
+                    <div class="text-center p-3 bg-slate-50 rounded-lg">
+                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.bestBowling }}</p>
+                      <p class="text-xs text-slate-600 font-medium">Best</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -275,11 +390,18 @@ const searchPlayers = () => {
   }
   searchTimeout = setTimeout(async () => {
     try {
-      const data: any = await $fetch(`${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`)
-      searchResults.value = data
+      console.log('Searching for:', searchQuery.value)
+      const url = `${config.public.apiBase}/api/players/search?query=${encodeURIComponent(searchQuery.value)}`
+      console.log('API URL:', url)
+      const data: any = await $fetch(url)
+      console.log('API response:', data)
+      searchResults.value = data || []
       showResults.value = searchResults.value.length > 0
+      console.log('Search results set:', searchResults.value, 'showResults:', showResults.value)
     } catch (error) {
       console.error('Search failed:', error)
+      searchResults.value = []
+      showResults.value = false
     }
   }, 300)
 }
@@ -304,10 +426,13 @@ const selectPlayer = async (playerName: string) => {
   searchQuery.value = playerName
   showResults.value = false
   try {
-    playerStats.value = await $fetch(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}`)
+    // Use the new comprehensive stats endpoint
+    const playerSlug = playerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    playerStats.value = await $fetch(`${config.public.apiBase}/api/players/${playerSlug}/stats`)
     await fetchPlayerGraph(playerName)
   } catch (error) {
     console.error('Fetch failed:', error)
+    playerStats.value = null
   }
 }
 

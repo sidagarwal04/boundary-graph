@@ -253,6 +253,7 @@ const availableSeasons = ref<string[]>([])
 const selectedSeason = ref<string>('all')
 const rivalries = ref<any[]>([])
 
+
 const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
 const defunctTeams = computed(() => allTeams.value.filter(t => !t.is_active))
 const teamDetails = computed(() => {
@@ -491,6 +492,11 @@ const getTeamLabel = (team: any) => {
   return label
 }
 
+// Function to navigate to player intelligence page
+const goToPlayer = (playerName: string) => {
+  navigateTo(`/player-search?name=${encodeURIComponent(playerName)}`)
+}
+
 const selectTeam = async (team: any) => {
   selectedTeam.value = team
   teamStats.value = { total_matches: 0, wins: 0, win_percentage: 0 }
@@ -562,10 +568,6 @@ const selectTeam = async (team: any) => {
     console.error('Failed to fetch rivalry data:', error)
     rivalries.value = []
   }
-}
-
-const goToPlayer = (playerName: string) => {
-  navigateTo(`/player-search?name=${encodeURIComponent(playerName)}`)
 }
 
 onMounted(async () => {
