@@ -724,7 +724,16 @@ async def get_player_stats(player_name: str):
                 'team': normalize_team_name(team_history.get(season, 'Unknown'))
             }
             
-            # Process batting stats - handle null values properly
+            # Process batting stats - handle null values properly and ALWAYS display batting stats
+            season_runs = 0
+            season_balls = 0
+            season_fours = 0
+            season_sixes = 0
+            season_innings = 0
+            season_highest = 0
+            season_fifties = 0
+            season_centuries = 0
+            
             if season_batting:
                 season_runs = sum((i.get('runs') or 0) for i in season_batting)
                 season_balls = sum((i.get('balls') or 0) for i in season_batting)
@@ -734,21 +743,20 @@ async def get_player_stats(player_name: str):
                 season_highest = max((i.get('runs') or 0) for i in season_batting) if season_batting else 0
                 season_fifties = sum(1 for i in season_batting if (i.get('runs') or 0) >= 50 and (i.get('runs') or 0) < 100)
                 season_centuries = sum(1 for i in season_batting if (i.get('runs') or 0) >= 100)
-                
-                # Only add batting stats if there's meaningful data
-                if season_innings > 0 or season_runs > 0:
-                    season_stats['batting'] = {
-                        'runs': season_runs,
-                        'balls': season_balls,
-                        'innings': season_innings,
-                        'average': round(season_runs / season_innings, 2) if season_innings > 0 else 0,
-                        'strikeRate': round((season_runs * 100.0) / season_balls, 2) if season_balls > 0 else 0,
-                        'highest': season_highest,
-                        'fifties': season_fifties,
-                        'centuries': season_centuries,
-                        'fours': season_fours,
-                        'sixes': season_sixes
-                    }
+            
+            # Always add batting stats (even if 0)
+            season_stats['batting'] = {
+                'runs': season_runs,
+                'balls': season_balls,
+                'innings': season_innings,
+                'average': round(season_runs / season_innings, 2) if season_innings > 0 else 0,
+                'strikeRate': round((season_runs * 100.0) / season_balls, 2) if season_balls > 0 else 0,
+                'highest': season_highest,
+                'fifties': season_fifties,
+                'centuries': season_centuries,
+                'fours': season_fours,
+                'sixes': season_sixes
+            }
             
             # Process bowling stats - handle null values properly and ALWAYS display bowling stats
             season_wickets = 0
