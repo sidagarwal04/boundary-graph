@@ -381,6 +381,12 @@ const refreshPlayerDatabase = async () => {
 const getPlayersForTeamSeason = (teamName: string, season: string): Array<{name: string, role: string, season: string}> => {
   const players: Array<{name: string, role: string, season: string}> = []
   
+  // Check if database is loaded
+  if (Object.keys(PLAYER_DATABASE).length === 0) {
+    console.log('Player database not ready for', teamName, season)
+    return players // Return empty array if database not loaded
+  }
+  
   for (const playerKey in PLAYER_DATABASE) {
     const player = PLAYER_DATABASE[playerKey]
     if (player.teamHistory[season] === teamName) {
@@ -523,8 +529,34 @@ const selectTeam = async (team: any) => {
       console.log('No additional API squad data available, using centralized database')
     }
     
-    // Use centralized database as primary source
-    const bySeason = populateSeasonSquads(team.name)
+  // Use centralized database as primary source (if available)
+  const bySeason = Object.keys(PLAYER_DATABASE).length > 0 
+    ? populateSeasonSquads(team.name)
+    : {} // Empty if database not loaded yet
+  
+  // If database not ready, show loading state and retry after delay
+  if (Object.keys(PLAYER_DATABASE).length === 0) {
+    console.log('Player database not ready yet, will supplement with API data and retry...')
+    // Retry after database loads
+    setTimeout(() => {
+      if (Object.keys(PLAYER_DATABASE).length > 0 && selectedTeam.value?.name === team.name) {
+        console.log('Retrying squad population with loaded database...')
+        const updatedBySeason = populateSeasonSquads(team.name)
+        // Merge with existing API data
+        Object.keys(updatedBySeason).forEach(season => {
+          if (!bySeason[season]) bySeason[season] = []
+          const existingNames = new Set(bySeason[season].map(p => p.name.toLowerCase()))
+          updatedBySeason[season].forEach(player => {
+            if (!existingNames.has(player.name.toLowerCase())) {
+              bySeason[season].push(player)
+            }
+          })
+        })
+        seasonSquads.value = bySeason
+        availableSeasons.value = Object.keys(bySeason).filter(s => s !== 'all').sort((a, b) => b.localeCompare(a))
+      }
+    }, 2000) // Wait 2 seconds for database to load
+  }
     
     // Supplement with any additional API data if available
     if (apiPlayers.length > 0 && typeof apiPlayers[0] === 'string') {
