@@ -496,22 +496,39 @@ const openTeamModal = async (team: any) => {
   selectedTeamDetails.value = null
   
   try {
-    const details = await $fetch(`${config.public.apiBase}/api/teams/${encodeURIComponent(team.name)}`)
-    selectedTeamDetails.value = details
-    console.log('Team details received:', details) // Debug log
+    // Get team stats from API
+    const stats = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`)
+    
+    // Get team details from utility function (same as teams page)
+    const { getTeamDetails } = await import('~/utils/teamLogos')
+    const teamInfo = getTeamDetails(team.name)
+    
+    // Map the utility function properties to match our template
+    const mappedTeamInfo = teamInfo ? {
+      captain: teamInfo.captain,
+      coach: teamInfo.coach,
+      home_ground: teamInfo.venue, // venue -> home_ground
+      founded_year: team.is_active ? '2008' : 'N/A' // Default founded year for active teams
+    } : {}
+    
+    // Combine stats with team information
+    selectedTeamDetails.value = {
+      ...stats,
+      ...mappedTeamInfo,
+      name: team.name,
+      is_active: team.is_active
+    }
+    console.log('Team details received:', selectedTeamDetails.value) // Debug log
   } catch (e) {
     console.error("Error fetching team details", e)
-    // Set mock details for now to show the UI structure
+    // Set minimal details when API fails - no fake stats
     selectedTeamDetails.value = {
       name: team.name,
-      captain: "Rohit Sharma", // Mock data for testing
-      coach: "Mahela Jayawardene", // Mock data for testing  
-      home_ground: "Wankhede Stadium", // Mock data for testing
-      founded_year: "2008", // Mock data for testing
       is_active: team.is_active,
-      total_matches: 180,
-      wins: 90,
-      losses: 85
+      total_matches: 'N/A',
+      wins: 'N/A',
+      losses: 'N/A',
+      win_percentage: 'N/A'
     }
   } finally {
     loadingTeamDetails.value = false
@@ -525,10 +542,14 @@ const closeTeamModal = () => {
 }
 
 const goToTeamsPage = () => {
-  closeTeamModal()
   const teamName = selectedTeam.value?.name
+  console.log('Navigating with team:', teamName)
+  closeTeamModal()
   if (teamName) {
-    navigateTo(`/teams?team=${encodeURIComponent(teamName)}`)
+    const encodedName = encodeURIComponent(teamName)
+    const url = `/teams?team=${encodedName}`
+    console.log('Navigation URL:', url)
+    navigateTo(url)
   } else {
     navigateTo('/teams')
   }

@@ -237,13 +237,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { TrophyIcon } from '@heroicons/vue/24/outline'
 import CricketTeamIcon from '~/components/icons/CricketTeamIcon.vue'
 import TeamLogo from '~/components/TeamLogo.vue'
 import { getTeamDetails } from '~/utils/teamLogos'
 
 const config = useRuntimeConfig()
+const route = useRoute()
 const allTeams = ref<any[]>([])
 const selectedTeam = ref<any>(null)
 const teamStats = ref<any>({ total_matches: 0, wins: 0, win_percentage: 0, trophies: [] })
@@ -256,6 +257,40 @@ const rivalries = ref<any[]>([])
 
 const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
 const defunctTeams = computed(() => allTeams.value.filter(t => !t.is_active))
+
+// Function to select team by name from query parameter
+const selectTeamFromQuery = async () => {
+  if (allTeams.value.length === 0) return
+  
+  const preSelectedTeamName = route.query.team as string
+  console.log('Route query team:', preSelectedTeamName)
+  
+  if (preSelectedTeamName) {
+    const decodedTeamName = decodeURIComponent(preSelectedTeamName)
+    console.log('Looking for team:', decodedTeamName)
+    console.log('Available teams:', allTeams.value.map(t => t.name))
+    
+    const teamToSelect = allTeams.value.find(t => t.name === decodedTeamName)
+    if (teamToSelect) {
+      console.log('Found matching team:', teamToSelect.name)
+      await selectTeam(teamToSelect)
+      return
+    } else {
+      console.warn('Team not found:', decodedTeamName)
+    }
+  }
+  
+  // If no query param or team not found, select first active team by default
+  if (!selectedTeam.value) {
+    const defaultTeam = allTeams.value.find(t => t.is_active) || allTeams.value[0]
+    await selectTeam(defaultTeam)
+  }
+}
+
+// Watch for route changes
+watch(() => route.query.team, () => {
+  selectTeamFromQuery()
+}, { immediate: false })
 const teamDetails = computed(() => {
   return selectedTeam.value ? getTeamDetails(selectedTeam.value.name) : null
 })
@@ -609,11 +644,8 @@ onMounted(async () => {
     const teamsData = await $fetch(`${config.public.apiBase}/api/teams`)
     allTeams.value = Array.isArray(teamsData) ? teamsData : []
     
-    if (allTeams.value.length > 0) {
-      // Find First active team to select by default
-      const firstActive = allTeams.value.find(t => t.is_active) || allTeams.value[0]
-      await selectTeam(firstActive)
-    }
+    // After teams are loaded, check for query parameter
+    await selectTeamFromQuery()
 
     // Load player database in the background (non-blocking)
     setTimeout(async () => {
