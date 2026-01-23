@@ -1,0 +1,17 @@
+# Robots.txt for Boundary Graph - Educational Cricket Analytics Project
+# This is an independent, non-commercial educational project
+# Not affiliated with BCCI, IPL, or any cricket organization
+
+User-agent: *
+Allow: /
+
+# Educational disclaimer
+Allow: /disclaimer
+
+# Analytics and API endpoints
+Allow: /api/
+Disallow: /admin
+Disallow: /debug
+
+# Sitemap (if exists)
+Sitemap: https://boundary-graph.netlify.app/sitemap.xml

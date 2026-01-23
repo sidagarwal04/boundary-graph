@@ -1,6 +1,19 @@
-# Boundary Graph - IPL Analytics Dashboard
+# Boundary Graph - Cricket Analytics Dashboard
 
-A professional, high-performance cricket analytics platform for the Indian Premier League (IPL). This project uses a **Neo4j Graph Database** to store complex ball-by-ball relationships and a **Nuxt 3** frontend with advanced caching for blazing-fast performance.
+A professional, high-performance cricket analytics platform for Indian cricket tournament data. This project uses a **Neo4j Graph Database** to store complex ball-by-ball relationships and a **Nuxt 3** frontend with advanced caching for blazing-fast performance.
+
+## ⚖️ Legal Notice & Disclaimers
+
+**This is an independent, educational project and is not affiliated with, endorsed by, or sponsored by the Board of Control for Cricket in India (BCCI), Indian Premier League, or any cricket teams.**
+
+- **Educational Purpose**: This project is created solely for educational, research, and portfolio demonstration purposes
+- **No Commercial Use**: This application is not monetized and serves no commercial purpose
+- **Fair Use**: Data analysis and statistics presentation fall under fair use for educational purposes
+- **Trademark Acknowledgment**: All team names, logos, and tournament references are property of their respective owners
+- **Data Source**: All data is publicly available and has been compiled for analytical purposes only
+- **No Official Endorsement**: This project does not represent or claim any official association with any cricket organization
+
+**If you are a rights holder and have concerns about this project, please contact the repository owner for immediate resolution.**
 
 ## 🔗 Live Demo
 - **Frontend**: [boundary-graph.netlify.app](https://boundary-graph.netlify.app/)

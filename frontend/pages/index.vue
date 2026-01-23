@@ -6,13 +6,13 @@
       <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="space-y-4">
           <div class="space-y-1">
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">The Indian Premier League <span class="text-brand-primary">Graph</span></h2>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Cricket Data Analytics <span class="text-brand-primary">Platform</span></h2>
             <p class="text-slate-500 max-w-2xl leading-relaxed text-sm md:text-base">
-              Welcome to the ultimate digital twin of the <strong class="text-slate-900">IPL</strong>. This platform processes every ball, wicket, and boundary since 2008 using high-performance graph technology. Dive deep into player trajectories and franchise rivalries powered by 17+ seasons of T20 data.
+              Welcome to an advanced cricket analytics platform. This educational project processes ball-by-ball data using high-performance graph technology. Explore player trajectories and team dynamics powered by comprehensive T20 cricket data.
             </p>
-            <div class="mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
-              <p class="text-xs text-amber-800 leading-relaxed">
-              <strong class="text-amber-900">Why not other leagues?</strong> While many leagues offer rich data, the IPL stands out for its scale, diversity, and continuous evolution—featuring global stars, frequent team changes, and high-stakes matches in a compressed window. This creates a uniquely complex, ever-changing network that’s ideal for graph analytics, letting us uncover dynamic relationships and trends that static datasets or less volatile leagues can’t reveal.
+            <div class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+              <p class="text-xs text-blue-800 leading-relaxed">
+              <strong class="text-blue-900">Educational Project:</strong> This is an independent, non-commercial project created for educational and technical demonstration purposes. Not affiliated with any cricket organization. <NuxtLink to="/disclaimer" class="underline font-medium">View legal disclaimer</NuxtLink>.
               </p>
             </div>
           </div>
