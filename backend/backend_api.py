@@ -6,12 +6,21 @@ Credentials are kept server-side only
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from neo4j import GraphDatabase
 import os
+import json
+import hashlib
+from datetime import datetime, timedelta
+from functools import wraps
 from dotenv import load_dotenv
 import logging
+import asyncio
+from cachetools import TTLCache
+import redis
+from contextlib import asynccontextmanager
 
 # Load environment variables
 load_dotenv()
@@ -20,11 +29,44 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Cache configuration
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
+CACHE_TTL = int(os.getenv('CACHE_TTL', '1800'))  # 30 minutes default
+ENABLE_REDIS = os.getenv('ENABLE_REDIS', 'true').lower() == 'true'
+
+# Global caches
+memory_cache = TTLCache(maxsize=1000, ttl=CACHE_TTL)
+redis_client = None
+
+# Initialize Redis connection
+async def init_redis():
+    global redis_client
+    if ENABLE_REDIS:
+        try:
+            redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+            await asyncio.to_thread(redis_client.ping)
+            logger.info("✅ Redis connected successfully")
+        except Exception as e:
+            logger.warning(f"⚠️ Redis connection failed: {e}. Using memory cache only.")
+            redis_client = None
+    else:
+        logger.info("📝 Redis disabled. Using memory cache only.")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await init_redis()
+    yield
+    # Shutdown
+    if redis_client:
+        redis_client.close()
+
 # FastAPI app
 app = FastAPI(
     title="IPL Cricket Dashboard API",
-    description="Professional API for IPL statistics from Neo4j",
-    version="1.0.0"
+    description="Professional API for IPL statistics from Neo4j with Redis caching",
+    version="2.0.0",
+    lifespan=lifespan
 )
 
 # CORS configuration - allow only your Netlify domain in production
@@ -42,10 +84,73 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Neo4j Connection
+# Add compression middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Cache utilities
+def generate_cache_key(func_name: str, **kwargs) -> str:
+    """Generate a unique cache key"""
+    key_data = f"{func_name}:{json.dumps(kwargs, sort_keys=True)}"
+    return hashlib.md5(key_data.encode()).hexdigest()
+
+def cache_response(ttl: int = CACHE_TTL):
+    """Decorator for caching API responses"""
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Extract function parameters for cache key
+            cache_key = generate_cache_key(func.__name__, **kwargs)
+            
+            # Try to get from cache
+            cached_result = await get_from_cache(cache_key)
+            if cached_result is not None:
+                logger.info(f"🚀 Cache HIT for {func.__name__}")
+                return cached_result
+            
+            # Execute function and cache result
+            logger.info(f"🔄 Cache MISS for {func.__name__} - executing...")
+            result = await func(*args, **kwargs)
+            await set_cache(cache_key, result, ttl)
+            return result
+        
+        return wrapper
+    return decorator
+
+async def get_from_cache(key: str):
+    """Get value from Redis or memory cache"""
+    try:
+        if redis_client:
+            cached_data = await asyncio.to_thread(redis_client.get, key)
+            if cached_data:
+                return json.loads(cached_data)
+        
+        # Fallback to memory cache
+        return memory_cache.get(key)
+    except Exception as e:
+        logger.warning(f"Cache get error: {e}")
+        return None
+
+async def set_cache(key: str, value: Any, ttl: int = CACHE_TTL):
+    """Set value in Redis and memory cache"""
+    try:
+        if redis_client:
+            await asyncio.to_thread(
+                redis_client.setex, 
+                key, 
+                ttl, 
+                json.dumps(value, default=str)
+            )
+        
+        # Also set in memory cache
+        memory_cache[key] = value
+    except Exception as e:
+        logger.warning(f"Cache set error: {e}")
+
+# Neo4j Connection with optimizations
 class Neo4jConnection:
     def __init__(self):
         self.driver = None
+        self._query_cache = TTLCache(maxsize=100, ttl=300)  # 5-minute query cache
     
     def connect(self):
         uri = os.getenv('NEO4J_URI', 'bolt://localhost:7687')
@@ -53,22 +158,55 @@ class Neo4jConnection:
         password = os.getenv('NEO4J_PASSWORD', 'password')
         
         try:
-            self.driver = GraphDatabase.driver(uri, auth=(username, password))
+            # Optimized connection with pooling
+            self.driver = GraphDatabase.driver(
+                uri, 
+                auth=(username, password),
+                max_connection_lifetime=3600,  # 1 hour
+                max_connection_pool_size=50,   # Increased pool size
+                connection_acquisition_timeout=60,
+                max_retry_time=15,
+                initial_retry_delay=1.0,
+                retry_delay_multiplier=2.0,
+                retry_delay_jitter_factor=0.2
+            )
             self.driver.verify_connectivity()
-            logger.info("✓ Connected to Neo4j")
+            logger.info("✓ Neo4j connected with optimized pool settings")
         except Exception as e:
             logger.error(f"✗ Neo4j connection failed: {str(e)}")
             self.driver = None
     
     def query(self, cypher: str, params: dict = None) -> List[Dict[str, Any]]:
-        """Execute query and return results as list of dicts"""
+        """Execute query with caching and optimization"""
         if not self.driver:
             raise HTTPException(status_code=503, detail="Database connection failed")
         
+        # Create cache key for query
+        query_key = hashlib.md5(f"{cypher}{json.dumps(params or {}, sort_keys=True)}".encode()).hexdigest()
+        
+        # Check query cache first
+        if query_key in self._query_cache:
+            logger.info("🔥 Query cache HIT")
+            return self._query_cache[query_key]
+        
         try:
             with self.driver.session() as session:
-                result = session.run(cypher, params or {})
-                return [dict(record) for record in result]
+                # Use read transaction for better performance on read queries
+                if cypher.strip().upper().startswith(('MATCH', 'RETURN', 'WITH', 'UNWIND')):
+                    result = session.execute_read(lambda tx: list(tx.run(cypher, params or {})))
+                else:
+                    result = session.run(cypher, params or {})
+                    result = list(result)
+                
+                # Convert to dict format
+                result_data = [dict(record) for record in result]
+                
+                # Cache the result
+                self._query_cache[query_key] = result_data
+                logger.info("📊 Query executed and cached")
+                
+                return result_data
+                
         except Exception as e:
             logger.error(f"Query error: {str(e)}")
             raise HTTPException(status_code=400, detail=str(e))
@@ -173,11 +311,68 @@ class MatchDetailed(BaseModel):
 # ==================== HEALTH CHECK ====================
 @app.get("/health")
 async def health_check():
-    """Check API and database health"""
-    return {
-        "status": "healthy",
-        "database": "connected" if db.driver else "disconnected"
+    """Health check endpoint with cache status"""
+    cache_status = {
+        "redis_connected": redis_client is not None,
+        "memory_cache_size": len(memory_cache),
+        "database_connected": db.driver is not None
     }
+    
+    if redis_client:
+        try:
+            await asyncio.to_thread(redis_client.ping)
+            cache_status["redis_ping"] = True
+        except:
+            cache_status["redis_ping"] = False
+    
+    return {"status": "healthy", "cache": cache_status, "timestamp": datetime.now()}
+
+# Cache management endpoints
+@app.post("/api/cache/clear")
+async def clear_cache():
+    """Clear all caches - useful for development/debugging"""
+    try:
+        # Clear Redis cache
+        if redis_client:
+            await asyncio.to_thread(redis_client.flushdb)
+        
+        # Clear memory caches
+        memory_cache.clear()
+        db._query_cache.clear()
+        
+        return {"status": "success", "message": "All caches cleared"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to clear cache: {str(e)}")
+
+@app.get("/api/cache/stats")
+async def cache_stats():
+    """Get cache statistics"""
+    stats = {
+        "memory_cache": {
+            "size": len(memory_cache),
+            "maxsize": memory_cache.maxsize,
+            "ttl": memory_cache.ttl
+        },
+        "query_cache": {
+            "size": len(db._query_cache),
+            "maxsize": db._query_cache.maxsize,
+            "ttl": db._query_cache.ttl
+        }
+    }
+    
+    if redis_client:
+        try:
+            info = await asyncio.to_thread(redis_client.info)
+            stats["redis"] = {
+                "connected_clients": info.get("connected_clients"),
+                "used_memory_human": info.get("used_memory_human"),
+                "keyspace_hits": info.get("keyspace_hits"),
+                "keyspace_misses": info.get("keyspace_misses")
+            }
+        except:
+            stats["redis"] = {"status": "error"}
+    
+    return stats
 
 # IPL Titles Mapping (Total trophies won by each franchise)
 IPL_TITLES = {
@@ -209,6 +404,7 @@ VALID_IPL_TEAMS = {
 
 # ==================== OVERVIEW ENDPOINTS ====================
 @app.get("/api/overview", response_model=OverviewStats)
+@cache_response(ttl=3600)  # Cache for 1 hour - this data changes infrequently
 async def get_overview():
     """Get database overview statistics"""
     
@@ -368,6 +564,7 @@ async def get_season_details(season_year: str):
     return SeasonDetails(**details)
 
 @app.get("/api/seasons", response_model=List[SeasonStats])
+@cache_response(ttl=3600)  # Cache for 1 hour
 async def get_seasons():
     """Get statistics for all seasons"""
     results = db.query("""
@@ -380,6 +577,7 @@ async def get_seasons():
 
 # ==================== PLAYER ENDPOINTS ====================
 @app.get("/api/batsmen/top", response_model=List[Player])
+@cache_response(ttl=1800)  # Cache for 30 minutes
 async def get_top_batsmen(limit: int = 20):
     """Get top run scorers"""
     results = db.query(f"""
@@ -397,6 +595,7 @@ async def get_top_batsmen(limit: int = 20):
     return [Player(**r) for r in results]
 
 @app.get("/api/bowlers/top", response_model=List[Player])
+@cache_response(ttl=1800)  # Cache for 30 minutes
 async def get_top_bowlers(limit: int = 20):
     """Get top wicket takers"""
     results = db.query(f"""
@@ -1110,6 +1309,7 @@ async def search(q: str):
 
 # ==================== VENUE ENDPOINTS ====================
 @app.get("/api/venues", response_model=List[VenueStats])
+@cache_response(ttl=1800)  # Cache for 30 minutes
 async def get_venues():
     """Get statistics for all venues"""
     
