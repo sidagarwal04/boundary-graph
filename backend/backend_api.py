@@ -169,8 +169,7 @@ class Neo4jConnection:
                 auth=(username, password),
                 max_connection_lifetime=3600,  # 1 hour
                 max_connection_pool_size=10,   # Reduced for cloud hosting
-                connection_acquisition_timeout=30,
-                encrypted=True  # Use encrypted connection for cloud
+                connection_acquisition_timeout=30
             )
             self.driver.verify_connectivity()
             logger.info("✅ Neo4j connected with optimized pool settings")
