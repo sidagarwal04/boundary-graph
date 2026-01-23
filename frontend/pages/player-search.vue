@@ -91,15 +91,21 @@
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <div class="flex items-center gap-2">
               <CricketHelmetIcon class="w-5 h-5 text-indigo-500" />
-              <h3 class="font-bold text-slate-800">Batting Analytics</h3>
-            </div>
+              <h3 class="font-bold text-slate-800">Batting Analytics</h3>              <div v-if="loadingStats" class="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>            </div>
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Career Profile</span>
           </div>
           <div class="p-6 grid grid-cols-2 gap-4 flex-grow">
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Runs</p>
-              <p class="text-2xl font-black text-slate-900">{{ playerStats.battingStats?.totalRuns || 0 }}</p>
-            </div>
+            <template v-if="loadingStats">
+              <div v-for="n in 8" :key="n" class="p-4 bg-slate-50 rounded-xl border border-slate-100 animate-pulse">
+                <div class="h-3 bg-slate-200 rounded w-16 mb-2"></div>
+                <div class="h-6 bg-slate-300 rounded w-12"></div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Runs</p>
+                <p class="text-2xl font-black text-slate-900">{{ playerStats.battingStats?.totalRuns || 0 }}</p>
+              </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Strike Rate</p>
               <p class="text-2xl font-black text-indigo-600">{{ playerStats.battingStats?.strikeRate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
@@ -127,6 +133,7 @@
                </div>
                <PresentationChartLineIcon class="w-8 h-8 opacity-20" />
             </div>
+            </template>
           </div>
         </div>
 
@@ -136,14 +143,22 @@
             <div class="flex items-center gap-2">
               <CricketBallIcon class="w-5 h-5 text-rose-500" />
               <h3 class="font-bold text-slate-800">Bowling Analytics</h3>
+              <div v-if="loadingStats" class="animate-spin h-4 w-4 border-2 border-rose-500 border-t-transparent rounded-full"></div>
             </div>
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Career Profile</span>
           </div>
           <div class="p-6 grid grid-cols-2 gap-4 flex-grow">
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Wickets</p>
-              <p class="text-2xl font-black text-slate-900">{{ playerStats.bowlingStats?.totalWickets || 0 }}</p>
-            </div>
+            <template v-if="loadingStats">
+              <div v-for="n in 4" :key="n" class="p-4 bg-slate-50 rounded-xl border border-slate-100 animate-pulse">
+                <div class="h-3 bg-slate-200 rounded w-16 mb-2"></div>
+                <div class="h-6 bg-slate-300 rounded w-12"></div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Wickets</p>
+                <p class="text-2xl font-black text-slate-900">{{ playerStats.bowlingStats?.totalWickets || 0 }}</p>
+              </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy Rate</p>
               <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate ?? 'N/A' }}</p>
@@ -168,16 +183,37 @@
       </div>
 
       <!-- Season-wise Performance -->
-      <div v-if="Object.keys(playerStats.seasonWiseStats || {}).length > 0" class="col-span-1 lg:col-span-2">
+      <div v-if="loadingStats || Object.keys(playerStats?.seasonWiseStats || {}).length > 0" class="col-span-1 lg:col-span-2">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <div class="flex items-center gap-2">
               <PresentationChartLineIcon class="w-5 h-5 text-purple-500" />
               <h3 class="font-bold text-slate-800">Season-wise Performance</h3>
+              <div v-if="loadingStats" class="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
             </div>
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Career Timeline</span>
           </div>
-          <div class="p-6 space-y-4">
+          <div v-if="loadingStats" class="p-6 space-y-4">
+            <!-- Loading skeleton for season-wise stats -->
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border border-purple-100 animate-pulse">
+              <div class="h-4 bg-purple-200 rounded w-48 mb-3"></div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="h-20 bg-white rounded-lg border"></div>
+                <div class="h-20 bg-white rounded-lg border"></div>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div v-for="n in 3" :key="n" class="bg-slate-50 rounded-lg p-4 animate-pulse">
+                <div class="h-5 bg-slate-200 rounded w-24 mb-3"></div>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="h-16 bg-slate-200 rounded"></div>
+                  <div class="h-16 bg-slate-200 rounded"></div>
+                  <div class="h-16 bg-slate-200 rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="p-6 space-y-4">
             <!-- Performance Trend Overview -->
             <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border border-purple-100">
               <h4 class="font-semibold text-purple-800 mb-3 flex items-center gap-2">
@@ -369,6 +405,40 @@
       </div> -->
     </div>
 
+    <!-- Loading State -->
+    <div v-else-if="loadingStats" class="space-y-6">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-6 animate-pulse">
+        <div class="w-16 h-16 rounded-full bg-slate-200"></div>
+        <div>
+          <div class="h-8 bg-slate-200 rounded w-48 mb-2"></div>
+          <div class="flex gap-4">
+            <div class="h-6 bg-slate-100 rounded w-20"></div>
+            <div class="h-6 bg-slate-100 rounded w-24"></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 animate-pulse">
+          <div class="h-6 bg-slate-200 rounded w-32 mb-4"></div>
+          <div class="grid grid-cols-3 md:grid-cols-4 gap-4">
+            <div v-for="n in 8" :key="n" class="p-4 bg-slate-50 rounded-xl">
+              <div class="h-3 bg-slate-200 rounded w-16 mb-2"></div>
+              <div class="h-6 bg-slate-300 rounded w-12"></div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 animate-pulse">
+          <div class="h-6 bg-slate-200 rounded w-32 mb-4"></div>
+          <div class="grid grid-cols-2 gap-4">
+            <div v-for="n in 4" :key="n" class="p-4 bg-slate-50 rounded-xl">
+              <div class="h-3 bg-slate-200 rounded w-16 mb-2"></div>
+              <div class="h-6 bg-slate-300 rounded w-12"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Placeholder State -->
     <div v-else-if="!searchQuery" class="bg-white rounded-2xl border-2 border-dashed border-slate-200 py-20 text-center">
       <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
@@ -405,6 +475,7 @@ const showResults = ref(false)
 const playerStats = ref<any>(null)
 const playerRivals = ref<any[]>([])
 const loadingRivals = ref(false)
+const loadingStats = ref(false)
 const highlightedIndex = ref(-1)
 let searchTimeout: any = null
 
@@ -488,8 +559,10 @@ type GraphData = {
 }
 
 const fetchPlayerGraph = async (playerName: string) => {
+  // Start loading but don't block the main stats loading
+  loadingRivals.value = true
+  
   try {
-    loadingRivals.value = true
     const graphData = await $fetch<GraphData>(`${config.public.apiBase}/api/player/${encodeURIComponent(playerName)}/graph`)
     
     // Convert graph data to rivals format for compatibility
@@ -544,7 +617,7 @@ const searchPlayers = () => {
       searchResults.value = []
       showResults.value = false
     }
-  }, 300)
+  }, 200) // Reduced from 300ms to 200ms for faster response
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -566,14 +639,27 @@ const handleKeydown = (e: KeyboardEvent) => {
 const selectPlayer = async (playerName: string) => {
   searchQuery.value = playerName
   showResults.value = false
+  loadingStats.value = true
+  
+  // Clear previous data immediately for better UX
+  playerStats.value = null
+  playerRivals.value = []
+  
   try {
-    // Use the new comprehensive stats endpoint
     const playerSlug = playerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-    playerStats.value = await $fetch(`${config.public.apiBase}/api/players/${playerSlug}/stats`)
-    await fetchPlayerGraph(playerName)
+    
+    // Load main stats and graph data in parallel for better performance
+    const [statsData] = await Promise.all([
+      $fetch(`${config.public.apiBase}/api/players/${playerSlug}/stats`),
+      fetchPlayerGraph(playerName) // This runs in parallel, has its own loading state
+    ])
+    
+    playerStats.value = statsData
   } catch (error) {
     console.error('Fetch failed:', error)
     playerStats.value = null
+  } finally {
+    loadingStats.value = false
   }
 }
 
