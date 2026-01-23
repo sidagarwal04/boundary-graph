@@ -153,9 +153,14 @@ class Neo4jConnection:
         self._query_cache = TTLCache(maxsize=100, ttl=300)  # 5-minute query cache
     
     def connect(self):
-        uri = os.getenv('NEO4J_URI', 'bolt://localhost:7687')
-        username = os.getenv('NEO4J_USERNAME', 'neo4j')
-        password = os.getenv('NEO4J_PASSWORD', 'password')
+        uri = os.getenv('NEO4J_URI')
+        username = os.getenv('NEO4J_USERNAME')
+        password = os.getenv('NEO4J_PASSWORD')
+        
+        if not all([uri, username, password]):
+            logger.error("❌ Neo4j credentials missing. Set NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD")
+            self.driver = None
+            return
         
         try:
             # Optimized connection with pooling
@@ -163,23 +168,28 @@ class Neo4jConnection:
                 uri, 
                 auth=(username, password),
                 max_connection_lifetime=3600,  # 1 hour
-                max_connection_pool_size=50,   # Increased pool size
-                connection_acquisition_timeout=60,
-                max_retry_time=15,
+                max_connection_pool_size=10,   # Reduced for cloud hosting
+                connection_acquisition_timeout=30,
+                max_retry_time=10,
                 initial_retry_delay=1.0,
-                retry_delay_multiplier=2.0,
-                retry_delay_jitter_factor=0.2
+                retry_delay_multiplier=1.5,
+                retry_delay_jitter_factor=0.1
             )
             self.driver.verify_connectivity()
-            logger.info("✓ Neo4j connected with optimized pool settings")
+            logger.info("✅ Neo4j connected with optimized pool settings")
         except Exception as e:
-            logger.error(f"✗ Neo4j connection failed: {str(e)}")
+            logger.error(f"❌ Neo4j connection failed: {str(e)}")
+            logger.error("   Make sure your Neo4j credentials are correct in Render environment variables")
             self.driver = None
     
     def query(self, cypher: str, params: dict = None) -> List[Dict[str, Any]]:
         """Execute query with caching and optimization"""
         if not self.driver:
-            raise HTTPException(status_code=503, detail="Database connection failed")
+            logger.error("🚨 Database not connected - check Neo4j credentials on Render")
+            raise HTTPException(
+                status_code=503, 
+                detail="Database connection failed. Please check Neo4j environment variables (NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD) on Render."
+            )
         
         # Create cache key for query
         query_key = hashlib.md5(f"{cypher}{json.dumps(params or {}, sort_keys=True)}".encode()).hexdigest()
@@ -334,7 +344,12 @@ class MatchDetailed(BaseModel):
     innings1: List[OverStats]
     innings2: List[OverStats]
 
-# ==================== HEALTH CHECK ====================
+# ==================== BASIC ENDPOINTS ====================
+@app.get("/")
+async def root():
+    """Root endpoint to verify server is running"""
+    return {"message": "IPL Cricket Dashboard API is running", "status": "active"}
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint with cache status"""
@@ -352,6 +367,24 @@ async def health_check():
             cache_status["redis_ping"] = False
     
     return {"status": "healthy", "cache": cache_status, "timestamp": datetime.now()}
+
+@app.get("/debug")
+async def debug_info():
+    """Debug endpoint to check environment configuration"""
+    env_vars = {
+        "NEO4J_URI": "SET" if os.getenv('NEO4J_URI') else "MISSING",
+        "NEO4J_USERNAME": "SET" if os.getenv('NEO4J_USERNAME') else "MISSING", 
+        "NEO4J_PASSWORD": "SET" if os.getenv('NEO4J_PASSWORD') else "MISSING",
+        "REDIS_URL": "SET" if os.getenv('REDIS_URL') else "MISSING",
+        "ENABLE_REDIS": os.getenv('ENABLE_REDIS', 'false')
+    }
+    
+    return {
+        "environment_variables": env_vars,
+        "database_connected": db.driver is not None,
+        "redis_enabled": ENABLE_REDIS,
+        "redis_connected": redis_client is not None
+    }
 
 # Cache management endpoints
 @app.post("/api/cache/clear")
@@ -1767,13 +1800,6 @@ async def get_player_rivals(player_name: str):
             ))
     
     return rivals
-
-# ==================== STARTUP/SHUTDOWN ====================
-@app.on_event("shutdown")
-async def shutdown():
-    """Close database connection on shutdown"""
-    db.close()
-    logger.info("✓ Database connection closed")
 
 if __name__ == "__main__":
     import uvicorn
