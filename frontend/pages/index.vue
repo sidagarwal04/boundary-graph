@@ -175,7 +175,7 @@
           class="group bg-white border border-slate-200 rounded-lg p-4 hover:border-brand-primary/30 hover:shadow-md hover:bg-slate-50 transition-all duration-200 cursor-pointer"
         >
           <div class="flex flex-col items-center text-center space-y-3">
-            <TeamLogo :teamName="team.name" size="lg" :showName="false" />
+            <TeamLogo :teamName="team.name" size="2xl" :showName="false" />
             <div>
               <h3 class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors text-sm">{{ team.name }}</h3>
             </div>

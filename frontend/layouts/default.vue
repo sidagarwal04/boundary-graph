@@ -167,19 +167,33 @@ const closeMenu = () => {
 
 <style scoped>
 .nav-link {
-  @apply text-sm font-medium text-slate-600 hover:text-brand-primary transition-colors duration-200;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #475569; /* text-slate-600 */
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 200ms;
+}
+.nav-link:hover {
+  color: var(--tw-brand-primary, #2563eb); /* hover:text-brand-primary */
 }
 
 .nav-link.router-link-active {
-  @apply text-brand-primary font-semibold;
+  color: var(--tw-brand-primary, #2563eb); /* text-brand-primary */
+  font-weight: 600; /* font-semibold */
 }
 
 .nav-link-mobile {
-  @apply text-base font-bold text-slate-700 block py-2 border-b border-slate-50;
+  font-size: 1.125rem; /* text-base */
+  font-weight: 700; /* font-bold */
+  color: #334155; /* text-slate-700 */
+  display: block;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f8fafc; /* border-slate-50 */
 }
 
 .nav-link-mobile.router-link-active {
-  @apply text-brand-primary;
+  color: var(--tw-brand-primary, #2563eb); /* text-brand-primary */
 }
 </style>
 

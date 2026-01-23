@@ -4,7 +4,8 @@
     size === 'sm' && 'text-xs',
     size === 'md' && 'text-sm',
     size === 'lg' && 'text-base',
-    size === 'xl' && 'text-lg'
+    size === 'xl' && 'text-lg',
+    size === '2xl' && 'text-xl'
   ]">
     <div 
       v-if="logoUrl" 
@@ -13,7 +14,8 @@
         size === 'sm' && 'w-8 h-8',
         size === 'md' && 'w-10 h-10', 
         size === 'lg' && 'w-12 h-12',
-        size === 'xl' && 'w-14 h-14'
+        size === 'xl' && 'w-14 h-14',
+        size === '2xl' && 'w-16 h-16'
       ]"
       :style="{ backgroundColor: teamColor }"
     >
@@ -25,7 +27,8 @@
           size === 'sm' && 'w-5 h-5',
           size === 'md' && 'w-6 h-6', 
           size === 'lg' && 'w-8 h-8',
-          size === 'xl' && 'w-10 h-10'
+          size === 'xl' && 'w-10 h-10',
+          size === '2xl' && 'w-12 h-12'
         ]"
       />
     </div>
@@ -41,7 +44,7 @@ import { getTeamLogo, getTeamAbbreviation, getTeamColor } from '~/utils/teamLogo
 
 interface Props {
   teamName: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   showName?: boolean
   useAbbreviation?: boolean
   textClass?: string
