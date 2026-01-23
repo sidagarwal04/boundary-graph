@@ -526,7 +526,12 @@ const closeTeamModal = () => {
 
 const goToTeamsPage = () => {
   closeTeamModal()
-  navigateTo('/teams')
+  const teamName = selectedTeam.value?.name
+  if (teamName) {
+    navigateTo(`/teams?team=${encodeURIComponent(teamName)}`)
+  } else {
+    navigateTo('/teams')
+  }
 }
 
 const onKeydown = (e: KeyboardEvent) => {
