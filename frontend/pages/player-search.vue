@@ -69,18 +69,58 @@
     <!-- Stats Display -->
     <div v-if="playerStats" class="space-y-6">
       <!-- Player Header Card -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-6">
-        <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-slate-200">
-          {{ searchQuery.charAt(0) }}
-        </div>
-        <div>
-          <h2 class="text-3xl font-bold text-slate-900 tracking-tight">{{ searchQuery }}</h2>
-          <div class="flex gap-4 mt-2">
-            <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-bold uppercase tracking-wider border border-green-100">Pro Athlete</span>
-            <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold uppercase tracking-wider border border-slate-200 italic">
-              {{ (playerStats.battingStats?.totalRuns > 0 && playerStats.bowlingStats?.totalWickets > 0) ? 'All Rounder' : 
-                   (playerStats.battingStats?.totalRuns > 0 ? 'Batsman' : 'Bowler') }}
-            </span>
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-start gap-6">
+          <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-slate-200">
+            {{ searchQuery.charAt(0) }}
+          </div>
+          <div class="flex-1">
+            <h2 class="text-3xl font-bold text-slate-900 tracking-tight">{{ searchQuery }}</h2>
+            
+            <!-- Player Type and Career Stats -->
+            <div class="flex flex-wrap gap-3 mt-3 mb-4">
+              <span class="px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-bold uppercase tracking-wider border border-green-100">Pro Athlete</span>
+              <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold uppercase tracking-wider border border-slate-200 italic">
+                {{ (playerStats.battingStats?.totalRuns > 0 && playerStats.bowlingStats?.totalWickets > 0) ? 'All Rounder' : 
+                     (playerStats.battingStats?.totalRuns > 0 ? 'Batsman' : 'Bowler') }}
+              </span>
+              <span v-if="playerStats.teamInfo?.totalTeams" class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider border border-blue-100">
+                {{ playerStats.teamInfo.totalTeams }} {{ playerStats.teamInfo.totalTeams === 1 ? 'Team' : 'Teams' }}
+              </span>
+            </div>
+
+            <!-- Team Information -->
+            <div v-if="playerStats.teamInfo" class="space-y-3">
+              <!-- Debut Team -->
+              <div v-if="playerStats.teamInfo.debutTeam" class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16">Debut:</span>
+                <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-semibold border border-emerald-100">
+                  {{ playerStats.teamInfo.debutTeam }}
+                </span>
+              </div>
+
+              <!-- Latest Team -->
+              <div v-if="playerStats.teamInfo.latestTeam" class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16">Current:</span>
+                <span class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold border border-indigo-100">
+                  {{ playerStats.teamInfo.latestTeam }}
+                </span>
+              </div>
+
+              <!-- Other Teams -->
+              <div v-if="playerStats.teamInfo.otherTeams && playerStats.teamInfo.otherTeams.length > 0" class="flex items-start gap-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16 mt-1">Other:</span>
+                <div class="flex flex-wrap gap-2">
+                  <span 
+                    v-for="team in playerStats.teamInfo.otherTeams" 
+                    :key="team"
+                    class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-md text-xs font-medium border border-slate-200"
+                  >
+                    {{ team }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -106,10 +146,10 @@
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Runs</p>
                 <p class="text-2xl font-black text-slate-900">{{ playerStats.battingStats?.totalRuns || 0 }}</p>
               </div>
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Strike Rate</p>
-              <p class="text-2xl font-black text-indigo-600">{{ playerStats.battingStats?.strikeRate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
-            </div>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Strike Rate</p>
+                <p class="text-2xl font-black text-indigo-600">{{ playerStats.battingStats?.strikeRate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
+              </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Average</p>
               <p class="text-2xl font-black text-slate-800">{{ playerStats.battingStats?.average || '0.00' }}</p>
@@ -159,25 +199,26 @@
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Total Wickets</p>
                 <p class="text-2xl font-black text-slate-900">{{ playerStats.bowlingStats?.totalWickets || 0 }}</p>
               </div>
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy Rate</p>
-              <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate ?? 'N/A' }}</p>
-            </div>
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Bowling Average</p>
-              <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.average ?? 'N/A' }}</p>
-            </div>
-            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Runs Conceded</p>
-              <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.runsConceded || 0 }}</p>
-            </div>
-            <div class="col-span-2 p-4 bg-rose-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-rose-100">
-               <div>
-                 <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Bowling Innings</p>
-                 <p class="text-xl font-black">{{ playerStats.bowlingStats?.innings || 0 }}</p>
-               </div>
-               <FireIcon class="w-8 h-8 opacity-20" />
-            </div>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy Rate</p>
+                <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate ?? 'N/A' }}</p>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Bowling Average</p>
+                <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.average ?? 'N/A' }}</p>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Runs Conceded</p>
+                <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.runsConceded || 0 }}</p>
+              </div>
+              <div class="col-span-2 p-4 bg-rose-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-rose-100">
+                 <div>
+                   <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Bowling Innings</p>
+                   <p class="text-xl font-black">{{ playerStats.bowlingStats?.innings || 0 }}</p>
+                 </div>
+                 <FireIcon class="w-8 h-8 opacity-20" />
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -407,13 +448,33 @@
 
     <!-- Loading State -->
     <div v-else-if="loadingStats" class="space-y-6">
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-6 animate-pulse">
-        <div class="w-16 h-16 rounded-full bg-slate-200"></div>
-        <div>
-          <div class="h-8 bg-slate-200 rounded w-48 mb-2"></div>
-          <div class="flex gap-4">
-            <div class="h-6 bg-slate-100 rounded w-20"></div>
-            <div class="h-6 bg-slate-100 rounded w-24"></div>
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm animate-pulse">
+        <div class="flex items-start gap-6">
+          <div class="w-16 h-16 rounded-full bg-slate-200"></div>
+          <div class="flex-1">
+            <div class="h-8 bg-slate-200 rounded w-48 mb-3"></div>
+            <div class="flex gap-3 mb-4">
+              <div class="h-6 bg-slate-100 rounded w-20"></div>
+              <div class="h-6 bg-slate-100 rounded w-24"></div>
+              <div class="h-6 bg-slate-100 rounded w-16"></div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <div class="h-4 bg-slate-200 rounded w-16"></div>
+                <div class="h-6 bg-slate-100 rounded w-32"></div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="h-4 bg-slate-200 rounded w-16"></div>
+                <div class="h-6 bg-slate-100 rounded w-28"></div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="h-4 bg-slate-200 rounded w-16"></div>
+                <div class="flex gap-2">
+                  <div class="h-6 bg-slate-100 rounded w-20"></div>
+                  <div class="h-6 bg-slate-100 rounded w-24"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

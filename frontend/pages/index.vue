@@ -161,6 +161,30 @@
       </div>
     </div>
 
+    <!-- Active Teams -->
+    <div class="stat-card mb-8">
+      <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
+        <h2 class="text-lg font-bold text-slate-800">Active Teams</h2>
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ activeTeams.length }} Teams</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <NuxtLink 
+          v-for="team in activeTeams" 
+          :key="team.name" 
+          :to="'/teams'"
+          class="group bg-white border border-slate-200 rounded-lg p-4 hover:border-brand-primary/30 hover:shadow-md hover:bg-slate-50 transition-all duration-200 cursor-pointer"
+        >
+          <div class="flex flex-col items-center text-center space-y-3">
+            <TeamLogo :teamName="team.name" size="lg" :showName="false" />
+            <div>
+              <h3 class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors text-sm">{{ team.name }}</h3>
+              <p class="text-xs text-slate-400 font-medium uppercase mt-1">Active Franchise</p>
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
+    </div>
+
 
     <!-- Season Detail Modal -->
     <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" @click.self="closeModal">
@@ -268,7 +292,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
 import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
 import CricketJerseyIcon from '~/components/icons/CricketJerseyIcon.vue'
@@ -296,11 +320,15 @@ const overview = ref<any>({
   total_deliveries: 0
 })
 const seasons = ref<any[]>([])
+const allTeams = ref<any[]>([])
 
 // Modal State
 const isModalOpen = ref(false)
 const loadingDetails = ref(false)
 const selectedSeasonDetails = ref<any>(null)
+
+// Computed properties
+const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
 
 const formatNumber = (num: number) => {
   if (!num) return 0
@@ -361,6 +389,14 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to fetch seasons:', error)
     seasons.value = []
+  }
+
+  try {
+    const teamsRes = await $fetch(`${config.public.apiBase}/api/teams`)
+    allTeams.value = Array.isArray(teamsRes) ? teamsRes : []
+  } catch (error) {
+    console.error('Failed to fetch teams:', error)
+    allTeams.value = []
   }
 })
 

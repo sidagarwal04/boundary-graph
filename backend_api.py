@@ -198,6 +198,15 @@ REBRAND_MAP = {
     "Rising Pune Supergiant": "Rising Pune Supergiants" # Merge spelling variants
 }
 
+# Valid IPL teams (including historical ones)
+VALID_IPL_TEAMS = {
+    "Chennai Super Kings", "Mumbai Indians", "Royal Challengers Bangalore", "Royal Challengers Bengaluru",
+    "Kolkata Knight Riders", "Sunrisers Hyderabad", "Rajasthan Royals", "Punjab Kings", "Kings XI Punjab",
+    "Delhi Capitals", "Delhi Daredevils", "Gujarat Titans", "Lucknow Super Giants",
+    "Gujarat Lions", "Rising Pune Supergiants", "Rising Pune Supergiant", "Pune Warriors",
+    "Kochi Tuskers Kerala", "Deccan Chargers"
+}
+
 # ==================== OVERVIEW ENDPOINTS ====================
 @app.get("/api/overview", response_model=OverviewStats)
 async def get_overview():
@@ -631,9 +640,9 @@ async def get_player_stats(player_name: str):
         MATCH (p:Player)
         WHERE toLower(p.name) = toLower($name) OR p.name IN $names
         
-        // Get team relationships (limit to avoid memory issues)
+        // Get IPL team relationships only (filter by known IPL teams)
         OPTIONAL MATCH (t:Team)-[sp:SELECTED_PLAYER]->(p)
-        WHERE sp.season IS NOT NULL
+        WHERE sp.season IS NOT NULL AND t.name IN $valid_ipl_teams
         
         // Get batting and bowling statistics together (more comprehensive filtering)
         OPTIONAL MATCH (p)-[bs:BATTING_STATS]->(m1:Match)
@@ -642,7 +651,7 @@ async def get_player_stats(player_name: str):
         
         // Aggregate everything together (comprehensive data collection)
         WITH p, 
-             collect(DISTINCT {team: t.name, season: sp.season})[..50] as team_history,
+             collect(DISTINCT {team: t.name, season: sp.season}) as team_history,
              collect(DISTINCT {runs: bs.runs, balls: bs.balls, fours: bs.fours, sixes: bs.sixes, season: m1.season, out: bs.out}) as batting_innings,
              collect(DISTINCT {wickets: bow.wickets, runs: bow.runs_conceded, balls: bow.balls, season: m2.season}) as bowling_innings
         
@@ -675,7 +684,7 @@ async def get_player_stats(player_name: str):
         LIMIT 1
         """
         
-        result = db.query(query, {"name": player_name.replace('-', ' '), "names": potential_names})
+        result = db.query(query, {"name": player_name.replace('-', ' '), "names": potential_names, "valid_ipl_teams": list(VALID_IPL_TEAMS)})
         
         if not result:
             raise HTTPException(status_code=404, detail="Player not found")
@@ -707,7 +716,7 @@ async def get_player_stats(player_name: str):
         season_wise_stats = {}
         batting_innings = player_data.get('batting_innings', [])
         bowling_innings = player_data.get('bowling_innings', [])
-        team_history = {str(th['season']): th['team'] for th in player_data.get('team_history', []) if th.get('season') and th.get('team')}
+        team_history = team_history_clean  # Use the cleaned team history
         
         # Get ALL seasons where player has any data (don't limit seasons)
         recent_seasons = set()
@@ -800,8 +809,40 @@ async def get_player_stats(player_name: str):
             
             season_wise_stats[season] = season_stats
         
+        # Process team history for career overview - filter out null values and get unique season-team combinations
+        team_history_clean = {}
+        for th in player_data.get('team_history', []):
+            if th.get('season') and th.get('team') and th['team'] in VALID_IPL_TEAMS:
+                season_str = str(th['season'])
+                # Use most recent team entry for each season (in case of duplicates)
+                team_history_clean[season_str] = th['team']
+        
+        unique_teams = set()
+        debut_team = None
+        latest_team = None
+        
+        if team_history_clean:
+            # Get all unique teams
+            unique_teams = set(team_history_clean.values())
+            
+            # Sort seasons to find debut and latest
+            sorted_seasons = sorted(team_history_clean.keys())
+            if sorted_seasons:
+                debut_team = normalize_team_name(team_history_clean[sorted_seasons[0]])
+                latest_team = normalize_team_name(team_history_clean[sorted_seasons[-1]])
+        
+        # Get other teams (excluding debut and latest)
+        other_teams = [normalize_team_name(team) for team in unique_teams 
+                      if normalize_team_name(team) not in [debut_team, latest_team]]
+        
         return {
             'name': player_data['name'],
+            'teamInfo': {
+                'debutTeam': debut_team,
+                'latestTeam': latest_team,
+                'otherTeams': other_teams,
+                'totalTeams': len(unique_teams)
+            },
             'battingStats': {
                 'totalRuns': player_data.get('total_runs', 0),
                 'ballsFaced': player_data.get('total_balls', 0),
