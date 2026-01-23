@@ -32,19 +32,19 @@ logger = logging.getLogger(__name__)
 # Cache configuration
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
 CACHE_TTL = int(os.getenv('CACHE_TTL', '1800'))  # 30 minutes default
-ENABLE_REDIS = os.getenv('ENABLE_REDIS', 'true').lower() == 'true'
+ENABLE_REDIS = os.getenv('ENABLE_REDIS', 'false').lower() == 'true'  # Default to false for Render
 
 # Global caches
 memory_cache = TTLCache(maxsize=1000, ttl=CACHE_TTL)
 redis_client = None
 
-# Initialize Redis connection
-async def init_redis():
+# Initialize Redis connection (non-blocking)
+def init_redis_sync():
     global redis_client
     if ENABLE_REDIS:
         try:
             redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
-            await asyncio.to_thread(redis_client.ping)
+            redis_client.ping()  # Test connection
             logger.info("✅ Redis connected successfully")
         except Exception as e:
             logger.warning(f"⚠️ Redis connection failed: {e}. Using memory cache only.")
@@ -52,21 +52,11 @@ async def init_redis():
     else:
         logger.info("📝 Redis disabled. Using memory cache only.")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    await init_redis()
-    yield
-    # Shutdown
-    if redis_client:
-        redis_client.close()
-
-# FastAPI app
+# FastAPI app (removed lifespan to avoid startup issues)
 app = FastAPI(
     title="IPL Cricket Dashboard API",
-    description="Professional API for IPL statistics from Neo4j with Redis caching",
-    version="2.0.0",
-    lifespan=lifespan
+    description="Professional API for IPL statistics from Neo4j with caching",
+    version="2.0.0"
 )
 
 # CORS configuration - allow only your Netlify domain in production
@@ -119,13 +109,23 @@ def cache_response(ttl: int = CACHE_TTL):
 async def get_from_cache(key: str):
     """Get value from Redis or memory cache"""
     try:
+        # Check memory cache first (fastest)
+        if key in memory_cache:
+            return memory_cache[key]
+            
+        # Try Redis if available
         if redis_client:
-            cached_data = await asyncio.to_thread(redis_client.get, key)
-            if cached_data:
-                return json.loads(cached_data)
+            try:
+                cached_data = redis_client.get(key)
+                if cached_data:
+                    parsed_data = json.loads(cached_data)
+                    # Also cache in memory for faster access
+                    memory_cache[key] = parsed_data
+                    return parsed_data
+            except Exception as redis_error:
+                logger.warning(f"Redis get error: {redis_error}")
         
-        # Fallback to memory cache
-        return memory_cache.get(key)
+        return None
     except Exception as e:
         logger.warning(f"Cache get error: {e}")
         return None
@@ -133,16 +133,16 @@ async def get_from_cache(key: str):
 async def set_cache(key: str, value: Any, ttl: int = CACHE_TTL):
     """Set value in Redis and memory cache"""
     try:
-        if redis_client:
-            await asyncio.to_thread(
-                redis_client.setex, 
-                key, 
-                ttl, 
-                json.dumps(value, default=str)
-            )
-        
-        # Also set in memory cache
+        # Always set in memory cache
         memory_cache[key] = value
+        
+        # Try Redis if available
+        if redis_client:
+            try:
+                redis_client.setex(key, ttl, json.dumps(value, default=str))
+            except Exception as redis_error:
+                logger.warning(f"Redis set error: {redis_error}")
+                
     except Exception as e:
         logger.warning(f"Cache set error: {e}")
 
@@ -217,7 +217,33 @@ class Neo4jConnection:
 
 # Initialize connection
 db = Neo4jConnection()
-db.connect()
+
+# Initialize everything at startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize connections on startup"""
+    try:
+        # Initialize Redis (non-blocking)
+        init_redis_sync()
+        
+        # Initialize Neo4j
+        db.connect()
+        
+        logger.info("🚀 Application startup complete")
+    except Exception as e:
+        logger.error(f"❌ Startup failed: {e}")
+        # Don't raise - let the app start even if connections fail
+
+@app.on_event("shutdown")  
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    try:
+        if redis_client:
+            redis_client.close()
+        db.close()
+        logger.info("👋 Application shutdown complete")
+    except Exception as e:
+        logger.warning(f"⚠️ Shutdown warning: {e}")
 
 # Pydantic Models
 class OverviewStats(BaseModel):
