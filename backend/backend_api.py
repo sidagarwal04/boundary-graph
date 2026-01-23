@@ -863,9 +863,25 @@ async def get_all_players():
         """
         results = db.query(query)
         
+        # First, let's check total players in database for debugging
+        total_in_db = db.query("MATCH (p:Player) RETURN COUNT(p) as total")[0]['total']
+        logger.info(f"Total players in database: {total_in_db}")
+        
+        # Check how many have team selections
+        with_selections = db.query("""
+            MATCH (p:Player)
+            OPTIONAL MATCH (t:Team)-[sp:SELECTED_PLAYER]->(p)
+            WHERE sp.season IS NOT NULL
+            WITH p, collect(DISTINCT {team: t.name, season: sp.season}) as team_selections
+            WHERE size(team_selections) > 0
+            RETURN COUNT(p) as total
+        """)[0]['total']
+        logger.info(f"Players with team selections: {with_selections}")
+        
         # Process the results into the required format
         players = {}
         total_players = 0
+        players_filtered_out = 0
         
         for record in results:
             name = record.get('name')
@@ -896,8 +912,12 @@ async def get_all_players():
                         'teamHistory': team_history_dict
                     }
                     total_players += 1
+                else:
+                    players_filtered_out += 1
+                    logger.debug(f"Filtered out player {name}: no valid team history")
         
         logger.info(f"Retrieved {total_players} players using SELECTED_PLAYER relationships")
+        logger.info(f"Filtered out {players_filtered_out} players due to missing/invalid team history")
         
         return {
             'lastUpdated': '2026-01-22T00:00:00Z',
