@@ -719,6 +719,27 @@ async def search_players(query: str, limit: int = 20):
 @app.get("/api/teams")
 async def get_teams():
     """Get all teams, normalized by rebrands, sorted by active status"""
+    
+    if not db.driver:
+        # Return basic team data when database is not connected
+        logger.info("Database not connected - returning fallback teams data")
+        # Return the most common IPL teams as fallback
+        fallback_teams = [
+            {"name": "Mumbai Indians", "is_active": True, "raw_names": ["Mumbai Indians"]},
+            {"name": "Chennai Super Kings", "is_active": True, "raw_names": ["Chennai Super Kings"]},
+            {"name": "Royal Challengers Bengaluru", "is_active": True, "raw_names": ["Royal Challengers Bengaluru", "Royal Challengers Bangalore"]},
+            {"name": "Kolkata Knight Riders", "is_active": True, "raw_names": ["Kolkata Knight Riders"]},
+            {"name": "Sunrisers Hyderabad", "is_active": True, "raw_names": ["Sunrisers Hyderabad"]},
+            {"name": "Delhi Capitals", "is_active": True, "raw_names": ["Delhi Capitals", "Delhi Daredevils"]},
+            {"name": "Punjab Kings", "is_active": True, "raw_names": ["Punjab Kings", "Kings XI Punjab"]},
+            {"name": "Rajasthan Royals", "is_active": True, "raw_names": ["Rajasthan Royals"]},
+            {"name": "Lucknow Super Giants", "is_active": True, "raw_names": ["Lucknow Super Giants"]},
+            {"name": "Gujarat Titans", "is_active": True, "raw_names": ["Gujarat Titans"]},
+            {"name": "Rising Pune Supergiant", "is_active": False, "raw_names": ["Rising Pune Supergiant"]},
+            {"name": "Gujarat Lions", "is_active": False, "raw_names": ["Gujarat Lions"]},
+        ]
+        return fallback_teams
+    
     # 1. Get ALL teams ever
     all_teams_result = db.query("MATCH (t:Team) RETURN DISTINCT t.name as name")
     
@@ -1378,6 +1399,11 @@ async def search(q: str):
 async def get_venues():
     """Get statistics for all venues"""
     
+    if not db.driver:
+        # Return empty response when database is not connected
+        logger.info("Database not connected - returning empty venues response")
+        return []
+    
     # For now, let's use a simpler approach that works with the available data
     # We'll calculate basic venue stats and set avg_first_innings to a reasonable default
     results = db.query("""
@@ -1435,6 +1461,23 @@ async def get_venues():
 @app.get("/api/venues/{venue_name}", response_model=VenueDetail)
 async def get_venue_detail(venue_name: str):
     """Get detailed intelligence for a specific stadium"""
+    
+    if not db.driver:
+        # Return default response when database is not connected
+        logger.info(f"Database not connected - returning empty venue detail for {venue_name}")
+        return VenueDetail(
+            name=venue_name,
+            total_matches=0,
+            avg_first_innings=155.0,
+            bat_first_win_pct=50.0,
+            chase_win_pct=50.0,
+            high_scoring_matches=0,
+            low_scoring_matches=0,
+            most_successful_team="N/A",
+            team_win_rate=0.0,
+            recent_matches=[]
+        )
+    
     # 1. Basic win-loss stats
     res = db.query("""
         MATCH (m:Match)
