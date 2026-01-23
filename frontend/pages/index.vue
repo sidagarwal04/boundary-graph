@@ -178,7 +178,6 @@
             <TeamLogo :teamName="team.name" size="lg" :showName="false" />
             <div>
               <h3 class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors text-sm">{{ team.name }}</h3>
-              <p class="text-xs text-slate-400 font-medium uppercase mt-1">Active Franchise</p>
             </div>
           </div>
         </NuxtLink>
