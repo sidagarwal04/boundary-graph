@@ -94,30 +94,33 @@
               <!-- Debut Team -->
               <div v-if="playerStats.teamInfo.debutTeam" class="flex items-center gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16">Debut:</span>
-                <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-semibold border border-emerald-100">
-                  {{ playerStats.teamInfo.debutTeam }}
-                </span>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100">
+                  <TeamLogo :teamName="playerStats.teamInfo.debutTeam" size="sm" :showName="false" />
+                  <span class="text-sm font-semibold">{{ playerStats.teamInfo.debutTeam }}</span>
+                </div>
               </div>
 
               <!-- Latest Team -->
               <div v-if="playerStats.teamInfo.latestTeam" class="flex items-center gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16">Current:</span>
-                <span class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold border border-indigo-100">
-                  {{ playerStats.teamInfo.latestTeam }}
-                </span>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100">
+                  <TeamLogo :teamName="playerStats.teamInfo.latestTeam" size="sm" :showName="false" />
+                  <span class="text-sm font-semibold">{{ playerStats.teamInfo.latestTeam }}</span>
+                </div>
               </div>
 
               <!-- Other Teams -->
               <div v-if="playerStats.teamInfo.otherTeams && playerStats.teamInfo.otherTeams.length > 0" class="flex items-start gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16 mt-1">Other:</span>
                 <div class="flex flex-wrap gap-2">
-                  <span 
+                  <div 
                     v-for="team in playerStats.teamInfo.otherTeams" 
                     :key="team"
-                    class="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-md text-xs font-medium border border-slate-200"
+                    class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 text-slate-700 rounded-md border border-slate-200"
                   >
-                    {{ team }}
-                  </span>
+                    <TeamLogo :teamName="team" size="sm" :showName="false" />
+                    <span class="text-xs font-medium">{{ team }}</span>
+                  </div>
                 </div>
               </div>
             </div>
