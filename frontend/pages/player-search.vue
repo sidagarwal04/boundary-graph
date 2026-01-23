@@ -146,11 +146,11 @@
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy Rate</p>
-              <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate || '0.00' }}</p>
+              <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate ?? 'N/A' }}</p>
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Bowling Average</p>
-              <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.average || '0.00' }}</p>
+              <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.average ?? 'N/A' }}</p>
             </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Runs Conceded</p>
@@ -178,11 +178,97 @@
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Career Timeline</span>
           </div>
           <div class="p-6 space-y-4">
-            <div v-for="(stats, season) in playerStats.seasonWiseStats" :key="season" class="border border-slate-200 rounded-lg overflow-hidden">
+            <!-- Performance Trend Overview -->
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border border-purple-100">
+              <h4 class="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+                <PresentationChartLineIcon class="w-4 h-4" />
+                Performance Trajectory Analysis
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.runs > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
+                  <div class="flex items-center justify-center gap-2 mb-1">
+                    <CricketHelmetIcon class="w-4 h-4 text-indigo-600" />
+                    <span class="text-sm font-medium text-slate-600">Batting Trend</span>
+                  </div>
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="text-2xl" :class="{
+                      'text-green-600': calculateBattingTrend(playerStats.seasonWiseStats).color === 'green',
+                      'text-red-600': calculateBattingTrend(playerStats.seasonWiseStats).color === 'red',
+                      'text-slate-600': calculateBattingTrend(playerStats.seasonWiseStats).color === 'slate'
+                    }">
+                      {{ calculateBattingTrend(playerStats.seasonWiseStats).icon }}
+                    </span>
+                    <div>
+                      <p class="font-bold text-lg" :class="{
+                        'text-green-700': calculateBattingTrend(playerStats.seasonWiseStats).color === 'green',
+                        'text-red-700': calculateBattingTrend(playerStats.seasonWiseStats).color === 'red',
+                        'text-slate-700': calculateBattingTrend(playerStats.seasonWiseStats).color === 'slate'
+                      }">
+                        {{ calculateBattingTrend(playerStats.seasonWiseStats).trend.toUpperCase() }}
+                      </p>
+                      <p class="text-xs text-slate-500" v-if="calculateBattingTrend(playerStats.seasonWiseStats).change !== 0">
+                        {{ calculateBattingTrend(playerStats.seasonWiseStats).change }}% vs recent
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.bowling?.wickets > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
+                  <div class="flex items-center justify-center gap-2 mb-1">
+                    <CricketBallIcon class="w-4 h-4 text-rose-600" />
+                    <span class="text-sm font-medium text-slate-600">Bowling Trend</span>
+                  </div>
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="text-2xl" :class="{
+                      'text-green-600': calculateBowlingTrend(playerStats.seasonWiseStats).color === 'green',
+                      'text-red-600': calculateBowlingTrend(playerStats.seasonWiseStats).color === 'red',
+                      'text-slate-600': calculateBowlingTrend(playerStats.seasonWiseStats).color === 'slate'
+                    }">
+                      {{ calculateBowlingTrend(playerStats.seasonWiseStats).icon }}
+                    </span>
+                    <div>
+                      <p class="font-bold text-lg" :class="{
+                        'text-green-700': calculateBowlingTrend(playerStats.seasonWiseStats).color === 'green',
+                        'text-red-700': calculateBowlingTrend(playerStats.seasonWiseStats).color === 'red',
+                        'text-slate-700': calculateBowlingTrend(playerStats.seasonWiseStats).color === 'slate'
+                      }">
+                        {{ calculateBowlingTrend(playerStats.seasonWiseStats).trend.toUpperCase() }}
+                      </p>
+                      <p class="text-xs text-slate-500" v-if="calculateBowlingTrend(playerStats.seasonWiseStats).change !== 0">
+                        {{ calculateBowlingTrend(playerStats.seasonWiseStats).change }}% improvement
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-for="(stats, season, index) in playerStats.seasonWiseStats" :key="season" class="border border-slate-200 rounded-lg overflow-hidden">
               <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-slate-800 text-lg">{{ season }}</span>
                   <span v-if="stats.team" class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs font-bold">{{ stats.team }}</span>
+                  
+                  <!-- Year-over-Year Comparison Badge -->
+                  <div v-if="index > 0" class="flex gap-2">
+                    <div v-if="stats.batting?.runs > 0 && getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'batting')" 
+                         class="px-2 py-1 rounded text-xs font-bold flex items-center gap-1"
+                         :class="{
+                           'bg-green-100 text-green-800': getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'batting')?.trend === 'up',
+                           'bg-red-100 text-red-800': getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'batting')?.trend === 'down'
+                         }">
+                      <span class="text-xs">🏏</span>
+                      <span>{{ getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'batting')?.average }}</span>
+                    </div>
+                    <div v-if="stats.bowling?.wickets > 0 && getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'bowling')" 
+                         class="px-2 py-1 rounded text-xs font-bold flex items-center gap-1"
+                         :class="{
+                           'bg-green-100 text-green-800': getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'bowling')?.trend === 'up',
+                           'bg-red-100 text-red-800': getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'bowling')?.trend === 'down'
+                         }">
+                      <span class="text-xs">⚾</span>
+                      <span>{{ getSeasonComparison(stats, Object.values(playerStats.seasonWiseStats)[index-1], 'bowling')?.economy }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="p-4">
@@ -232,11 +318,11 @@
                       <p class="text-xs text-rose-600 font-medium">Wickets</p>
                     </div>
                     <div class="text-center p-3 bg-slate-50 rounded-lg">
-                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.average }}</p>
+                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.average ?? 'N/A' }}</p>
                       <p class="text-xs text-slate-600 font-medium">Average</p>
                     </div>
                     <div class="text-center p-3 bg-slate-50 rounded-lg">
-                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.economy }}</p>
+                      <p class="text-lg font-bold text-slate-800">{{ stats.bowling.economy ?? 'N/A' }}</p>
                       <p class="text-xs text-slate-600 font-medium">Economy</p>
                     </div>
                     <div class="text-center p-3 bg-slate-50 rounded-lg">
@@ -321,6 +407,80 @@ const playerRivals = ref<any[]>([])
 const loadingRivals = ref(false)
 const highlightedIndex = ref(-1)
 let searchTimeout: any = null
+
+// Performance trend analysis functions
+const calculateBattingTrend = (seasonStats: any): { trend: string, change: number, color: string, icon: string } => {
+  const seasons = Object.keys(seasonStats).filter(s => s !== 'all').sort()
+  if (seasons.length < 2) return { trend: 'stable', change: 0, color: 'slate', icon: '→' }
+  
+  const recentSeasons = seasons.slice(-3) // Last 3 seasons for trend
+  const battingAverages = recentSeasons
+    .map(season => seasonStats[season]?.batting?.average || 0)
+    .filter(avg => avg > 0)
+  
+  if (battingAverages.length < 2) return { trend: 'stable', change: 0, color: 'slate', icon: '→' }
+  
+  const latestAvg = battingAverages[battingAverages.length - 1]
+  const previousAvg = battingAverages[battingAverages.length - 2]
+  const change = ((latestAvg - previousAvg) / previousAvg * 100)
+  
+  if (change > 15) return { trend: 'improving', change: Math.round(change), color: 'green', icon: '↗' }
+  if (change < -15) return { trend: 'declining', change: Math.round(change), color: 'red', icon: '↘' }
+  return { trend: 'stable', change: Math.round(change), color: 'slate', icon: '→' }
+}
+
+const calculateBowlingTrend = (seasonStats: any): { trend: string, change: number, color: string, icon: string } => {
+  const seasons = Object.keys(seasonStats).filter(s => s !== 'all').sort()
+  if (seasons.length < 2) return { trend: 'stable', change: 0, color: 'slate', icon: '→' }
+  
+  const recentSeasons = seasons.slice(-3)
+  const economyRates = recentSeasons
+    .map(season => seasonStats[season]?.bowling?.economy)
+    .filter(eco => eco != null && eco > 0) // Filter null, undefined, and 0 values
+  
+  if (economyRates.length < 2) return { trend: 'stable', change: 0, color: 'slate', icon: '→' }
+  
+  const latestEco = economyRates[economyRates.length - 1]
+  const previousEco = economyRates[economyRates.length - 2]
+  const change = ((previousEco - latestEco) / previousEco * 100) // Lower economy is better
+  
+  if (change > 10) return { trend: 'improving', change: Math.round(change), color: 'green', icon: '↗' }
+  if (change < -10) return { trend: 'declining', change: Math.round(Math.abs(change)), color: 'red', icon: '↘' }
+  return { trend: 'stable', change: Math.round(Math.abs(change)), color: 'slate', icon: '→' }
+}
+
+const getSeasonComparison = (currentStats: any, previousStats: any, type: 'batting' | 'bowling') => {
+  if (!currentStats || !previousStats) return null
+  
+  if (type === 'batting' && currentStats.batting && previousStats.batting) {
+    const runsChange = currentStats.batting.runs - previousStats.batting.runs
+    const avgChange = ((currentStats.batting.average - previousStats.batting.average) / previousStats.batting.average * 100)
+    return {
+      runs: runsChange > 0 ? `+${runsChange}` : `${runsChange}`,
+      average: avgChange > 0 ? `+${avgChange.toFixed(1)}%` : `${avgChange.toFixed(1)}%`,
+      trend: avgChange > 0 ? 'up' : 'down'
+    }
+  }
+  
+  if (type === 'bowling' && currentStats.bowling && previousStats.bowling) {
+    const wicketsChange = currentStats.bowling.wickets - previousStats.bowling.wickets
+    if (currentStats.bowling.economy != null && previousStats.bowling.economy != null) {
+      const ecoChange = ((previousStats.bowling.economy - currentStats.bowling.economy) / previousStats.bowling.economy * 100)
+      return {
+        wickets: wicketsChange > 0 ? `+${wicketsChange}` : `${wicketsChange}`,
+        economy: ecoChange > 0 ? `+${ecoChange.toFixed(1)}%` : `${ecoChange.toFixed(1)}%`,
+        trend: ecoChange > 0 ? 'up' : 'down'
+      }
+    }
+    return {
+      wickets: wicketsChange > 0 ? `+${wicketsChange}` : `${wicketsChange}`,
+      economy: 'N/A',
+      trend: 'up'
+    }
+  }
+  
+  return null
+}
 
 type GraphData = {
   edges: Array<any>,

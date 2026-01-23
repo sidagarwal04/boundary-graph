@@ -644,7 +644,7 @@ async def get_player_stats(player_name: str):
         WITH p, 
              collect(DISTINCT {team: t.name, season: sp.season})[..50] as team_history,
              collect(DISTINCT {runs: bs.runs, balls: bs.balls, fours: bs.fours, sixes: bs.sixes, season: m1.season, out: bs.out}) as batting_innings,
-             collect(DISTINCT {wickets: bow.wickets, runs: bow.runs, balls: bow.balls, season: m2.season}) as bowling_innings
+             collect(DISTINCT {wickets: bow.wickets, runs: bow.runs_conceded, balls: bow.balls, season: m2.season}) as bowling_innings
         
         // Calculate basic aggregated stats
         WITH p, team_history, batting_innings, bowling_innings,
@@ -670,8 +670,8 @@ async def get_player_stats(player_name: str):
                CASE WHEN innings > 0 THEN round((total_runs * 1.0) / innings, 2) ELSE 0 END as average,
                CASE WHEN total_balls > 0 THEN round((total_runs * 100.0) / total_balls, 2) ELSE 0 END as strike_rate,
                total_wickets, bowling_runs, bowling_balls, bowling_innings_count,
-               CASE WHEN total_wickets > 0 THEN round((bowling_runs * 1.0) / total_wickets, 2) ELSE 0 END as bowling_average,
-               CASE WHEN bowling_balls > 0 THEN round((bowling_runs * 6.0) / bowling_balls, 2) ELSE 0 END as economy_rate
+               CASE WHEN total_wickets > 0 AND bowling_runs > 0 THEN round((bowling_runs * 1.0) / total_wickets, 2) ELSE 0 END as bowling_average,
+               CASE WHEN bowling_balls > 0 AND bowling_runs > 0 THEN round((bowling_runs * 6.0) / bowling_balls, 2) ELSE 0 END as economy_rate
         LIMIT 1
         """
         
@@ -689,10 +689,19 @@ async def get_player_stats(player_name: str):
             logger.info(f"=== DEBUG: RG Sharma Bowling Data ===")
             logger.info(f"Total bowling innings with wickets: {len(wickets_data)}")
             for w in wickets_data:
-                logger.info(f"Season {w.get('season')}: {w.get('wickets')} wickets")
+                logger.info(f"Season {w.get('season')}: {w.get('wickets')} wickets, runs: {w.get('runs')}")
             total_debug_wickets = sum(w.get('wickets', 0) for w in wickets_data)
+            total_debug_runs = sum(w.get('runs', 0) for w in wickets_data if w.get('runs') is not None)
             logger.info(f"Total wickets (debug calculation): {total_debug_wickets}")
+            logger.info(f"Total runs conceded (debug): {total_debug_runs}")
             logger.info(f"Total wickets (backend calculation): {player_data.get('total_wickets', 0)}")
+            logger.info(f"Total runs (backend calculation): {player_data.get('bowling_runs', 0)}")
+        
+        # Debug for any player with wickets but no runs
+        total_wickets = player_data.get('total_wickets', 0)
+        total_runs = player_data.get('bowling_runs', 0)
+        if total_wickets > 5 and total_runs == 0:
+            logger.info(f"⚠️ DATA QUALITY ALERT: {player_name} has {total_wickets} wickets but {total_runs} runs conceded")
         
         # Process season-wise stats (include all seasons where player has data)
         season_wise_stats = {}
@@ -771,15 +780,21 @@ async def get_player_stats(player_name: str):
                 season_bowling_balls = sum((i.get('balls') or 0) for i in season_bowling)
                 season_bowling_innings = len([i for i in season_bowling if i.get('wickets') is not None or i.get('runs') is not None or i.get('balls') is not None])
                 best_bowling = max((i.get('wickets') or 0) for i in season_bowling) if season_bowling else 0
+                
+                # Debug logging for cases with wickets but no runs (data quality issue)
+                if season_wickets > 0 and season_bowling_runs == 0:
+                    logger.info(f"⚠️ Data Quality Issue - {player_name} Season {season}: {season_wickets} wickets but 0 runs conceded")
+                    logger.info(f"Raw bowling data: {season_bowling}")
+                    # This should be resolved now that we're using runs_conceded property
             
-            # Always add bowling stats (even if 0)
+            # Always add bowling stats (even if 0) with proper data quality handling
             season_stats['bowling'] = {
                 'wickets': season_wickets,
                 'runs': season_bowling_runs,
                 'balls': season_bowling_balls,
                 'innings': season_bowling_innings,
-                'average': round(season_bowling_runs / season_wickets, 2) if season_wickets > 0 else 0,
-                'economy': round((season_bowling_runs * 6.0) / season_bowling_balls, 2) if season_bowling_balls > 0 else 0,
+                'average': round(season_bowling_runs / season_wickets, 2) if season_wickets > 0 and season_bowling_runs > 0 else None,
+                'economy': round((season_bowling_runs * 6.0) / season_bowling_balls, 2) if season_bowling_balls > 0 else None,
                 'bestBowling': best_bowling
             }
             
@@ -804,8 +819,8 @@ async def get_player_stats(player_name: str):
                 'runsConceded': player_data.get('bowling_runs', 0),
                 'ballsBowled': player_data.get('bowling_balls', 0),
                 'innings': player_data.get('bowling_innings_count', 0),
-                'average': player_data.get('bowling_average', 0),
-                'economyRate': player_data.get('economy_rate', 0),
+                'average': player_data.get('bowling_average', 0) if player_data.get('bowling_average', 0) > 0 else None,
+                'economyRate': player_data.get('economy_rate', 0) if player_data.get('economy_rate', 0) > 0 else None,
                 'bestBowling': player_data.get('total_wickets', 0)  # Simplified since we removed best_bowling_wickets
             },
             'seasonWiseStats': season_wise_stats
