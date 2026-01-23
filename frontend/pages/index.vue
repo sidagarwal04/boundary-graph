@@ -167,12 +167,12 @@
         <h2 class="text-lg font-bold text-slate-800">Active Teams</h2>
         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ activeTeams.length }} Teams</span>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="flex flex-wrap gap-4 justify-center">
         <NuxtLink 
           v-for="team in activeTeams" 
           :key="team.name" 
           :to="'/teams'"
-          class="group bg-white border border-slate-200 rounded-lg p-4 hover:border-brand-primary/30 hover:shadow-md hover:bg-slate-50 transition-all duration-200 cursor-pointer"
+          class="group bg-white border border-slate-200 rounded-lg p-4 hover:border-brand-primary/30 hover:shadow-md hover:bg-slate-50 transition-all duration-200 cursor-pointer w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.67rem)] lg:w-[calc(25%-0.75rem)]"
         >
           <div class="flex flex-col items-center text-center space-y-3">
             <TeamLogo :teamName="team.name" size="2xl" :showName="false" />
