@@ -231,6 +231,20 @@
             <div v-if="segmentedSquad.batters.length === 0 && segmentedSquad.bowlers.length === 0 && segmentedSquad.allRounders.length === 0 && segmentedSquad.wicketKeepers.length === 0" class="text-slate-400 text-sm text-center py-8">No players found for this season.</div>
           </div>
         </div>
+
+        <!-- Squad Loading State -->
+        <div v-else-if="selectedTeam" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Squad by Season & Role</h2>
+          </div>
+          <div class="p-6 text-center py-12">
+            <div class="animate-pulse">
+              <div class="w-8 h-8 bg-brand-primary/20 rounded-full mx-auto mb-3"></div>
+              <p class="text-slate-500 text-sm">Loading squad data...</p>
+              <p class="text-slate-400 text-xs mt-1">Fetching player database</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -584,25 +598,24 @@ const selectTeam = async (team: any) => {
   // If database not ready, show loading state and retry after delay
   if (Object.keys(PLAYER_DATABASE).length === 0) {
     console.log('Player database not ready yet, will supplement with API data and retry...')
+    // Don't set empty data initially - wait for database to load
+    seasonSquads.value = {} // Keep empty until data is ready
+    availableSeasons.value = []
+    selectedSeason.value = '2025'
+    
     // Retry after database loads
     setTimeout(() => {
       if (Object.keys(PLAYER_DATABASE).length > 0 && selectedTeam.value?.name === team.name) {
         console.log('Retrying squad population with loaded database...')
         const updatedBySeason = populateSeasonSquads(team.name)
-        // Merge with existing API data
-        Object.keys(updatedBySeason).forEach(season => {
-          if (!bySeason[season]) bySeason[season] = []
-          const existingNames = new Set(bySeason[season].map(p => p.name.toLowerCase()))
-          updatedBySeason[season].forEach(player => {
-            if (!existingNames.has(player.name.toLowerCase())) {
-              bySeason[season].push(player)
-            }
-          })
-        })
-        seasonSquads.value = bySeason
-        availableSeasons.value = Object.keys(bySeason).filter(s => s !== 'all').sort((a, b) => b.localeCompare(a))
+        seasonSquads.value = updatedBySeason
+        availableSeasons.value = Object.keys(updatedBySeason).filter(s => s !== 'all').sort((a, b) => b.localeCompare(a))
+        selectedSeason.value = availableSeasons.value[0] || '2025'
       }
     }, 2000) // Wait 2 seconds for database to load
+    
+    // Exit early - don't process empty data
+    return
   }
     
     // Supplement with any additional API data if available
