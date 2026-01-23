@@ -353,12 +353,12 @@
               </div>
             </div>
             
-            <!-- Founded Year -->
-            <div v-if="selectedTeamDetails.founded_year" class="p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg border border-purple-100">
+            <!-- Owner -->
+            <div v-if="selectedTeamDetails.owner" class="p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg border border-purple-100">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-xs text-purple-600 font-bold uppercase tracking-widest mb-1">Founded</p>
-                  <p class="text-lg font-bold text-slate-900">{{ selectedTeamDetails.founded_year }}</p>
+                  <p class="text-xs text-purple-600 font-bold uppercase tracking-widest mb-1">Owner</p>
+                  <p class="text-lg font-bold text-slate-900">{{ selectedTeamDetails.owner }}</p>
                 </div>
                 <ShieldCheckIcon class="w-6 h-6 text-purple-400" />
               </div>
@@ -498,6 +498,7 @@ const openTeamModal = async (team: any) => {
   try {
     // Get team stats from API
     const stats = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`)
+    console.log('Raw API stats response:', stats) // Debug: see actual API response
     
     // Get team details from utility function (same as teams page)
     const { getTeamDetails } = await import('~/utils/teamLogos')
@@ -508,7 +509,7 @@ const openTeamModal = async (team: any) => {
       captain: teamInfo.captain,
       coach: teamInfo.coach,
       home_ground: teamInfo.venue, // venue -> home_ground
-      founded_year: team.is_active ? '2008' : 'N/A' // Default founded year for active teams
+      owner: teamInfo.owner // Use owner from teamInfo
     } : {}
     
     // Combine stats with team information
@@ -516,9 +517,11 @@ const openTeamModal = async (team: any) => {
       ...stats,
       ...mappedTeamInfo,
       name: team.name,
-      is_active: team.is_active
+      is_active: team.is_active,
+      // Calculate losses since API doesn't provide it
+      losses: stats.total_matches && stats.wins ? stats.total_matches - stats.wins : 'N/A'
     }
-    console.log('Team details received:', selectedTeamDetails.value) // Debug log
+    console.log('Final team details:', selectedTeamDetails.value) // Debug log
   } catch (e) {
     console.error("Error fetching team details", e)
     // Set minimal details when API fails - no fake stats
