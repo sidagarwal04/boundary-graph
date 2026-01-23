@@ -375,12 +375,148 @@ async def debug_info():
         "ENABLE_REDIS": os.getenv('ENABLE_REDIS', 'false')
     }
     
-    return {
+    debug_data = {
         "environment_variables": env_vars,
         "database_connected": db.driver is not None,
         "redis_enabled": ENABLE_REDIS,
         "redis_connected": redis_client is not None
     }
+    
+    # Add player database statistics if database is connected
+    if db.driver:
+        try:
+            # Total players in database
+            total_result = db.query("MATCH (p:Player) RETURN COUNT(p) as total")
+            total_players = total_result[0]['total'] if total_result else 0
+            
+            # Players with any team relationship
+            with_team_rel = db.query("""
+                MATCH (p:Player)
+                WHERE EXISTS((p)<-[:SELECTED_PLAYER]-(:Team))
+                RETURN COUNT(p) as total
+            """)[0]['total']
+            
+            # Players with team selections that have season data
+            with_season_data = db.query("""
+                MATCH (p:Player)<-[sp:SELECTED_PLAYER]-(t:Team)
+                WHERE sp.season IS NOT NULL
+                RETURN COUNT(DISTINCT p) as total
+            """)[0]['total']
+            
+            # Sample of players without team selections
+            no_selections = db.query("""
+                MATCH (p:Player)
+                WHERE NOT EXISTS((p)<-[:SELECTED_PLAYER]-(:Team))
+                RETURN p.name as name
+                LIMIT 5
+            """)
+            
+            # Sample of players with selections but no season data
+            no_season = db.query("""
+                MATCH (p:Player)<-[sp:SELECTED_PLAYER]-(t:Team)
+                WHERE sp.season IS NULL
+                RETURN DISTINCT p.name as name, t.name as team
+                LIMIT 5
+            """)
+            
+            debug_data["player_stats"] = {
+                "total_players_in_db": total_players,
+                "with_team_relationships": with_team_rel,
+                "with_season_data": with_season_data,
+                "missing_players": total_players - with_season_data,
+                "sample_no_team_selections": [r['name'] for r in no_selections],
+                "sample_no_season_data": [{"name": r['name'], "team": r['team']} for r in no_season]
+            }
+            
+        except Exception as e:
+            debug_data["player_stats_error"] = str(e)
+    
+    return debug_data
+
+@app.get("/api/players/filter-analysis")
+async def analyze_player_filtering():
+    """Analyze why players are being filtered out of the /api/players/all endpoint"""
+    if not db.driver:
+        return {"error": "Database not connected"}
+    
+    try:
+        # Run the same query as the main endpoint to see filtering steps
+        
+        # Step 1: Total players
+        total_players = db.query("MATCH (p:Player) RETURN COUNT(p) as count")[0]['count']
+        
+        # Step 2: Players with SELECTED_PLAYER relationships
+        players_with_selections = db.query("""
+            MATCH (p:Player)
+            OPTIONAL MATCH (t:Team)-[sp:SELECTED_PLAYER]->(p)
+            WHERE sp.season IS NOT NULL
+            WITH p, collect(DISTINCT {team: t.name, season: sp.season}) as team_selections
+            WHERE size(team_selections) > 0
+            RETURN COUNT(p) as count
+        """)[0]['count']
+        
+        # Step 3: After processing - simulate the same filtering logic
+        results = db.query("""
+            MATCH (p:Player)
+            OPTIONAL MATCH (t:Team)-[sp:SELECTED_PLAYER]->(p)
+            WHERE sp.season IS NOT NULL
+            WITH p, collect(DISTINCT {team: t.name, season: sp.season}) as team_selections
+            WHERE size(team_selections) > 0
+            RETURN p.name as name, team_selections
+            LIMIT 1000
+        """)
+        
+        # Apply the same filtering logic as the main endpoint
+        processed_players = 0
+        filtered_out = 0
+        sample_filtered = []
+        
+        for record in results:
+            name = record.get('name')
+            team_history = record.get('team_selections', [])
+            
+            if name:
+                # Build team history dictionary (same logic as main endpoint)
+                team_history_dict = {}
+                if isinstance(team_history, list):
+                    for th in team_history:
+                        if isinstance(th, dict):
+                            season = th.get('season')
+                            team = th.get('team')
+                            if season and team and str(season) != 'None' and str(team) != 'None':
+                                season_str = str(season)
+                                team_history_dict[season_str] = str(team)
+                
+                # Apply the final filter
+                if team_history_dict:
+                    processed_players += 1
+                else:
+                    filtered_out += 1
+                    if len(sample_filtered) < 10:
+                        sample_filtered.append({
+                            "name": name,
+                            "raw_team_history": team_history,
+                            "reason": "No valid team history after filtering"
+                        })
+        
+        return {
+            "filtering_steps": {
+                "total_players_in_db": total_players,
+                "with_team_selections": players_with_selections,
+                "after_processing": processed_players,
+                "filtered_out_in_processing": filtered_out
+            },
+            "missing_breakdown": {
+                "no_team_relationships": total_players - players_with_selections,
+                "invalid_team_data": filtered_out
+            },
+            "sample_filtered_players": sample_filtered,
+            "final_player_count": processed_players
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in filter analysis: {str(e)}")
+        return {"error": str(e)}
 
 # Cache management endpoints
 @app.post("/api/cache/clear")
