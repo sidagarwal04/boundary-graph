@@ -1041,6 +1041,14 @@ async def get_player_stats(player_name: str):
         if total_wickets > 5 and total_runs == 0:
             logger.info(f"⚠️ DATA QUALITY ALERT: {player_name} has {total_wickets} wickets but {total_runs} runs conceded")
         
+        # Process team history first - filter out null values and get unique season-team combinations
+        team_history_clean = {}
+        for th in player_data.get('team_history', []):
+            if th.get('season') and th.get('team') and th['team'] in VALID_IPL_TEAMS:
+                season_str = str(th['season'])
+                # Use most recent team entry for each season (in case of duplicates)
+                team_history_clean[season_str] = th['team']
+        
         # Process season-wise stats (include all seasons where player has data)
         season_wise_stats = {}
         batting_innings = player_data.get('batting_innings', [])
@@ -1138,14 +1146,7 @@ async def get_player_stats(player_name: str):
             
             season_wise_stats[season] = season_stats
         
-        # Process team history for career overview - filter out null values and get unique season-team combinations
-        team_history_clean = {}
-        for th in player_data.get('team_history', []):
-            if th.get('season') and th.get('team') and th['team'] in VALID_IPL_TEAMS:
-                season_str = str(th['season'])
-                # Use most recent team entry for each season (in case of duplicates)
-                team_history_clean[season_str] = th['team']
-        
+        # Process career overview using the already cleaned team history
         unique_teams = set()
         debut_team = None
         latest_team = None
