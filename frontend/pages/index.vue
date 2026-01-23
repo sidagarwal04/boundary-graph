@@ -512,14 +512,17 @@ const openTeamModal = async (team: any) => {
       owner: teamInfo.owner // Use owner from teamInfo
     } : {}
     
+    // Type-safe handling of stats
+    const safeStats = stats && typeof stats === 'object' ? stats as any : {}
+    
     // Combine stats with team information
     selectedTeamDetails.value = {
-      ...stats,
+      ...safeStats,
       ...mappedTeamInfo,
       name: team.name,
       is_active: team.is_active,
       // Calculate losses since API doesn't provide it
-      losses: stats.total_matches && stats.wins ? stats.total_matches - stats.wins : 'N/A'
+      losses: safeStats.total_matches && safeStats.wins ? safeStats.total_matches - safeStats.wins : 'N/A'
     }
     console.log('Final team details:', selectedTeamDetails.value) // Debug log
   } catch (e) {
