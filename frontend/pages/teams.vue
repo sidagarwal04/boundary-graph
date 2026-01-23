@@ -298,6 +298,18 @@ const teamDetails = computed(() => {
 const segmentedSquad = computed(() => {
   const season = selectedSeason.value
   const players = seasonSquads.value[season] || []
+  
+  // Safety check: ensure players is an array
+  if (!Array.isArray(players)) {
+    console.warn(`Squad data for season ${season} is not an array:`, players)
+    return {
+      batters: [],
+      bowlers: [],
+      allRounders: [],
+      wicketKeepers: []
+    }
+  }
+  
   return {
     batters: players.filter((p: any) => p.role && (
       p.role.toLowerCase().includes('bat') && 
@@ -598,6 +610,11 @@ const selectTeam = async (team: any) => {
       // If API returns additional players as strings, add them to recent seasons
       const recentSeasons = ['2025', '2024', '2023']
       recentSeasons.forEach((season, seasonIndex) => {
+        // Ensure bySeason[season] exists and is an array
+        if (!bySeason[season]) {
+          bySeason[season] = []
+        }
+        
         const existingNames = new Set(bySeason[season].map(p => p.name.toLowerCase()))
         const newPlayers = apiPlayers
           .filter((name: string) => !existingNames.has(name.toLowerCase()))
