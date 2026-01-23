@@ -785,6 +785,16 @@ async def debug_players_schema():
 @app.get("/api/players/all")
 async def get_all_players():
     """Get all players with their complete team histories"""
+    if not db.driver:
+        # Return empty response when database is not connected
+        logger.info("Database not connected - returning empty players response")
+        return {
+            'lastUpdated': '2026-01-22T00:00:00Z',
+            'totalPlayers': 0,
+            'players': {},
+            'status': 'database_unavailable'
+        }
+    
     try:
         # Use the correct Team -> Player SELECTED_PLAYER relationships with season data
         query = """

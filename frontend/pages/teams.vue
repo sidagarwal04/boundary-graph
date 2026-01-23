@@ -361,7 +361,7 @@ const loadPlayerDatabase = async () => {
       return false
     }
   } catch (error) {
-    console.error('Failed to load player database from API:', error)
+    console.log('Player database API temporarily unavailable:', error.message || error)
     
     // Try to load from cache as fallback
     const cached = localStorage.getItem('playerDB_cache')
@@ -671,10 +671,10 @@ onMounted(async () => {
         let loaded = await loadFromCacheIfValid()
         
         if (!loaded) {
-          // If no valid cache, fetch from API with timeout
+          // If no valid cache, fetch from API with timeout (5 seconds)
           loaded = await Promise.race([
             loadPlayerDatabase(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Database load timeout')), 15000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Database load timeout')), 5000))
           ]) as boolean
         }
         
@@ -684,10 +684,10 @@ onMounted(async () => {
           // Run weekly refresh check in background
           setTimeout(() => refreshPlayerDatabase(), 1000)
         } else {
-          console.warn('⚠️ Player database not loaded, some features may be limited')
+          console.log('🔄 Player database not available - using fallback data')
         }
       } catch (dbError) {
-        console.warn('⚠️ Player database load failed, continuing without it:', dbError)
+        console.log('🔄 Player database temporarily unavailable, using fallback mode:', dbError.message || dbError)
       }
     }, 100) // Small delay to ensure teams load first
     
