@@ -170,10 +170,7 @@ class Neo4jConnection:
                 max_connection_lifetime=3600,  # 1 hour
                 max_connection_pool_size=10,   # Reduced for cloud hosting
                 connection_acquisition_timeout=30,
-                max_retry_time=10,
-                initial_retry_delay=1.0,
-                retry_delay_multiplier=1.5,
-                retry_delay_jitter_factor=0.1
+                encrypted=True  # Use encrypted connection for cloud
             )
             self.driver.verify_connectivity()
             logger.info("✅ Neo4j connected with optimized pool settings")
