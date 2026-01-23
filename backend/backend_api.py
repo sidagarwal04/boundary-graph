@@ -932,6 +932,27 @@ async def get_all_players():
 @app.get("/api/players/{player_name}/stats")
 async def get_player_stats(player_name: str):
     """Get detailed batting and bowling statistics for a specific player"""
+    
+    if not db.driver:
+        # Return empty response when database is not connected
+        logger.info(f"Database not connected - returning empty player stats for {player_name}")
+        return {
+            "name": player_name.replace('-', ' ').title(),
+            "total_runs": 0,
+            "total_innings": 0,
+            "average": 0.0,
+            "strike_rate": 0.0,
+            "highest_score": 0,
+            "fifties": 0,
+            "centuries": 0,
+            "total_wickets": 0,
+            "bowling_average": 0.0,
+            "economy_rate": 0.0,
+            "teams": [],
+            "recent_form": [],
+            "status": "database_unavailable"
+        }
+    
     try:
         # Convert slug back to potential player names for search
         potential_names = [
@@ -988,6 +1009,9 @@ async def get_player_stats(player_name: str):
                CASE WHEN bowling_balls > 0 AND bowling_runs > 0 THEN round((bowling_runs * 6.0) / bowling_balls, 2) ELSE 0 END as economy_rate
         LIMIT 1
         """
+        
+        logger.info(f"Fetching player stats for: {player_name}")
+        logger.info(f"Potential names: {potential_names}")
         
         result = db.query(query, {"name": player_name.replace('-', ' '), "names": potential_names, "valid_ipl_teams": list(VALID_IPL_TEAMS)})
         
@@ -1176,7 +1200,42 @@ async def get_player_stats(player_name: str):
         raise
     except Exception as e:
         logger.error(f"Error fetching player stats for {player_name}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error fetching player stats: {str(e)}")
+        logger.error(f"Player name variations tried: {[player_name.replace('-', ' ').title(), player_name.replace('-', ' ').upper(), player_name.replace('-', ' ')]}")
+        
+        # Return a default response instead of failing
+        return {
+            "name": player_name.replace('-', ' ').title(),
+            "basic": {
+                'displayName': player_name.replace('-', ' ').title(),
+                'slug': player_name,
+                'role': 'Player',
+                'totalSeasons': 0,
+                'totalTeams': 0
+            },
+            'battingStats': {
+                'totalRuns': 0,
+                'ballsFaced': 0,
+                'highestScore': 0,
+                'average': 0,
+                'strikeRate': 0,
+                'innings': 0,
+                'centuries': 0,
+                'fifties': 0,
+                'fours': 0,
+                'sixes': 0
+            },
+            'bowlingStats': {
+                'totalWickets': 0,
+                'runsConceded': 0,
+                'ballsBowled': 0,
+                'innings': 0,
+                'average': None,
+                'economyRate': None,
+                'bestBowling': 0
+            },
+            'seasonWiseStats': {},
+            'error': 'Player data temporarily unavailable'
+        }
 
 def normalize_team_name(team_name: str) -> str:
     """Normalize team names to current branding"""
