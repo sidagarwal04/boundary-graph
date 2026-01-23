@@ -1258,8 +1258,19 @@ async def get_franchises():
     return await get_teams()
 
 @app.get("/api/team/{team_name}/stats")
+@cache_response(ttl=1800)  # Cache for 30 minutes
 async def get_team_stats(team_name: str):
     """Get team statistics, including history for rebranded teams"""
+    
+    if not db.driver:
+        # Return default stats when database is not connected
+        logger.info(f"Database not connected - returning default stats for {team_name}")
+        return {
+            "total_matches": 0,
+            "wins": 0,
+            "win_percentage": 0.0
+        }
+    
     # Find all raw names associated with this normalized name
     raw_names = [team_name]
     for old_name, new_name in REBRAND_MAP.items():
@@ -1593,8 +1604,15 @@ async def get_venue_detail(venue_name: str):
 
 # ==================== TEAM RIVALRIES ENDPOINT ====================
 @app.get("/api/team/{team_name}/rivalries", response_model=List[RivalryStat])
+@cache_response(ttl=3600)  # Cache for 1 hour - rivalry data doesn't change frequently
 async def get_team_rivalries(team_name: str):
     """Get H2H win/loss records against all other franchises"""
+    
+    if not db.driver:
+        # Return empty rivalries when database is not connected
+        logger.info(f"Database not connected - returning empty rivalries for {team_name}")
+        return []
+    
     # Normalize team name
     current_name = team_name
     for old, new in REBRAND_MAP.items():

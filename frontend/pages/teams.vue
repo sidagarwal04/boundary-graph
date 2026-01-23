@@ -572,11 +572,25 @@ const selectTeam = async (team: any) => {
   // Skip refresh if database was recently loaded (non-blocking background refresh)
   setTimeout(() => refreshPlayerDatabase(), 100)
   
-  try {
-    const stats = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`)
-    teamStats.value = stats
-  } catch (error) {
-    console.error('Failed to fetch team stats:', error)
+  // Load team stats and rivalry data in parallel (faster loading)
+  const [statsResult, rivalryResult] = await Promise.allSettled([
+    $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/stats`),
+    $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/rivalries`)
+  ])
+  
+  // Handle team stats
+  if (statsResult.status === 'fulfilled') {
+    teamStats.value = statsResult.value
+  } else {
+    console.error('Failed to fetch team stats:', statsResult.reason)
+  }
+  
+  // Handle rivalry data
+  if (rivalryResult.status === 'fulfilled') {
+    rivalries.value = Array.isArray(rivalryResult.value) ? rivalryResult.value : []
+  } else {
+    console.error('Failed to fetch rivalry data:', rivalryResult.reason)
+    rivalries.value = []
   }
 
   // Use centralized player database for squad data
@@ -656,14 +670,6 @@ const selectTeam = async (team: any) => {
     seasonSquads.value = {}
     availableSeasons.value = []
     selectedSeason.value = '2025'
-  }
-
-  try {
-    const rivalData = await $fetch(`${config.public.apiBase}/api/team/${encodeURIComponent(team.name)}/rivalries`)
-    rivalries.value = Array.isArray(rivalData) ? rivalData : []
-  } catch (error) {
-    console.error('Failed to fetch rivalry data:', error)
-    rivalries.value = []
   }
 }
 
