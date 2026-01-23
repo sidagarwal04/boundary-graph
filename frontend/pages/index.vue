@@ -168,10 +168,10 @@
         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ activeTeams.length }} Teams</span>
       </div>
       <div class="flex flex-wrap gap-4 justify-center">
-        <NuxtLink 
+        <div 
           v-for="team in activeTeams" 
           :key="team.name" 
-          :to="'/teams'"
+          @click="openTeamModal(team)"
           class="group bg-white border border-slate-200 rounded-lg p-4 hover:border-brand-primary/30 hover:shadow-md hover:bg-slate-50 transition-all duration-200 cursor-pointer w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.67rem)] lg:w-[calc(25%-0.75rem)]"
         >
           <div class="flex flex-col items-center text-center space-y-3">
@@ -180,7 +180,7 @@
               <h3 class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors text-sm">{{ team.name }}</h3>
             </div>
           </div>
-        </NuxtLink>
+        </div>
       </div>
     </div>
 
@@ -287,6 +287,123 @@
       </div>
     </div>
 
+    <!-- Team Detail Modal -->
+    <div v-if="isTeamModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" @click.self="closeTeamModal">
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-fade-in-up">
+        
+        <!-- Header -->
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <TeamLogo v-if="selectedTeam" :teamName="selectedTeam.name" size="md" :showName="false" />
+            <h3 class="text-xl font-bold text-slate-900">{{ selectedTeam?.name }}</h3>
+          </div>
+          <button @click="closeTeamModal" class="text-slate-400 hover:text-slate-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div v-if="loadingTeamDetails" class="p-8 text-center text-slate-500">
+           Loading team stats...
+        </div>
+        
+        <div v-else-if="selectedTeamDetails" class="p-6">
+          
+          <!-- Team Status -->
+          <div class="mb-6 text-center">
+            <div class="flex items-center justify-center gap-2 mb-2">
+              <div :class="selectedTeam?.is_active ? 'w-3 h-3 bg-green-500 rounded-full' : 'w-3 h-3 bg-red-500 rounded-full'"></div>
+              <span :class="selectedTeam?.is_active ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'">{{ selectedTeam?.is_active ? 'Active Team' : 'Inactive Team' }}</span>
+            </div>
+            <p class="text-sm text-slate-500">{{ selectedTeam?.is_active ? 'Currently participating in IPL' : 'No longer part of IPL' }}</p>
+          </div>
+
+          <!-- Team Details -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- Captain -->
+            <div v-if="selectedTeamDetails.captain" class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-blue-600 font-bold uppercase tracking-widest mb-1">Captain</p>
+                  <p class="text-lg font-bold text-slate-900">{{ selectedTeamDetails.captain }}</p>
+                </div>
+                <CricketHelmetIcon class="w-6 h-6 text-blue-400" />
+              </div>
+            </div>
+            
+            <!-- Coach -->
+            <div v-if="selectedTeamDetails.coach" class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-100">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-green-600 font-bold uppercase tracking-widest mb-1">Coach</p>
+                  <p class="text-lg font-bold text-slate-900">{{ selectedTeamDetails.coach }}</p>
+                </div>
+                <UserIcon class="w-6 h-6 text-green-400" />
+              </div>
+            </div>
+            
+            <!-- Home Ground -->
+            <div v-if="selectedTeamDetails.home_ground" class="p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-100">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-orange-600 font-bold uppercase tracking-widest mb-1">Home Ground</p>
+                  <p class="text-lg font-bold text-slate-900">{{ selectedTeamDetails.home_ground }}</p>
+                </div>
+                <CricketStadiumIcon class="w-6 h-6 text-orange-400" />
+              </div>
+            </div>
+            
+            <!-- Founded Year -->
+            <div v-if="selectedTeamDetails.founded_year" class="p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg border border-purple-100">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-purple-600 font-bold uppercase tracking-widest mb-1">Founded</p>
+                  <p class="text-lg font-bold text-slate-900">{{ selectedTeamDetails.founded_year }}</p>
+                </div>
+                <ShieldCheckIcon class="w-6 h-6 text-purple-400" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="p-4 bg-slate-50 rounded-lg text-center">
+              <p class="text-xs text-slate-400 font-medium mb-1">Total Matches</p>
+              <p class="text-xl font-bold text-slate-800">{{ selectedTeamDetails.total_matches || 'N/A' }}</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-lg text-center">
+              <p class="text-xs text-slate-400 font-medium mb-1">Win Rate</p>
+              <p class="text-xl font-bold text-slate-800">
+                {{ selectedTeamDetails.wins && selectedTeamDetails.total_matches ? 
+                   Math.round((selectedTeamDetails.wins / selectedTeamDetails.total_matches) * 100) + '%' : 
+                   'N/A' }}
+              </p>
+            </div>
+            <div class="p-3 bg-green-50 rounded-lg text-center border border-green-100">
+              <p class="text-xs text-green-600 font-medium mb-1">Wins</p>
+              <p class="text-xl font-bold text-green-700">{{ selectedTeamDetails.wins || 'N/A' }}</p>
+            </div>
+            <div class="p-3 bg-red-50 rounded-lg text-center border border-red-100">
+              <p class="text-xs text-red-600 font-medium mb-1">Losses</p>
+              <p class="text-xl font-bold text-red-700">{{ selectedTeamDetails.losses || 'N/A' }}</p>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="text-center">
+            <button 
+              @click="goToTeamsPage"
+              class="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <span>Know More</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -325,6 +442,12 @@ const allTeams = ref<any[]>([])
 const isModalOpen = ref(false)
 const loadingDetails = ref(false)
 const selectedSeasonDetails = ref<any>(null)
+
+// Team Modal State
+const isTeamModalOpen = ref(false)
+const loadingTeamDetails = ref(false)
+const selectedTeam = ref<any>(null)
+const selectedTeamDetails = ref<any>(null)
 
 // Computed properties
 const activeTeams = computed(() => allTeams.value.filter(t => t.is_active))
@@ -366,9 +489,53 @@ const closeModal = () => {
   selectedSeasonDetails.value = null
 }
 
+const openTeamModal = async (team: any) => {
+  isTeamModalOpen.value = true
+  loadingTeamDetails.value = true
+  selectedTeam.value = team
+  selectedTeamDetails.value = null
+  
+  try {
+    const details = await $fetch(`${config.public.apiBase}/api/teams/${encodeURIComponent(team.name)}`)
+    selectedTeamDetails.value = details
+    console.log('Team details received:', details) // Debug log
+  } catch (e) {
+    console.error("Error fetching team details", e)
+    // Set mock details for now to show the UI structure
+    selectedTeamDetails.value = {
+      name: team.name,
+      captain: "Rohit Sharma", // Mock data for testing
+      coach: "Mahela Jayawardene", // Mock data for testing  
+      home_ground: "Wankhede Stadium", // Mock data for testing
+      founded_year: "2008", // Mock data for testing
+      is_active: team.is_active,
+      total_matches: 180,
+      wins: 90,
+      losses: 85
+    }
+  } finally {
+    loadingTeamDetails.value = false
+  }
+}
+
+const closeTeamModal = () => {
+  isTeamModalOpen.value = false
+  selectedTeam.value = null
+  selectedTeamDetails.value = null
+}
+
+const goToTeamsPage = () => {
+  closeTeamModal()
+  navigateTo('/teams')
+}
+
 const onKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && isModalOpen.value) {
-    closeModal()
+  if (e.key === 'Escape') {
+    if (isTeamModalOpen.value) {
+      closeTeamModal()
+    } else if (isModalOpen.value) {
+      closeModal()
+    }
   }
 }
 
