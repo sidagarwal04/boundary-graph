@@ -36,6 +36,15 @@ export const teamLogoMap: TeamLogoMapping = {
   // Historical variations
   'Delhi Daredevils': '/teams-logos/DCoutline.avif', // Same as Delhi Capitals
   'Kings XI Punjab': '/teams-logos/PBKSoutline.avif', // Same as Punjab Kings
+  
+  // Defunct Teams
+  'Deccan Chargers': '/teams-logos/HyderabadDeccanChargers.png',
+  'Gujarat Lions': '/teams-logos/Gujarat_Lions.png', 
+  'Kochi Tuskers Kerala': '/teams-logos/Kochi_Tuskers_Kerala_Logo.svg.png',
+  'Pune Warriors India': '/teams-logos/Pune_Warriors_India_IPL_Logo.png',
+  'Pune Warriors': '/teams-logos/Pune_Warriors_India_IPL_Logo.png', // Alternative name
+  'Rising Pune Supergiant': '/teams-logos/Rising_Pune_Supergiant.png',
+  'Rising Pune Supergiants': '/teams-logos/Rising_Pune_Supergiant.png', // Alternative name
 }
 
 export const teamColorMap: TeamColorMapping = {
@@ -67,6 +76,15 @@ export const teamColorMap: TeamColorMapping = {
   // Historical variations
   'Delhi Daredevils': '#b9251c',
   'Kings XI Punjab': '#d71920',
+  
+  // Defunct Teams - Grey background to denote defunct status
+  'Deccan Chargers': '#9ca3af', // gray-400
+  'Gujarat Lions': '#9ca3af', // gray-400
+  'Kochi Tuskers Kerala': '#9ca3af', // gray-400  
+  'Pune Warriors India': '#9ca3af', // gray-400
+  'Pune Warriors': '#9ca3af', // gray-400
+  'Rising Pune Supergiant': '#9ca3af', // gray-400
+  'Rising Pune Supergiants': '#9ca3af', // gray-400
 }
 
 export interface TeamDetailsMapping {
@@ -228,6 +246,7 @@ export function getTeamColor(teamName: string): string {
     ['Chennai', '#ffcb03'],
     ['Delhi', '#b9251c'],
     ['Gujarat Titans', '#77c7f2'], // Only Gujarat Titans
+    ['Gujarat Lions', '#9ca3af'], // Defunct team - grey
     ['Kolkata', '#ecc542'],
     ['Lucknow', '#ffffff'],
     ['Mumbai', '#2d6ab1'],
@@ -235,6 +254,10 @@ export function getTeamColor(teamName: string): string {
     ['Royal Challengers', '#2b2a29'],
     ['Rajasthan', '#eb83b5'],
     ['Sunrisers', '#f26522'],
+    ['Deccan', '#9ca3af'], // Defunct team - grey
+    ['Kochi', '#9ca3af'], // Defunct team - grey
+    ['Pune Warriors', '#9ca3af'], // Defunct team - grey
+    ['Rising Pune', '#9ca3af'], // Defunct team - grey
   ]
   
   for (const [keyword, color] of colorPartialMatches) {
@@ -267,6 +290,7 @@ export function getTeamLogo(teamName: string): string | null {
     ['Chennai', '/teams-logos/CSKoutline.avif'],
     ['Delhi', '/teams-logos/DCoutline.avif'],
     ['Gujarat Titans', '/teams-logos/GToutline.avif'], // Only Gujarat Titans, not Gujarat Lions
+    ['Gujarat Lions', '/teams-logos/Gujarat_Lions.png'], // Defunct team
     ['Kolkata', '/teams-logos/KKRoutline.avif'],
     ['Lucknow', '/teams-logos/LSGoutline.avif'],
     ['Mumbai', '/teams-logos/MIoutline.avif'],
@@ -274,6 +298,10 @@ export function getTeamLogo(teamName: string): string | null {
     ['Royal Challengers', '/teams-logos/RCBoutline.avif'],
     ['Rajasthan', '/teams-logos/RR_Logo.avif'],
     ['Sunrisers', '/teams-logos/SRHoutline.avif'],
+    ['Deccan', '/teams-logos/HyderabadDeccanChargers.png'],
+    ['Kochi', '/teams-logos/Kochi_Tuskers_Kerala_Logo.svg.png'],
+    ['Pune Warriors', '/teams-logos/Pune_Warriors_India_IPL_Logo.png'],
+    ['Rising Pune', '/teams-logos/Rising_Pune_Supergiant.png'],
   ]
   
   for (const [keyword, logo] of partialMatches) {
@@ -305,6 +333,14 @@ export function getTeamAbbreviation(teamName: string): string {
     'Royal Challengers Bengaluru': 'RCB',
     'Rajasthan Royals': 'RR',
     'Sunrisers Hyderabad': 'SRH',
+    // Defunct Teams
+    'Deccan Chargers': 'DC',
+    'Gujarat Lions': 'GL',
+    'Kochi Tuskers Kerala': 'KTK',
+    'Pune Warriors India': 'PWI',
+    'Pune Warriors': 'PWI',
+    'Rising Pune Supergiant': 'RPS',
+    'Rising Pune Supergiants': 'RPS',
   }
   
   return abbreviations[teamName] || teamName
@@ -344,4 +380,38 @@ export function getTeamDetails(teamName: string): TeamDetailsMapping[string] | n
   }
   
   return null
+}
+
+/**
+ * Check if a team is defunct (no longer active in IPL)
+ * @param teamName - Team name to check
+ * @returns true if team is defunct, false otherwise
+ */
+export function isDefunctTeam(teamName: string): boolean {
+  if (!teamName) return false
+  
+  const defunctTeams = [
+    'Deccan Chargers',
+    'Gujarat Lions',
+    'Kochi Tuskers Kerala', 
+    'Pune Warriors India',
+    'Pune Warriors',
+    'Rising Pune Supergiant',
+    'Rising Pune Supergiants'
+  ]
+  
+  // Direct match
+  if (defunctTeams.includes(teamName)) {
+    return true
+  }
+  
+  // Try partial matches for teams that might have slight variations
+  const defunctKeywords = ['Gujarat Lions', 'Deccan', 'Kochi', 'Pune Warriors', 'Rising Pune']
+  for (const keyword of defunctKeywords) {
+    if (teamName.includes(keyword)) {
+      return true
+    }
+  }
+  
+  return false
 }

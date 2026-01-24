@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getTeamLogo, getTeamAbbreviation, getTeamColor } from '~/utils/teamLogos'
+import { getTeamLogo, getTeamAbbreviation, getTeamColor, isDefunctTeam } from '~/utils/teamLogos'
 
 interface Props {
   teamName: string
@@ -62,6 +62,10 @@ const logoUrl = computed(() => {
 })
 
 const teamColor = computed(() => {
+  // For defunct teams, always use grey regardless of original team color
+  if (isDefunctTeam(props.teamName)) {
+    return '#9ca3af' // gray-400
+  }
   return getTeamColor(props.teamName)
 })
 

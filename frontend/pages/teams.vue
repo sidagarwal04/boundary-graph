@@ -97,7 +97,7 @@
               </p>
             </div>
             <div class="w-full sm:ml-6 sm:flex-shrink-0 sm:w-auto">
-              <div v-if="!selectedTeam.is_active" class="px-2 py-1 mb-2 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase text-center sm:text-right">
+              <div v-if="!selectedTeam.is_active" class="px-2 py-1 mb-2 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase text-center">
                 Historical
               </div>
               <div class="bg-slate-50 border border-slate-100 rounded-lg px-3 sm:px-4 py-3 shadow-sm w-full sm:w-64 sm:min-w-[16rem] sm:max-w-[25rem] lg:w-[28rem] lg:min-w-[28rem] lg:max-w-[48rem]">
