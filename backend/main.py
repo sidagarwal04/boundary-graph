@@ -43,6 +43,7 @@ class IPLNeo4jImporter:
         'info.officials.reserve_umpires', 'info.officials.tv_umpires',
         'info.officials.umpires',
         'innings.team', 'innings.overs', 'innings.powerplays',
+        'innings.powerplays.from', 'innings.powerplays.to', 'innings.powerplays.type',
         'innings.target.overs', 'innings.target.runs',
         'innings.overs.over', 'innings.overs.deliveries',
         'innings.overs.deliveries.batter', 'innings.overs.deliveries.bowler',
@@ -362,9 +363,22 @@ class IPLNeo4jImporter:
             target = innings_data.get('target', {})
             powerplays = innings_data.get('powerplays', [])
             
-            # Get powerplay info (usually just one mandatory powerplay)
-            pp_from = powerplays[0].get('from') if powerplays else None
-            pp_to = powerplays[0].get('to') if powerplays else None
+            # Enhanced powerplay handling - store all powerplay phases
+            powerplay_data = []
+            pp_from = None
+            pp_to = None
+            for pp in powerplays:
+                powerplay_info = {
+                    'from_over': pp.get('from'),
+                    'to_over': pp.get('to'),
+                    'type': pp.get('type', 'mandatory')
+                }
+                powerplay_data.append(powerplay_info)
+                
+                # Keep first powerplay for backward compatibility
+                if pp_from is None:
+                    pp_from = pp.get('from')
+                    pp_to = pp.get('to')
             
             # Create Innings node
             innings_id = f"{match_id}_innings_{innings_idx}"
@@ -379,7 +393,8 @@ class IPLNeo4jImporter:
                     i.target_runs = $target_runs,
                     i.target_overs = $target_overs,
                     i.powerplay_from = $pp_from,
-                    i.powerplay_to = $pp_to
+                    i.powerplay_to = $pp_to,
+                    i.powerplay_phases = $powerplay_data
                 ON MATCH SET i.match_id = $match_id,
                     i.innings_number = $innings_number,
                     i.batting_team = $batting_team,
@@ -388,7 +403,8 @@ class IPLNeo4jImporter:
                     i.target_runs = $target_runs,
                     i.target_overs = $target_overs,
                     i.powerplay_from = $pp_from,
-                    i.powerplay_to = $pp_to
+                    i.powerplay_to = $pp_to,
+                    i.powerplay_phases = $powerplay_data
             """, 
                 innings_id=innings_id,
                 match_id=match_id,
@@ -399,7 +415,8 @@ class IPLNeo4jImporter:
                 target_runs=target.get('runs'),
                 target_overs=target.get('overs'),
                 pp_from=pp_from,
-                pp_to=pp_to
+                pp_to=pp_to,
+                powerplay_data=powerplay_data
             )
             
             # Link Innings to Match and Team
@@ -450,6 +467,13 @@ class IPLNeo4jImporter:
                         delivery_counter += 1
                         delivery_id = f"{over_id}_ball_{ball_idx}"
                         
+                        # Determine which powerplay phase this delivery is in
+                        current_powerplay = None
+                        for pp in powerplay_data:
+                            if pp['from_over'] <= over_number <= pp['to_over']:
+                                current_powerplay = pp['type']
+                                break
+                        
                         runs = delivery.get('runs', {})
                         extras = delivery.get('extras', {})
                         wickets = delivery.get('wickets', [])
@@ -467,6 +491,7 @@ class IPLNeo4jImporter:
                             'delivery_number': delivery_counter,
                             'over_number': over_number,
                             'ball_in_over': ball_idx,
+                            'powerplay_phase': current_powerplay,
                             'runs_batter': runs.get('batter', 0),
                             'runs_extras': runs.get('extras', 0),
                             'runs_total': runs.get('total', 0),
