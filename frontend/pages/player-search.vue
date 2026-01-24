@@ -169,6 +169,29 @@
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Sixes (6s)</p>
               <p class="text-2xl font-black text-slate-800">{{ playerStats.battingStats?.sixes || 0 }}</p>
             </div>
+            
+            <!-- Boundary Trend Sparkline -->
+            <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                <div>
+                  <p class="text-xs text-amber-700 font-bold uppercase tracking-wide mb-1">Boundary Rate Trend</p>
+                  <p class="text-sm text-amber-600">Season-wise boundaries per ball</p>
+                </div>
+                <div class="text-amber-500 self-start">
+                  <ChartBarIcon class="w-5 h-5" />
+                </div>
+              </div>
+              <BoundarySparkline 
+                :seasonData="playerStats.seasonWiseStats"
+                type="boundary"
+                :width="240"
+                :height="50"
+                primaryColor="#f59e0b"
+                backgroundColor="transparent"
+                class="w-full"
+              />
+            </div>
+            
             <div class="col-span-2 p-4 bg-indigo-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-indigo-100">
                <div>
                  <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Innings Played</p>
@@ -214,6 +237,51 @@
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Runs Conceded</p>
                 <p class="text-2xl font-black text-slate-800">{{ playerStats.bowlingStats?.runsConceded || 0 }}</p>
               </div>
+              
+              <!-- Bowling Economy Trend Sparkline -->
+              <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1 && Object.values(playerStats?.seasonWiseStats || {}).some((s: any) => s.bowling?.balls > 0)" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-rose-50 to-red-50 rounded-xl border border-rose-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                  <div>
+                    <p class="text-xs text-rose-700 font-bold uppercase tracking-wide mb-1">Economy Rate Trend</p>
+                    <p class="text-sm text-rose-600">Season-wise runs per over</p>
+                  </div>
+                  <div class="text-rose-500 self-start">
+                    <ChartBarIcon class="w-5 h-5" />
+                  </div>
+                </div>
+                <BoundarySparkline 
+                  :seasonData="playerStats.seasonWiseStats"
+                  type="economy"
+                  :width="240"
+                  :height="50"
+                  primaryColor="#ef4444"
+                  backgroundColor="transparent"
+                  class="w-full"
+                />
+              </div>
+              
+              <!-- Wickets Per Innings Trend (for all-rounders) -->
+              <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1 && Object.values(playerStats?.seasonWiseStats || {}).some((s: any) => s.bowling?.wickets > 0 && s.bowling?.innings > 0)" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                  <div>
+                    <p class="text-xs text-purple-700 font-bold uppercase tracking-wide mb-1">Wickets Trend</p>
+                    <p class="text-sm text-purple-600">Season-wise wickets per innings</p>
+                  </div>
+                  <div class="text-purple-500 self-start">
+                    <ChartBarIcon class="w-5 h-5" />
+                  </div>
+                </div>
+                <BoundarySparkline 
+                  :seasonData="playerStats.seasonWiseStats"
+                  type="wickets"
+                  :width="240"
+                  :height="50"
+                  primaryColor="#8b5cf6"
+                  backgroundColor="transparent"
+                  class="w-full"
+                />
+              </div>
+              
               <div class="col-span-2 p-4 bg-rose-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-rose-100">
                  <div>
                    <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Bowling Innings</p>
@@ -264,7 +332,7 @@
                 <PresentationChartLineIcon class="w-4 h-4" />
                 Performance Trajectory Analysis
               </h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.runs > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
                   <div class="flex items-center justify-center gap-2 mb-1">
                     <CricketHelmetIcon class="w-4 h-4 text-indigo-600" />
@@ -292,6 +360,7 @@
                     </div>
                   </div>
                 </div>
+                
                 <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.bowling?.wickets > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
                   <div class="flex items-center justify-center gap-2 mb-1">
                     <CricketBallIcon class="w-4 h-4 text-rose-600" />
@@ -315,6 +384,34 @@
                       </p>
                       <p class="text-xs text-slate-500" v-if="calculateBowlingTrend(playerStats.seasonWiseStats).change !== 0">
                         {{ calculateBowlingTrend(playerStats.seasonWiseStats).change }}% improvement
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.fours > 0 || s.batting?.sixes > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
+                  <div class="flex items-center justify-center gap-2 mb-1">
+                    <ChartBarIcon class="w-4 h-4 text-amber-600" />
+                    <span class="text-sm font-medium text-slate-600">Boundary Rate</span>
+                  </div>
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="text-2xl" :class="{
+                      'text-green-600': calculateBoundaryTrend(playerStats.seasonWiseStats).color === 'green',
+                      'text-red-600': calculateBoundaryTrend(playerStats.seasonWiseStats).color === 'red',
+                      'text-slate-600': calculateBoundaryTrend(playerStats.seasonWiseStats).color === 'slate'
+                    }">
+                      {{ calculateBoundaryTrend(playerStats.seasonWiseStats).icon }}
+                    </span>
+                    <div>
+                      <p class="font-bold text-lg" :class="{
+                        'text-green-700': calculateBoundaryTrend(playerStats.seasonWiseStats).color === 'green',
+                        'text-red-700': calculateBoundaryTrend(playerStats.seasonWiseStats).color === 'red',
+                        'text-slate-700': calculateBoundaryTrend(playerStats.seasonWiseStats).color === 'slate'
+                      }">
+                        {{ calculateBoundaryTrend(playerStats.seasonWiseStats).trend.toUpperCase() }}
+                      </p>
+                      <p class="text-xs text-slate-500" v-if="calculateBoundaryTrend(playerStats.seasonWiseStats).rate > 0">
+                        {{ calculateBoundaryTrend(playerStats.seasonWiseStats).rate.toFixed(1) }}% rate
                       </p>
                     </div>
                   </div>
@@ -525,11 +622,13 @@ import {
   PresentationChartLineIcon,
   FireIcon,
   ShareIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  ChartBarIcon
 } from '@heroicons/vue/24/outline'
 import CricketBallIcon from '~/components/icons/CricketBallIcon.vue'
 import CricketHelmetIcon from '~/components/icons/CricketHelmetIcon.vue'
 import GraphVisualization from '~/components/GraphVisualization.vue'
+import BoundarySparkline from '~/components/BoundarySparkline.vue'
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -582,6 +681,42 @@ const calculateBowlingTrend = (seasonStats: any): { trend: string, change: numbe
   if (change > 10) return { trend: 'improving', change: Math.round(change), color: 'green', icon: '↗' }
   if (change < -10) return { trend: 'declining', change: Math.round(Math.abs(change)), color: 'red', icon: '↘' }
   return { trend: 'stable', change: Math.round(Math.abs(change)), color: 'slate', icon: '→' }
+}
+
+const calculateBoundaryTrend = (seasonStats: any): { trend: string, rate: number, color: string, icon: string } => {
+  const seasons = Object.keys(seasonStats).filter(s => s !== 'all').sort()
+  if (seasons.length < 2) return { trend: 'stable', rate: 0, color: 'slate', icon: '→' }
+  
+  // Calculate boundary rates for each season
+  const boundaryRates = seasons.map(season => {
+    const batting = seasonStats[season]?.batting
+    if (!batting || !batting.balls || batting.balls === 0) return null
+    
+    const boundaries = (batting.fours || 0) + (batting.sixes || 0)
+    return (boundaries / batting.balls) * 100
+  }).filter(rate => rate !== null)
+  
+  if (boundaryRates.length < 2) return { trend: 'stable', rate: 0, color: 'slate', icon: '→' }
+  
+  // Calculate overall rate and trend
+  const overallRate = boundaryRates.reduce((sum, rate) => sum + rate, 0) / boundaryRates.length
+  
+  // Compare recent seasons vs earlier seasons
+  const recentSeasons = boundaryRates.slice(-3)
+  const earlierSeasons = boundaryRates.slice(0, -3)
+  
+  if (recentSeasons.length === 0 || earlierSeasons.length === 0) {
+    return { trend: 'stable', rate: overallRate, color: 'slate', icon: '→' }
+  }
+  
+  const recentAvg = recentSeasons.reduce((sum, rate) => sum + rate, 0) / recentSeasons.length
+  const earlierAvg = earlierSeasons.reduce((sum, rate) => sum + rate, 0) / earlierSeasons.length
+  
+  const change = ((recentAvg - earlierAvg) / earlierAvg) * 100
+  
+  if (change > 8) return { trend: 'improving', rate: overallRate, color: 'green', icon: '↗' }
+  if (change < -8) return { trend: 'declining', rate: overallRate, color: 'red', icon: '↘' }
+  return { trend: 'stable', rate: overallRate, color: 'slate', icon: '→' }
 }
 
 const getSeasonComparison = (currentStats: any, previousStats: any, type: 'batting' | 'bowling') => {
