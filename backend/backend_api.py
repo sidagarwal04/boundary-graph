@@ -843,26 +843,26 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "RR", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.549},
             {"team": "CSK", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.647}
         ],
-        "2024": [  # Actual 2024 season final standings
-            {"team": "KKR", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.428},
+        "2024": [  # Actual 2024 season final standings (KKR Champions)
+            {"team": "KKR", "played": 14, "won": 9, "lost": 3, "no_result": 2, "points": 20, "nrr": 1.428},
             {"team": "SRH", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.414},
-            {"team": "RR", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.273},
+            {"team": "RR", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.273},
             {"team": "RCB", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.459},
             {"team": "CSK", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.392},
             {"team": "DC", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.377},
             {"team": "LSG", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.667},
             {"team": "GT", "played": 14, "won": 5, "lost": 7, "no_result": 2, "points": 12, "nrr": -1.063},
-            {"team": "MI", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.318},
-            {"team": "PBKS", "played": 14, "won": 2, "lost": 12, "no_result": 0, "points": 4, "nrr": -0.251}
+            {"team": "PBKS", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.353},
+            {"team": "MI", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.318}
         ],
         "2023": [  # Actual 2023 season final standings (CSK Champions)
             {"team": "GT", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.809},
-            {"team": "CSK", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.652},
-            {"team": "LSG", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.284},
-            {"team": "MI", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.044},
-            {"team": "RCB", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.135},
-            {"team": "RR", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.062},
-            {"team": "KKR", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.256},
+            {"team": "CSK", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.652},
+            {"team": "LSG", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.284},
+            {"team": "MI", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.044},
+            {"team": "RR", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.148},
+            {"team": "RCB", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.135},
+            {"team": "KKR", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.239},
             {"team": "PBKS", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.304},
             {"team": "DC", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.808},
             {"team": "SRH", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.590}
@@ -870,10 +870,10 @@ def scrape_points_table(season: str) -> PointsTable:
         "2022": [  # Actual 2022 season final standings (GT Champions)
             {"team": "GT", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.316},
             {"team": "RR", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.298},
-            {"team": "LSG", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.284},
+            {"team": "LSG", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.251},
             {"team": "RCB", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.253},
             {"team": "DC", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.204},
-            {"team": "PBKS", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.023},
+            {"team": "PBKS", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.126},
             {"team": "KKR", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": 0.146},
             {"team": "SRH", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.379},
             {"team": "MI", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.506},
@@ -882,18 +882,18 @@ def scrape_points_table(season: str) -> PointsTable:
         "2021": [  # Actual 2021 season final standings (CSK Champions)
             {"team": "DC", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.481},
             {"team": "CSK", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.455},
-            {"team": "RCB", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": -0.049},
+            {"team": "RCB", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": -0.14},
             {"team": "KKR", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.587},
             {"team": "MI", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.116},
             {"team": "PBKS", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.001},
-            {"team": "RR", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.190},
+            {"team": "RR", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.993},
             {"team": "SRH", "played": 14, "won": 3, "lost": 11, "no_result": 0, "points": 6, "nrr": -0.545}
         ],
         "2020": [  # Actual 2020 season final standings (MI Champions)
             {"team": "MI", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 1.107},
             {"team": "DC", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.109},
             {"team": "SRH", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.608},
-            {"team": "RCB", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.145},
+            {"team": "RCB", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.172},
             {"team": "KKR", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.214},
             {"team": "PBKS", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.162},
             {"team": "CSK", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.455},
