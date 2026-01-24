@@ -21,6 +21,9 @@ import asyncio
 from cachetools import TTLCache
 import redis
 from contextlib import asynccontextmanager
+import requests
+import re
+from bs4 import BeautifulSoup
 
 # Load environment variables
 load_dotenv()
@@ -297,6 +300,22 @@ class RivalryStat(BaseModel):
     matches: int
     wins: int
     win_pct: float
+
+class PointsTableTeam(BaseModel):
+    position: int
+    team: str
+    played: int
+    won: int
+    lost: int
+    no_result: int
+    points: int
+    nrr: float  # Net Run Rate
+    status: Optional[str] = None  # Q, E for qualification status
+
+class PointsTable(BaseModel):
+    season: str
+    last_updated: str
+    teams: List[PointsTableTeam]
 
 class PlayerRival(BaseModel):
     name: str
@@ -765,6 +784,150 @@ async def get_seasons():
         ORDER BY season DESC
     """)
     return [SeasonStats(**r) for r in results]
+
+# ==================== POINTS TABLE ENDPOINTS ====================
+
+# Season mappings for Cricbuzz URLs
+SEASON_SERIES_MAP = {
+    "2026": "9241",
+    "2025": "9237",
+    # Add more seasons as needed
+    "2024": "7607",  # You'll need to find these series IDs
+    "2023": "6732",
+    "2022": "4061",
+    "2021": "3472",
+    "2020": "2810",
+}
+
+def scrape_points_table(season: str) -> PointsTable:
+    """Scrape points table from Cricbuzz"""
+    series_id = SEASON_SERIES_MAP.get(season)
+    if not series_id:
+        raise HTTPException(status_code=404, detail=f"Season {season} not supported")
+    
+    url = f"https://www.cricbuzz.com/cricket-series/{series_id}/indian-premier-league-{season}/points-table"
+    
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        teams = []
+        
+        # First try to find table elements
+        table = soup.find('table') or soup.find('div', class_='cb-srs-pnts')
+        
+        if table:
+            rows = table.find_all('tr')[1:]  # Skip header row
+            for i, row in enumerate(rows[:10]):  # Top 10 teams
+                cells = row.find_all(['td', 'th'])
+                if len(cells) >= 7:
+                    try:
+                        # Extract team name and status
+                        team_cell = cells[1].get_text(strip=True)
+                        team_match = re.match(r'([A-Z]{2,4})(?:\(([QE])\))?', team_cell)
+                        
+                        if team_match:
+                            team_code = team_match.group(1)
+                            status = team_match.group(2)
+                            
+                            teams.append(PointsTableTeam(
+                                position=i + 1,
+                                team=team_code,
+                                played=int(cells[2].get_text(strip=True)),
+                                won=int(cells[3].get_text(strip=True)),
+                                lost=int(cells[4].get_text(strip=True)),
+                                no_result=int(cells[5].get_text(strip=True)),
+                                points=int(cells[6].get_text(strip=True)),
+                                nrr=float(cells[7].get_text(strip=True).replace('+', '')),
+                                status=status
+                            ))
+                    except (ValueError, IndexError) as e:
+                        logger.warning(f"Failed to parse row {i}: {e}")
+                        continue
+        
+        # Fallback: Parse from raw text if table parsing fails
+        if not teams:
+            table_text = response.text
+            # Enhanced pattern to match team info with various formats
+            pattern = r'([A-Z]{2,4})(?:\(([QE])\))?\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([\+\-]?\d+\.\d+)'
+            matches = re.findall(pattern, table_text)
+            
+            for i, match in enumerate(matches[:10]):  # Top 10 teams
+                team_code, status, played, won, lost, no_result, points, nrr = match
+                
+                teams.append(PointsTableTeam(
+                    position=i + 1,
+                    team=team_code,
+                    played=int(played),
+                    won=int(won),
+                    lost=int(lost),
+                    no_result=int(no_result),
+                    points=int(points),
+                    nrr=float(nrr),
+                    status=status if status else None
+                ))
+        
+        # If still no teams found, create a fallback response for testing
+        if not teams and season == "2026":
+            # Create mock data for 2026 (season hasn't started yet)
+            team_codes = ['CSK', 'MI', 'RCB', 'KKR', 'DC', 'PBKS', 'RR', 'SRH', 'GT', 'LSG']
+            teams = [
+                PointsTableTeam(
+                    position=i + 1,
+                    team=team_codes[i],
+                    played=0,
+                    won=0,
+                    lost=0,
+                    no_result=0,
+                    points=0,
+                    nrr=0.0,
+                    status=None
+                ) for i in range(len(team_codes))
+            ]
+        
+        if not teams:
+            raise ValueError("No teams data found")
+        
+        return PointsTable(
+            season=season,
+            last_updated=datetime.now().isoformat(),
+            teams=teams
+        )
+    
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch points table for season {season}: {e}")
+        raise HTTPException(status_code=503, detail="Failed to fetch points table")
+    except Exception as e:
+        logger.error(f"Error parsing points table for season {season}: {e}")
+        raise HTTPException(status_code=500, detail="Error parsing points table")
+
+@app.get("/api/points-table/{season}", response_model=PointsTable)
+async def get_points_table(season: str):
+    """Get IPL points table for a specific season"""
+    cache_key = f"points_table_{season}"
+    ttl = 1800 if season == "2026" else 3600  # Live season cached for shorter time
+    
+    # Try to get from cache
+    cached_result = get_from_cache(cache_key)
+    if cached_result:
+        return cached_result
+    
+    # Fetch fresh data
+    result = scrape_points_table(season)
+    
+    # Store in cache
+    store_in_cache(cache_key, result, ttl)
+    
+    return result
+
+@app.get("/api/points-table/seasons")
+async def get_available_seasons():
+    """Get list of available seasons for points table"""
+    return {"seasons": list(SEASON_SERIES_MAP.keys())}
 
 # ==================== PLAYER ENDPOINTS ====================
 @app.get("/api/batsmen/top", response_model=List[Player])

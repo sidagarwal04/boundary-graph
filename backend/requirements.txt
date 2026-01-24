@@ -13,3 +13,7 @@ python-dotenv==1.0.0
 redis==5.0.1
 cachetools==5.3.2
 
+# Web scraping
+requests==2.31.0
+beautifulsoup4==4.12.2
+
