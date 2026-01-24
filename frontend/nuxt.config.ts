@@ -5,7 +5,11 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-04-03',
   nitro: {
-    preset: 'static'
+    preset: 'static',
+    prerender: {
+      crawlLinks: true
+    },
+    compressPublicAssets: true
   },
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
@@ -33,21 +37,57 @@ export default defineNuxtConfig({
   imports: {
     autoImport: true,
   },
+  experimental: {
+    payloadExtraction: false,
+    viewTransition: true
+  },
+  routeRules: {
+    '/': { prerender: true },
+    '/batsmen': { prerender: true },
+    '/bowlers': { prerender: true },
+    '/teams': { prerender: true },
+    '/venues': { prerender: true },
+    '/h2h': { prerender: true },
+    '/player-search': { prerender: true }
+  },
   app: {
     head: {
       title: 'Boundary Graph',
       meta: [
         { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover' },
         { name: 'description', content: 'Professional cricket analytics dashboard' },
         { name: 'theme-color', content: '#FBBF24' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+        { name: 'format-detection', content: 'telephone=no' },
       ],
       link: [
         { rel: 'manifest', href: '/manifest.json' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', href: '/bg-logo.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap' }
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap' },
+        { rel: 'preconnect', href: 'https://boundary-graph.onrender.com' },
+      ],
+      script: [
+        {
+          innerHTML: `
+            // Prevent FOUC and handle loading
+            document.documentElement.classList.add('loading');
+            window.addEventListener('load', () => {
+              document.documentElement.classList.remove('loading');
+            });
+            
+            // Add basic mobile detection
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+              document.documentElement.classList.add('mobile-device');
+            }
+          `,
+          type: 'text/javascript'
+        }
       ],
     },
   },

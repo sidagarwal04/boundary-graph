@@ -1,13 +1,13 @@
 <template>
   <div>
     <!-- Project Intro -->
-    <div class="mb-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden relative animate-in fade-in slide-in-from-top-4 duration-700">
-      <div class="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full -mr-16 -mt-16"></div>
-      <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="space-y-4">
+    <div class="mb-6 sm:mb-8 p-4 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm overflow-hidden relative animate-in fade-in slide-in-from-top-4 duration-700">
+      <div class="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-brand-primary/5 rounded-full -mr-12 -mt-12 sm:-mr-16 sm:-mt-16"></div>
+      <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
+        <div class="space-y-3 sm:space-y-4">
             <div class="space-y-1">
-              <h2 class="text-2xl font-black text-slate-900 tracking-tight">Boundary Graph <span class="text-brand-primary">Analytics</span></h2>
-              <p class="text-slate-500 max-w-2xl leading-relaxed text-sm md:text-base">
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight text-responsive">Boundary Graph <span class="text-brand-primary">Analytics</span></h2>
+              <p class="text-slate-500 max-w-2xl leading-relaxed text-sm sm:text-base">
                 Welcome to <strong>Boundary Graph</strong>, an advanced cricket analytics platform focused exclusively on the <strong>Indian Premier League (IPL)</strong>. This educational project processes ball-by-ball IPL data using high-performance Neo4j graph technology. Explore player trajectories, team dynamics, and venue insights from India's most exciting T20 tournament spanning 2008-2024.
               </p>
             </div>
@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
       <NuxtLink to="/h2h" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">

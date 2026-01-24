@@ -1,5 +1,5 @@
 <template>
-  <div class="relative bg-slate-900 rounded-3xl p-8 overflow-hidden h-[400px] flex items-center justify-center border border-slate-800 shadow-2xl">
+  <div class="relative bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-8 overflow-hidden h-[300px] sm:h-[400px] flex items-center justify-center border border-slate-800 shadow-2xl">
     <!-- Grid Pattern -->
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#6366f1 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
     
@@ -8,7 +8,7 @@
       <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Traversing Graph...</p>
     </div>
 
-    <svg v-else viewBox="0 0 500 400" class="w-full h-full relative z-10 transition-opacity duration-1000" :class="{ 'opacity-100': !loading, 'opacity-0': loading }">
+    <svg v-else viewBox="0 0 500 400" class="w-full h-full relative z-10 transition-opacity duration-1000 touch-pan-y" :class="{ 'opacity-100': !loading, 'opacity-0': loading }">
       <!-- Connection Lines -->
       <g v-for="(rival, index) in rivals" :key="'line-' + index">
         <line 

@@ -33,21 +33,21 @@ const closeMenu = () => {
 <template>
   <div class="min-h-screen bg-slate-50 font-sans flex flex-col">
     <!-- Header Navigation -->
-    <header class="bg-white text-slate-900 border-b border-slate-200 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-6">
-          <NuxtLink to="/" class="flex items-center gap-3" @click="closeMenu">
+    <header class="bg-white text-slate-900 border-b border-slate-200 sticky top-0 z-50 safe-area-inset">
+      <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center min-h-[64px]">
+        <div class="flex items-center gap-3 sm:gap-6 min-w-0 flex-1">
+          <NuxtLink to="/" class="flex items-center gap-2 sm:gap-3 min-w-0" @click="closeMenu">
             <!-- Logo Mark -->
-            <div class="w-12 h-12 flex items-center justify-center">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
               <img 
                 src="/bg-logo.png" 
                 alt="Boundary Graph Logo" 
                 class="w-full h-full object-contain"
               />
             </div>
-            <div class="hidden sm:block">
-              <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-none">Boundary Graph</h1>
-              <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wide mt-1">Cricket Analytics for Data Enthusiasts</p>
+            <div class="hidden xs:block min-w-0">
+              <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 leading-none truncate">Boundary Graph</h1>
+              <p class="text-[9px] sm:text-[10px] text-slate-500 font-medium uppercase tracking-wide mt-1 hidden sm:block">Cricket Analytics for Data Enthusiasts</p>
             </div>
           </NuxtLink>
         </div>
@@ -77,7 +77,7 @@ const closeMenu = () => {
         </nav>
 
         <!-- Mobile Menu Toggle -->
-        <button class="md:hidden p-2 -mr-2 text-slate-600" @click="toggleMenu">
+        <button class="md:hidden p-2 -mr-2 text-slate-600 touch-target flex-shrink-0" @click="toggleMenu">
           <Bars3Icon v-if="!isMenuOpen" class="w-6 h-6" />
           <XMarkIcon v-else class="w-6 h-6" />
         </button>
@@ -86,16 +86,16 @@ const closeMenu = () => {
       <!-- Mobile Navigation Drawer -->
       <div 
         v-if="isMenuOpen" 
-        class="md:hidden border-t border-slate-100 bg-white absolute top-full left-0 w-full shadow-xl animate-in slide-in-from-top-2 duration-200"
+        class="md:hidden border-t border-slate-100 bg-white absolute top-full left-0 w-full shadow-xl animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-80px)] overflow-y-auto safe-area-inset"
       >
-        <nav class="flex flex-col p-4 space-y-4">
-          <NuxtLink to="/" class="nav-link-mobile" @click="closeMenu">Overview</NuxtLink>
-          <NuxtLink to="/batsmen" class="nav-link-mobile" @click="closeMenu">Batsmen</NuxtLink>
-          <NuxtLink to="/bowlers" class="nav-link-mobile" @click="closeMenu">Bowlers</NuxtLink>
-          <NuxtLink to="/teams" class="nav-link-mobile" @click="closeMenu">Teams</NuxtLink>
-          <NuxtLink to="/venues" class="nav-link-mobile" @click="closeMenu">Venues</NuxtLink>
-          <NuxtLink to="/h2h" class="nav-link-mobile" @click="closeMenu">Compare</NuxtLink>
-          <NuxtLink to="/player-search" class="nav-link-mobile" @click="closeMenu">Search</NuxtLink>
+        <nav class="flex flex-col p-4 space-y-1">
+          <NuxtLink to="/" class="nav-link-mobile touch-target" @click="closeMenu">Overview</NuxtLink>
+          <NuxtLink to="/batsmen" class="nav-link-mobile touch-target" @click="closeMenu">Batsmen</NuxtLink>
+          <NuxtLink to="/bowlers" class="nav-link-mobile touch-target" @click="closeMenu">Bowlers</NuxtLink>
+          <NuxtLink to="/teams" class="nav-link-mobile touch-target" @click="closeMenu">Teams</NuxtLink>
+          <NuxtLink to="/venues" class="nav-link-mobile touch-target" @click="closeMenu">Venues</NuxtLink>
+          <NuxtLink to="/h2h" class="nav-link-mobile touch-target" @click="closeMenu">Compare</NuxtLink>
+          <NuxtLink to="/player-search" class="nav-link-mobile touch-target" @click="closeMenu">Search</NuxtLink>
           <NuxtLink to="/ask-bg" class="nav-link-mobile flex items-center justify-between" @click="closeMenu">
             <span>Ask BG</span>
             <div class="w-2 h-2 rounded-full bg-brand-primary animate-pulse"></div>
@@ -114,7 +114,7 @@ const closeMenu = () => {
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-6 sm:py-8 w-full container-safe safe-area-inset">
       <slot />
     </main>
 
@@ -187,17 +187,26 @@ const closeMenu = () => {
 }
 
 .nav-link-mobile {
-  font-size: 1.125rem; /* text-base */
-  font-weight: 700; /* font-bold */
+  font-size: 1rem; /* text-base */
+  font-weight: 600; /* font-semibold */
   color: #334155; /* text-slate-700 */
   display: block;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #f8fafc; /* border-slate-50 */
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  transition-property: all;
+  transition-duration: 200ms;
+  margin-bottom: 0.25rem;
+}
+
+.nav-link-mobile:hover {
+  background-color: #f8fafc;
+  color: var(--tw-brand-primary, #2563eb);
 }
 
 .nav-link-mobile.router-link-active {
-  color: var(--tw-brand-primary, #2563eb); /* text-brand-primary */
+  color: var(--tw-brand-primary, #2563eb);
+  background-color: #eff6ff;
+  font-weight: 700;
 }
 </style>
 

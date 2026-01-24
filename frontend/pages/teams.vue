@@ -14,14 +14,14 @@
       </div>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
       <!-- Team Selector -->
       <div class="lg:col-span-4 lg:sticky lg:top-24 h-fit">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
+          <div class="px-4 sm:px-5 py-4 border-b border-slate-100 bg-slate-50/50">
             <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Select Team</h2>
           </div>
-          <div class="p-4 space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto custom-scrollbar">
+          <div class="p-3 sm:p-4 space-y-4 max-h-[60vh] lg:max-h-[calc(100vh-250px)] overflow-y-auto custom-scrollbar">
             <!-- Active Teams separator -->
             <div class="relative py-2">
               <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -86,21 +86,21 @@
       <div v-if="selectedTeam" class="lg:col-span-8 space-y-8">
         <!-- Main Stats -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-6 py-5 border-b border-slate-100 flex items-start justify-between">
+          <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3 mb-2">
                 <TeamLogo :teamName="selectedTeam.name" size="lg" :showName="false" />
-                <h2 class="text-2xl font-extrabold text-slate-900">{{ selectedTeam.name }}</h2>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">{{ selectedTeam.name }}</h2>
               </div>
               <p class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">
                 {{ selectedTeam.is_active ? 'Currently Active' : 'Defunct Franchise' }}
               </p>
             </div>
-            <div class="ml-6 flex-shrink-0">
-              <div v-if="!selectedTeam.is_active" class="px-2 py-1 mb-2 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase text-center">
+            <div class="w-full sm:ml-6 sm:flex-shrink-0 sm:w-auto">
+              <div v-if="!selectedTeam.is_active" class="px-2 py-1 mb-2 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase text-center sm:text-right">
                 Historical
               </div>
-              <div class="bg-slate-50 border border-slate-100 rounded-lg px-4 py-3 shadow-sm w-64 min-w-[25rem] max-w-[25rem]">
+              <div class="bg-slate-50 border border-slate-100 rounded-lg px-3 sm:px-4 py-3 shadow-sm w-full sm:w-64 sm:min-w-[16rem] sm:max-w-[25rem] lg:w-[28rem] lg:min-w-[28rem] lg:max-w-[48rem]">
                 <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">Team Information</div>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-2">
                   <div class="flex flex-col items-start">
@@ -124,20 +124,20 @@
             </div>
           </div>
           
-          <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-            <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+            <div class="p-4 sm:p-6">
               <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Matches</p>
-              <p class="text-4xl font-black text-slate-900">{{ teamStats.total_matches }}</p>
+              <p class="text-3xl sm:text-4xl font-black text-slate-900">{{ teamStats.total_matches }}</p>
             </div>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
               <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Wins</p>
-              <p class="text-4xl font-black text-brand-primary">{{ teamStats.wins }}</p>
+              <p class="text-3xl sm:text-4xl font-black text-brand-primary">{{ teamStats.wins }}</p>
             </div>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
               <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Win Rate</p>
               <div class="flex items-baseline gap-1">
-                <p class="text-4xl font-black text-brand-accent">{{ teamStats.win_percentage }}</p>
-                <span class="text-lg font-bold text-slate-400">%</span>
+                <p class="text-3xl sm:text-4xl font-black text-brand-accent">{{ teamStats.win_percentage }}</p>
+                <span class="text-base sm:text-lg font-bold text-slate-400">%</span>
               </div>
             </div>
           </div>
