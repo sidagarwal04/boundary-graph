@@ -62,7 +62,7 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS configuration - allow only your Netlify domain in production  
+# CORS configuration - allow Netlify domain and local development
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000", 
