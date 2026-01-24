@@ -1110,6 +1110,21 @@ def determine_status(position: int, season: str) -> Optional[str]:
             return "E"  # Eliminated
         return None
 
+# ==================== POINTS TABLE ENDPOINTS ====================
+
+@app.get("/api/points-table/seasons")
+async def get_available_seasons():
+    """Get list of available seasons for points table"""
+    try:
+        seasons = list(SEASON_URL_MAP.keys())
+        # Sort seasons in descending order (newest first)
+        seasons_sorted = sorted(seasons, key=lambda x: int(x), reverse=True)
+        return {"seasons": seasons_sorted}
+    except Exception as e:
+        logger.error(f"Error getting available seasons: {e}")
+        # Fallback to hardcoded list
+        return {"seasons": ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008"]}
+
 @app.get("/api/points-table/{season}", response_model=PointsTable)
 async def get_points_table(season: str):
     """Get IPL points table for a specific season"""
@@ -1128,19 +1143,6 @@ async def get_points_table(season: str):
     await set_cache(cache_key, result, ttl)
     
     return result
-
-@app.get("/api/points-table/seasons")
-async def get_available_seasons():
-    """Get list of available seasons for points table"""
-    try:
-        seasons = list(SEASON_URL_MAP.keys())
-        # Sort seasons in descending order (newest first)
-        seasons_sorted = sorted(seasons, key=lambda x: int(x), reverse=True)
-        return {"seasons": seasons_sorted}
-    except Exception as e:
-        logger.error(f"Error getting available seasons: {e}")
-        # Fallback to hardcoded list
-        return {"seasons": ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008"]}
 
 # ==================== PLAYER ENDPOINTS ====================
 @app.get("/api/batsmen/top", response_model=List[Player])
