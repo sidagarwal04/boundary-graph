@@ -1102,7 +1102,7 @@ async def get_points_table(season: str):
     ttl = 1800 if season == "2026" else 3600  # Live season cached for shorter time
     
     # Try to get from cache
-    cached_result = get_from_cache(cache_key)
+    cached_result = await get_from_cache(cache_key)
     if cached_result:
         return cached_result
     
@@ -1110,7 +1110,7 @@ async def get_points_table(season: str):
     result = scrape_points_table(season)
     
     # Store in cache
-    store_in_cache(cache_key, result, ttl)
+    await set_cache(cache_key, result, ttl)
     
     return result
 
