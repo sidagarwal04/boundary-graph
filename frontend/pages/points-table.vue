@@ -135,6 +135,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import TeamLogo from '~/components/TeamLogo.vue'
+import { useHead } from '#app'
 
 // Nuxt composables
 const config = useRuntimeConfig()
@@ -190,8 +191,12 @@ const fetchAvailableSeasons = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch available seasons:', err)
-    // Fallback to default seasons
-    availableSeasons.value = ['2026', '2025', '2024', '2023']
+    // Fallback to all available seasons (2008-2026)
+    availableSeasons.value = [
+      '2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', 
+      '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', 
+      '2010', '2009', '2008'
+    ]
   }
 }
 

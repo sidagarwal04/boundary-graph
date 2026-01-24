@@ -62,10 +62,10 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS configuration - allow only your Netlify domain in production
+# CORS configuration - allow only your Netlify domain in production  
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:8000",
+    "http://localhost:8000", 
     "https://boundary-graph.netlify.app",
 ]
 
@@ -73,7 +73,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -2436,6 +2436,21 @@ async def get_player_rivals(player_name: str):
             ))
     
     return rivals
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Simple health check endpoint"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "2.0.0"
+    }
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {"message": "IPL Cricket Dashboard API", "version": "2.0.0"}
 
 if __name__ == "__main__":
     import uvicorn
