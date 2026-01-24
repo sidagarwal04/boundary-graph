@@ -831,17 +831,17 @@ def scrape_points_table(season: str) -> PointsTable:
     
     # Actual IPL Points Table Data (as of available records)
     ACTUAL_IPL_DATA = {
-        "2025": [  # Current season (as of Jan 25, 2026)
-            {"team": "KKR", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.428},
-            {"team": "SRH", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.414},
-            {"team": "RR", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.273},
-            {"team": "RCB", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.459},
-            {"team": "DC", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.377},
-            {"team": "PBKS", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.251},
-            {"team": "MI", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.318},
-            {"team": "GT", "played": 14, "won": 5, "lost": 7, "no_result": 2, "points": 12, "nrr": -1.063},
-            {"team": "LSG", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.769},
-            {"team": "CSK", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.528}
+        "2025": [  # Actual 2025 season final standings
+            {"team": "PBKS", "played": 14, "won": 9, "lost": 4, "no_result": 1, "points": 19, "nrr": 0.372},
+            {"team": "RCB", "played": 14, "won": 9, "lost": 4, "no_result": 1, "points": 19, "nrr": 0.301},
+            {"team": "GT", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.254},
+            {"team": "MI", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 1.142},
+            {"team": "DC", "played": 14, "won": 7, "lost": 6, "no_result": 1, "points": 15, "nrr": 0.011},
+            {"team": "SRH", "played": 14, "won": 6, "lost": 7, "no_result": 1, "points": 13, "nrr": -0.241},
+            {"team": "LSG", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.376},
+            {"team": "KKR", "played": 14, "won": 5, "lost": 7, "no_result": 2, "points": 12, "nrr": -0.305},
+            {"team": "RR", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.549},
+            {"team": "CSK", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.647}
         ],
         "2024": [
             {"team": "KKR", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.428},
