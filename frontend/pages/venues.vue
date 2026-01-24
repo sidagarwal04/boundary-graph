@@ -411,7 +411,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, Teleport } from 'vue'
+import { ref, onMounted, onUnmounted, Teleport } from 'vue'
 import { MapPinIcon, BuildingLibraryIcon } from '@heroicons/vue/24/outline'
 import { useHead } from 'nuxt/app'
 
@@ -421,12 +421,23 @@ const selectedVenue = ref<any>(null)
 const isLoading = ref(true)
 const loadError = ref<string | null>(null)
 
+// ESC key handler function
+const handleEscKey = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    closeModal()
+  }
+}
+
 const showVenueDetails = (venue: any) => {
   selectedVenue.value = venue
+  // Add ESC key listener when modal opens
+  document.addEventListener('keydown', handleEscKey)
 }
 
 const closeModal = () => {
   selectedVenue.value = null
+  // Remove ESC key listener when modal closes
+  document.removeEventListener('keydown', handleEscKey)
 }
 
 const fetchVenues = async () => {
@@ -488,6 +499,11 @@ const fetchVenues = async () => {
 onMounted(async () => {
   // Start loading venues immediately (non-blocking)
   fetchVenues().catch(console.error)
+})
+
+onUnmounted(() => {
+  // Cleanup ESC key listener to prevent memory leaks
+  document.removeEventListener('keydown', handleEscKey)
 })
 
 useHead({
