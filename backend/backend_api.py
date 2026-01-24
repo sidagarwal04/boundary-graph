@@ -231,17 +231,32 @@ db = Neo4jConnection()
 @app.on_event("startup")
 async def startup_event():
     """Initialize connections on startup"""
+    logger.info("🚀 Starting application...")
+    
     try:
-        # Initialize Redis (non-blocking)
+        # Initialize Redis (non-blocking, fast)
         init_redis_sync()
+        logger.info("✅ Redis initialization completed")
         
-        # Initialize Neo4j
-        db.connect()
+        # Initialize Neo4j with timeout (non-blocking)
+        try:
+            import asyncio
+            # Run Neo4j connection with timeout to prevent hanging
+            await asyncio.wait_for(
+                asyncio.to_thread(db.connect), 
+                timeout=10.0  # 10 second timeout
+            )
+            logger.info("✅ Neo4j connection completed")
+        except asyncio.TimeoutError:
+            logger.warning("⚠️ Neo4j connection timeout - will retry later if needed")
+        except Exception as neo4j_error:
+            logger.warning(f"⚠️ Neo4j connection failed: {neo4j_error} - will retry later if needed")
         
         logger.info("🚀 Application startup complete")
     except Exception as e:
-        logger.error(f"❌ Startup failed: {e}")
+        logger.error(f"❌ Startup error: {e}")
         # Don't raise - let the app start even if connections fail
+        logger.info("🚀 Application started with partial initialization")
 
 @app.on_event("shutdown")  
 async def shutdown_event():
