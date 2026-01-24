@@ -38,13 +38,13 @@
                 <button 
                   @click="selectTeam(team)"
                   :class="[
-                    'w-full text-left px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium border',
+                    'w-full text-left px-4 py-3 rounded-lg transition-all duration-200 text-base font-medium border',
                     selectedTeam?.name === team.name 
                       ? 'bg-brand-primary text-white border-brand-primary shadow-md shadow-brand-primary/20' 
                       : 'bg-white text-slate-600 hover:bg-slate-50 border-transparent'
                   ]"
                 >
-                  <TeamLogo :teamName="team.name" size="sm" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-600'" />
+                  <TeamLogo :teamName="team.name" size="md" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-600'" />
                 </button>
               </div>
             </div>
@@ -65,14 +65,14 @@
                 <button 
                   @click="selectTeam(team)"
                   :class="[
-                    'w-full text-left px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium border opacity-75',
+                    'w-full text-left px-4 py-3 rounded-lg transition-all duration-200 text-base font-medium border opacity-75',
                     selectedTeam?.name === team.name 
                       ? 'bg-slate-800 text-white border-slate-800 shadow-md shadow-slate-800/20' 
                       : 'bg-white text-slate-500 hover:bg-slate-50 border-transparent'
                   ]"
                 >
                   <div class="flex items-center justify-between w-full">
-                    <TeamLogo :teamName="team.name" size="sm" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-500'" />
+                    <TeamLogo :teamName="team.name" size="md" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-500'" />
                     <span v-if="selectedTeam?.name === team.name" class="text-[10px] opacity-60">(Defunct)</span>
                   </div>
                 </button>
@@ -156,25 +156,27 @@
 
         <!-- Rivalry Intelligence -->
         <div v-if="rivalries.length > 0" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center">
+          <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
              <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">H2H Rivalry Intelligence</h2>
              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Win % vs Opponents</span>
           </div>
           <div class="divide-y divide-slate-50">
-            <div v-for="rival in rivalries" :key="rival.opponent" class="p-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <TeamLogo :teamName="rival.opponent" size="md" :showName="true" textClass="font-bold text-slate-800 truncate" />
-                  <span class="text-[10px] text-slate-400 font-medium uppercase">• {{ rival.matches }} Matches Played</span>
+            <div v-for="rival in rivalries" :key="rival.opponent" class="p-3 sm:p-4 hover:bg-slate-50/50 transition-colors">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-6">
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <TeamLogo :teamName="rival.opponent" size="md" :showName="true" textClass="font-bold text-slate-800 truncate" />
+                    <span class="text-[10px] text-slate-400 font-medium uppercase ml-0 sm:ml-0">• {{ rival.matches }} Matches Played</span>
+                  </div>
                 </div>
-              </div>
-              <div class="flex items-center gap-6">
-                <div class="text-right">
-                  <p class="text-sm font-black text-slate-900">{{ rival.wins }}W - {{ rival.matches - rival.wins }}L</p>
-                  <p class="text-[10px] font-bold text-slate-400">{{ rival.win_pct }}% Win Ratio</p>
-                </div>
-                <div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div class="h-full bg-brand-primary rounded-full transition-all duration-700" :style="{ width: rival.win_pct + '%' }"></div>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
+                  <div class="text-left sm:text-right">
+                    <p class="text-sm font-black text-slate-900">{{ rival.wins }}W - {{ rival.matches - rival.wins }}L</p>
+                    <p class="text-[10px] font-bold text-slate-400">{{ rival.win_pct }}% Win Ratio</p>
+                  </div>
+                  <div class="w-full sm:w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-brand-primary rounded-full transition-all duration-700" :style="{ width: rival.win_pct + '%' }"></div>
+                  </div>
                 </div>
               </div>
             </div>

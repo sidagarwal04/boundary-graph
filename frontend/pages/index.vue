@@ -8,7 +8,7 @@
             <div class="space-y-1">
               <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight text-responsive">Boundary Graph <span class="text-brand-primary">Analytics</span></h2>
               <p class="text-slate-500 max-w-2xl leading-relaxed text-sm sm:text-base">
-                Welcome to <strong>Boundary Graph</strong>, an advanced cricket analytics platform focused exclusively on the <strong>Indian Premier League (IPL)</strong>. This educational project processes ball-by-ball IPL data using high-performance Neo4j graph technology. Explore player trajectories, team dynamics, and venue insights from India's most exciting T20 tournament spanning 2008-2024.
+                Welcome to <strong>Boundary Graph</strong>, an advanced cricket analytics platform focused exclusively on the <strong>Indian Premier League (IPL)</strong>. This educational project processes ball-by-ball IPL data using high-performance Neo4j graph technology. Explore player trajectories, team dynamics, and venue insights from India's most exciting T20 tournament spanning 2008-2025.
               </p>
             </div>
             <div class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
@@ -18,28 +18,28 @@
             </div>
             
             <!-- Tech Stack Pill -->
-            <div class="flex flex-wrap items-center gap-4 pt-2">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Engineered With</span>
-              <div class="flex gap-3">
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Graph Database">
-                  <CircleStackIcon class="w-3.5 h-3.5 text-blue-600" />
-                  <span class="text-[10px] font-bold text-slate-700">Neo4j</span>
+            <div class="flex flex-wrap items-start gap-2 sm:gap-4 pt-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0">Engineered With</span>
+              <div class="flex flex-wrap gap-1.5 sm:gap-3 min-w-0">
+                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="Graph Database">
+                  <CircleStackIcon class="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Neo4j</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Frontend Framework">
-                  <SparklesIcon class="w-3.5 h-3.5 text-emerald-600" />
-                  <span class="text-[10px] font-bold text-slate-700">Nuxt 3</span>
+                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="Frontend Framework">
+                  <SparklesIcon class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Nuxt 3</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="API Backend">
-                  <BoltIcon class="w-3.5 h-3.5 text-orange-600" />
-                  <span class="text-[10px] font-bold text-slate-700">FastAPI</span>
+                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="API Backend">
+                  <BoltIcon class="w-3.5 h-3.5 text-orange-600 shrink-0" />
+                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">FastAPI</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="AI Coding Assistant">
-                  <CpuChipIcon class="w-3.5 h-3.5 text-indigo-600" />
-                  <span class="text-[10px] font-bold text-slate-700">Antigravity</span>
+                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="AI Coding Assistant">
+                  <CpuChipIcon class="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Antigravity</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="LLM Technology">
-                  <SparklesIcon class="w-3.5 h-3.5 text-purple-600" />
-                  <span class="text-[10px] font-bold text-slate-700">Gemini</span>
+                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="LLM Technology">
+                  <SparklesIcon class="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Gemini</span>
                 </div>
               </div>
             </div>
@@ -162,8 +162,8 @@
           @click="openSeasonModal(season)"
           class="bg-slate-50 rounded p-3 text-center border border-slate-100/50 hover:bg-white hover:shadow-sm hover:border-brand-primary/30 transition-all duration-200 cursor-pointer"
         >
-          <p class="text-xs text-slate-400 font-medium font-mono mb-1">{{ season.season }}</p>
-          <p class="text-lg font-bold text-slate-900">{{ season.matches }} Matches</p>
+          <p class="text-lg text-slate-400 font-medium font-mono mb-1">{{ season.season }}</p>
+          <p class="text-sm font-bold text-slate-900">{{ season.matches }} Matches</p>
         </div>
       </div>
     </div>
