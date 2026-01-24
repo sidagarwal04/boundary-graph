@@ -1117,7 +1117,15 @@ async def get_points_table(season: str):
 @app.get("/api/points-table/seasons")
 async def get_available_seasons():
     """Get list of available seasons for points table"""
-    return {"seasons": list(SEASON_URL_MAP.keys())}
+    try:
+        seasons = list(SEASON_URL_MAP.keys())
+        # Sort seasons in descending order (newest first)
+        seasons_sorted = sorted(seasons, key=lambda x: int(x), reverse=True)
+        return {"seasons": seasons_sorted}
+    except Exception as e:
+        logger.error(f"Error getting available seasons: {e}")
+        # Fallback to hardcoded list
+        return {"seasons": ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008"]}
 
 # ==================== PLAYER ENDPOINTS ====================
 @app.get("/api/batsmen/top", response_model=List[Player])
@@ -2436,21 +2444,6 @@ async def get_player_rivals(player_name: str):
             ))
     
     return rivals
-
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    """Simple health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": "2.0.0"
-    }
-
-@app.get("/")
-async def root():
-    """Root endpoint"""
-    return {"message": "IPL Cricket Dashboard API", "version": "2.0.0"}
 
 if __name__ == "__main__":
     import uvicorn
