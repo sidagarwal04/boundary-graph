@@ -183,7 +183,7 @@ const teamNameMap: Record<string, string> = {
 // Methods
 const fetchAvailableSeasons = async () => {
   try {
-    const response = await fetch(`${config.public.apiUrl}/api/points-table/seasons`)
+    const response = await fetch(`${config.public.apiBase}/api/points-table/seasons`)
     if (response.ok) {
       const data = await response.json()
       availableSeasons.value = data.seasons.sort((a: string, b: string) => b.localeCompare(a))
@@ -200,7 +200,7 @@ const fetchPointsTable = async () => {
   error.value = null
   
   try {
-    const response = await fetch(`${config.public.apiUrl}/api/points-table/${selectedSeason.value}`)
+    const response = await fetch(`${config.public.apiBase}/api/points-table/${selectedSeason.value}`)
     
     if (!response.ok) {
       throw new Error(`Failed to fetch points table: ${response.statusText}`)

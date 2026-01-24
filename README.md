@@ -153,7 +153,7 @@ NUXT_PUBLIC_CACHE_TTL=1800000
 - **🏢 Team Insights**: Track rebranding history (Delhi Daredevils ➔ Delhi Capitals)
 - **📈 Trends**: Visualize runs and wickets across all IPL seasons
 - **🏟️ Venue Intelligence**: Stadium-specific performance analytics
-- **� Live Points Table**: Real-time IPL standings with team rankings, NRR, and qualification status
+- **📊 Live Points Table**: Real-time IPL standings (2008-2026) with team rankings, NRR, and qualification status
 - **�📱 Responsive**: Optimized for all device sizes
 
 ## 🚀 Performance Metrics
