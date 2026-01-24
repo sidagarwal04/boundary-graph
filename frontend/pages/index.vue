@@ -5,46 +5,53 @@
       <div class="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full -mr-16 -mt-16"></div>
       <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="space-y-4">
-          <div class="space-y-1">
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Cricket Data Analytics <span class="text-brand-primary">Platform</span></h2>
-            <p class="text-slate-500 max-w-2xl leading-relaxed text-sm md:text-base">
-              Welcome to an advanced cricket analytics platform. This educational project processes ball-by-ball data using high-performance graph technology. Explore player trajectories and team dynamics powered by comprehensive T20 cricket data.
-            </p>
+            <div class="space-y-1">
+              <h2 class="text-2xl font-black text-slate-900 tracking-tight">Boundary Graph <span class="text-brand-primary">Analytics</span></h2>
+              <p class="text-slate-500 max-w-2xl leading-relaxed text-sm md:text-base">
+                Welcome to <strong>Boundary Graph</strong>, an advanced cricket analytics platform focused exclusively on the <strong>Indian Premier League (IPL)</strong>. This educational project processes ball-by-ball IPL data using high-performance Neo4j graph technology. Explore player trajectories, team dynamics, and venue insights from India's most exciting T20 tournament spanning 2008-2024.
+              </p>
+            </div>
             <div class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
               <p class="text-xs text-blue-800 leading-relaxed">
               <strong class="text-blue-900">Educational Project:</strong> This is an independent, non-commercial project created for educational and technical demonstration purposes. Not affiliated with any cricket organization. <NuxtLink to="/disclaimer" class="underline font-medium">View legal disclaimer</NuxtLink>.
               </p>
             </div>
-          </div>
-          
-          <!-- Tech Stack Pill -->
-          <div class="flex flex-wrap items-center gap-4 pt-2">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Engineered With</span>
-            <div class="flex gap-3">
-              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Graph Database">
-                <CircleStackIcon class="w-3.5 h-3.5 text-blue-600" />
-                <span class="text-[10px] font-bold text-slate-700">Neo4j</span>
-              </div>
-              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Frontend Framework">
-                <SparklesIcon class="w-3.5 h-3.5 text-emerald-600" />
-                <span class="text-[10px] font-bold text-slate-700">Nuxt 3</span>
-              </div>
-              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="API Backend">
-                <BoltIcon class="w-3.5 h-3.5 text-orange-600" />
-                <span class="text-[10px] font-bold text-slate-700">FastAPI</span>
-              </div>
-              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="AI Coding Assistant">
-                <CpuChipIcon class="w-3.5 h-3.5 text-indigo-600" />
-                <span class="text-[10px] font-bold text-slate-700">Antigravity</span>
-              </div>
-              <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="LLM Technology">
-                <SparklesIcon class="w-3.5 h-3.5 text-purple-600" />
-                <span class="text-[10px] font-bold text-slate-700">Gemini</span>
+            
+            <!-- Tech Stack Pill -->
+            <div class="flex flex-wrap items-center gap-4 pt-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Engineered With</span>
+              <div class="flex gap-3">
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Graph Database">
+                  <CircleStackIcon class="w-3.5 h-3.5 text-blue-600" />
+                  <span class="text-[10px] font-bold text-slate-700">Neo4j</span>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="Frontend Framework">
+                  <SparklesIcon class="w-3.5 h-3.5 text-emerald-600" />
+                  <span class="text-[10px] font-bold text-slate-700">Nuxt 3</span>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="API Backend">
+                  <BoltIcon class="w-3.5 h-3.5 text-orange-600" />
+                  <span class="text-[10px] font-bold text-slate-700">FastAPI</span>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="AI Coding Assistant">
+                  <CpuChipIcon class="w-3.5 h-3.5 text-indigo-600" />
+                  <span class="text-[10px] font-bold text-slate-700">Antigravity</span>
+                </div>
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg border border-slate-100" title="LLM Technology">
+                  <SparklesIcon class="w-3.5 h-3.5 text-purple-600" />
+                  <span class="text-[10px] font-bold text-slate-700">Gemini</span>
+                </div>
               </div>
             </div>
-          </div>
         </div>
-        <div class="flex items-center gap-3 shrink-0">
+        <div class="flex flex-col items-center gap-3 shrink-0">
+          <div class="flex-shrink-0">
+            <img 
+              src="/bg-logo.png" 
+              alt="Boundary Graph Logo" 
+              class="w-32 h-32 object-contain"
+            />
+          </div>
           <div class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-slate-200">
             IPL 2008 - 2025
           </div>

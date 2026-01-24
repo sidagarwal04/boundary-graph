@@ -6,7 +6,11 @@
     <!-- Mystery Icon -->
     <div class="mb-8 relative group">
       <div class="w-24 h-24 bg-slate-900 rounded-3xl flex items-center justify-center shadow-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500">
-         <SparklesIcon class="w-12 h-12 text-brand-primary animate-pulse" />
+         <img 
+           src="/bg-logo.png" 
+           alt="Boundary Graph Logo" 
+           class="w-20 h-20 object-contain"
+         />
       </div>
       <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center border-4 border-slate-50 shadow-lg">
         <span class="text-white text-xs font-black">?</span>

@@ -38,8 +38,12 @@ const closeMenu = () => {
         <div class="flex items-center gap-6">
           <NuxtLink to="/" class="flex items-center gap-3" @click="closeMenu">
             <!-- Logo Mark -->
-            <div class="w-8 h-8 bg-brand-primary text-white rounded flex items-center justify-center font-bold text-lg">
-              B
+            <div class="w-12 h-12 flex items-center justify-center">
+              <img 
+                src="/bg-logo.png" 
+                alt="Boundary Graph Logo" 
+                class="w-full h-full object-contain"
+              />
             </div>
             <div class="hidden sm:block">
               <h1 class="text-xl font-bold tracking-tight text-slate-900 leading-none">Boundary Graph</h1>
