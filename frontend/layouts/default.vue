@@ -55,11 +55,11 @@ const closeMenu = () => {
         <!-- Desktop Navigation -->
         <nav class="hidden md:flex gap-8 items-center">
           <NuxtLink to="/" class="nav-link">Overview</NuxtLink>
+          <NuxtLink to="/points-table" class="nav-link">Points Table</NuxtLink>
           <NuxtLink to="/batsmen" class="nav-link">Batsmen</NuxtLink>
           <NuxtLink to="/bowlers" class="nav-link">Bowlers</NuxtLink>
           <NuxtLink to="/teams" class="nav-link">Teams</NuxtLink>
           <NuxtLink to="/venues" class="nav-link">Venues</NuxtLink>
-          <NuxtLink to="/points-table" class="nav-link">Points Table</NuxtLink>
           <NuxtLink to="/h2h" class="nav-link">Compare</NuxtLink>
           <NuxtLink to="/player-search" class="nav-link">Search</NuxtLink>
           <NuxtLink to="/ask-bg" class="nav-link group flex items-center gap-1.5">
@@ -91,11 +91,11 @@ const closeMenu = () => {
       >
         <nav class="flex flex-col p-4 space-y-1">
           <NuxtLink to="/" class="nav-link-mobile touch-target" @click="closeMenu">Overview</NuxtLink>
+          <NuxtLink to="/points-table" class="nav-link-mobile touch-target" @click="closeMenu">Points Table</NuxtLink>
           <NuxtLink to="/batsmen" class="nav-link-mobile touch-target" @click="closeMenu">Batsmen</NuxtLink>
           <NuxtLink to="/bowlers" class="nav-link-mobile touch-target" @click="closeMenu">Bowlers</NuxtLink>
           <NuxtLink to="/teams" class="nav-link-mobile touch-target" @click="closeMenu">Teams</NuxtLink>
           <NuxtLink to="/venues" class="nav-link-mobile touch-target" @click="closeMenu">Venues</NuxtLink>
-          <NuxtLink to="/points-table" class="nav-link-mobile touch-target" @click="closeMenu">Points Table</NuxtLink>
           <NuxtLink to="/h2h" class="nav-link-mobile touch-target" @click="closeMenu">Compare</NuxtLink>
           <NuxtLink to="/player-search" class="nav-link-mobile touch-target" @click="closeMenu">Search</NuxtLink>
           <NuxtLink to="/ask-bg" class="nav-link-mobile flex items-center justify-between" @click="closeMenu">

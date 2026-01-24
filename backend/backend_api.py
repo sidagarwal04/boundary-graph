@@ -1170,19 +1170,8 @@ def get_teams_for_season(season: str) -> list:
 
 def determine_status(position: int, season: str) -> Optional[str]:
     """Determine qualification status based on position"""
-    if season in ["2025", "2024", "2023", "2022", "2021", "2020"]:
-        # Historical seasons - we don't know exact qualification status
-        return None
-    elif season == "2026":
-        # Live season - no status yet
-        return None
-    else:
-        # For other seasons, use general playoff qualification
-        if position <= 4:
-            return "Q"  # Qualified
-        elif position > 7:
-            return "E"  # Eliminated
-        return None
+    # No status indicators for any season
+    return None
 
 # ==================== POINTS TABLE ENDPOINTS ====================
 
