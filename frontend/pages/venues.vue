@@ -23,61 +23,62 @@
 
     <!-- Venues Table -->
     <div class="stat-card overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left">
+      <div class="mobile-table-container">
+        <table class="w-full text-left min-w-[700px]">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Venue Name</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Matches</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Avg 1st Innings</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Defend %</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Chase %</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Action</th>
+              <th class="px-3 sm:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 min-w-[200px]">Venue Name</th>
+              <th class="px-3 sm:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center min-w-[80px]">Matches</th>
+              <th class="px-3 sm:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center min-w-[120px]">Avg 1st Innings</th>
+              <th class="px-3 sm:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center min-w-[100px]">Defend %</th>
+              <th class="px-3 sm:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center min-w-[100px]">Chase %</th>
+              <th class="px-3 sm:px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right min-w-[120px]">Action</th>
             </tr>
           </thead>
           <tbody v-if="!isLoading && !loadError && venues.length > 0" class="divide-y divide-slate-50">
             <tr v-for="venue in venues" :key="venue.name" class="hover:bg-slate-50/50 transition-colors group">
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-brand-primary group-hover:text-white transition-colors">
-                    <BuildingLibraryIcon class="w-5 h-5" />
+              <td class="px-3 sm:px-6 py-3 sm:py-4">
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-brand-primary group-hover:text-white transition-colors flex-shrink-0">
+                    <BuildingLibraryIcon class="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <div>
-                    <p class="font-bold text-slate-900 leading-none mb-1">{{ venue.name }}</p>
-                    <p class="text-xs text-slate-400 font-medium">Premier League Venue</p>
+                  <div class="min-w-0">
+                    <p class="font-bold text-slate-900 leading-none mb-1 text-sm sm:text-base truncate">{{ venue.name }}</p>
+                    <p class="text-xs text-slate-400 font-medium hidden sm:block">Premier League Venue</p>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 text-center">
-                <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold tracking-tight">
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-center">
+                <span class="px-2 sm:px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold tracking-tight whitespace-nowrap">
                   {{ venue.total_matches }}
                 </span>
               </td>
-              <td class="px-6 py-4 text-center">
-                <span class="text-sm font-bold text-slate-700">{{ venue.avg_first_innings }}</span>
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-center">
+                <span class="text-sm font-bold text-slate-700 whitespace-nowrap">{{ venue.avg_first_innings }}</span>
               </td>
-              <td class="px-6 py-4 text-center">
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-center">
                 <div class="flex flex-col items-center gap-1">
-                  <span class="text-sm font-bold text-slate-700">{{ venue.bat_first_win_pct }}%</span>
-                  <div class="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <span class="text-xs sm:text-sm font-bold text-slate-700 whitespace-nowrap">{{ venue.bat_first_win_pct }}%</span>
+                  <div class="w-10 sm:w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
                     <div class="h-full bg-blue-500 rounded-full" :style="{ width: venue.bat_first_win_pct + '%' }"></div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 text-center">
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-center">
                 <div class="flex flex-col items-center gap-1">
-                  <span class="text-sm font-bold text-slate-700">{{ venue.chase_win_pct }}%</span>
-                  <div class="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <span class="text-xs sm:text-sm font-bold text-slate-700 whitespace-nowrap">{{ venue.chase_win_pct }}%</span>
+                  <div class="w-10 sm:w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
                     <div class="h-full bg-green-500 rounded-full" :style="{ width: venue.chase_win_pct + '%' }"></div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 text-right">
+              <td class="px-3 sm:px-6 py-3 sm:py-4 text-right">
                 <button 
                   @click="showVenueDetails(venue)"
-                  class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-brand-primary transition-colors"
+                  class="px-2 sm:px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-brand-primary transition-colors whitespace-nowrap"
                 >
-                  View Intelligence
+                  <span class="hidden sm:inline">View Intelligence</span>
+                  <span class="sm:hidden">View</span>
                 </button>
               </td>
             </tr>
@@ -85,7 +86,7 @@
           <!-- Loading State -->
           <tbody v-else-if="isLoading">
             <tr v-for="n in 8" :key="n">
-              <td class="px-6 py-4" colspan="6">
+              <td class="px-3 sm:px-6 py-4" colspan="6">
                 <div class="flex items-center gap-3 animate-pulse">
                   <div class="w-10 h-10 bg-slate-200 rounded-xl"></div>
                   <div class="space-y-2 flex-1">
@@ -146,9 +147,9 @@
       <div v-if="selectedVenue" class="fixed inset-0 z-[9999] flex items-start justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" @click.self="closeModal">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300 mt-8">
         <!-- Header -->
-        <div class="bg-white px-6 py-4 border-b border-slate-200 flex justify-between items-center sticky top-0 z-10">
-          <div>
-            <h3 class="text-xl font-bold text-slate-900">{{ selectedVenue.name }}</h3>
+        <div class="bg-white px-4 sm:px-6 py-4 border-b border-slate-200 flex justify-between items-center sticky top-0 z-10">
+          <div class="min-w-0 flex-1 mr-4">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 truncate">{{ selectedVenue.name }}</h3>
             <p class="text-sm text-slate-500">Venue Intelligence Report</p>
           </div>
           <button @click="closeModal" class="text-slate-400 hover:text-slate-600 p-2">
@@ -159,15 +160,15 @@
         </div>
 
         <!-- Content -->
-        <div class="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(90vh-80px)]">
           <!-- Venue Personality Card -->
-          <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100">
+          <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4 sm:p-6 rounded-2xl border border-purple-100">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <span class="text-white text-xl">🏟️</span>
+              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span class="text-white text-lg sm:text-xl">🏟️</span>
               </div>
-              <div>
-                <h4 class="text-lg font-bold text-slate-900">Venue Personality</h4>
+              <div class="min-w-0">
+                <h4 class="text-base sm:text-lg font-bold text-slate-900">Venue Personality</h4>
                 <p class="text-xs text-purple-600 font-medium">AI-Generated Insights</p>
               </div>
             </div>
