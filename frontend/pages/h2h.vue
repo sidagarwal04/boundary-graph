@@ -19,22 +19,48 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
       <div class="md:col-span-5 space-y-2">
         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">First Team</label>
-        <select 
-          v-model="team1"
-          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-ipl-blue/20 focus:border-ipl-blue outline-none transition-all text-slate-800 font-medium shadow-sm"
-        >
-          <option value="">Select Team...</option>
-          <optgroup label="Active Teams">
-            <option v-for="team in activeTeams" :key="team.name" :value="team.name">
-              {{ getTeamLabel(team) }}
-            </option>
-          </optgroup>
-          <optgroup label="Defunct Teams">
-            <option v-for="team in defunctTeams" :key="team.name" :value="team.name">
-              {{ team.name }} (defunct)
-            </option>
-          </optgroup>
-        </select>
+        <div class="relative">
+          <button 
+            @click="toggleTeam1Dropdown"
+            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-ipl-blue/20 focus:border-ipl-blue outline-none transition-all text-slate-800 font-medium shadow-sm text-left flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <TeamLogo v-if="team1" :teamName="team1" size="sm" :showName="false" />
+              <span :class="team1 ? 'text-slate-800' : 'text-slate-400'">
+                {{ team1 ? getSelectedTeamLabel(team1) : 'Select Team...' }}
+              </span>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': showTeam1Dropdown }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div v-if="showTeam1Dropdown" class="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+            <div class="py-1">
+              <div class="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50">Active Teams</div>
+              <button 
+                v-for="team in activeTeams" 
+                :key="team.name"
+                @click="selectTeam1(team.name)"
+                class="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-3 transition-colors"
+              >
+                <TeamLogo :teamName="team.name" size="sm" :showName="false" />
+                <span class="font-medium text-slate-700">{{ getTeamLabel(team) }}</span>
+              </button>
+              
+              <div class="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border-t border-slate-100 mt-1">Defunct Teams</div>
+              <button 
+                v-for="team in defunctTeams" 
+                :key="team.name"
+                @click="selectTeam1(team.name)"
+                class="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-3 transition-colors"
+              >
+                <TeamLogo :teamName="team.name" size="sm" :showName="false" />
+                <span class="font-medium text-slate-500">{{ team.name }} (defunct)</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       
       <div class="md:col-span-2 flex justify-center pb-2">
@@ -43,22 +69,48 @@
 
       <div class="md:col-span-5 space-y-2">
         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Second Team</label>
-        <select 
-          v-model="team2"
-          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-ipl-blue/20 focus:border-ipl-blue outline-none transition-all text-slate-800 font-medium shadow-sm"
-        >
-          <option value="">Select Team...</option>
-          <optgroup label="Active Teams">
-            <option v-for="team in activeTeams" :key="team.name" :value="team.name">
-              {{ getTeamLabel(team) }}
-            </option>
-          </optgroup>
-          <optgroup label="Defunct Teams">
-            <option v-for="team in defunctTeams" :key="team.name" :value="team.name">
-              {{ team.name }} (defunct)
-            </option>
-          </optgroup>
-        </select>
+        <div class="relative">
+          <button 
+            @click="toggleTeam2Dropdown"
+            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-ipl-blue/20 focus:border-ipl-blue outline-none transition-all text-slate-800 font-medium shadow-sm text-left flex items-center justify-between"
+          >
+            <div class="flex items-center gap-3">
+              <TeamLogo v-if="team2" :teamName="team2" size="sm" :showName="false" />
+              <span :class="team2 ? 'text-slate-800' : 'text-slate-400'">
+                {{ team2 ? getSelectedTeamLabel(team2) : 'Select Team...' }}
+              </span>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': showTeam2Dropdown }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div v-if="showTeam2Dropdown" class="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+            <div class="py-1">
+              <div class="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50">Active Teams</div>
+              <button 
+                v-for="team in activeTeams" 
+                :key="team.name"
+                @click="selectTeam2(team.name)"
+                class="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-3 transition-colors"
+              >
+                <TeamLogo :teamName="team.name" size="sm" :showName="false" />
+                <span class="font-medium text-slate-700">{{ getTeamLabel(team) }}</span>
+              </button>
+              
+              <div class="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border-t border-slate-100 mt-1">Defunct Teams</div>
+              <button 
+                v-for="team in defunctTeams" 
+                :key="team.name"
+                @click="selectTeam2(team.name)"
+                class="w-full px-4 py-2 text-left hover:bg-slate-50 flex items-center gap-3 transition-colors"
+              >
+                <TeamLogo :teamName="team.name" size="sm" :showName="false" />
+                <span class="font-medium text-slate-500">{{ team.name }} (defunct)</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -160,7 +212,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import CrossedBatsIcon from '~/components/icons/CrossedBatsIcon.vue'
 import TeamLogo from '~/components/TeamLogo.vue'
 
@@ -171,6 +223,8 @@ const allTeamsInfo = ref<any[]>([])
 const h2hStats = ref<any>({ total_matches: 0, team1_wins: 0, team2_wins: 0 })
 const matches = ref<any[]>([])
 const hasSearched = ref(false)
+const showTeam1Dropdown = ref(false)
+const showTeam2Dropdown = ref(false)
 
 const activeTeams = computed(() => allTeamsInfo.value.filter(t => t.is_active))
 const defunctTeams = computed(() => allTeamsInfo.value.filter(t => !t.is_active))
@@ -207,9 +261,47 @@ const getTeamLabel = (team: any) => {
   return label
 }
 
+const getSelectedTeamLabel = (teamName: string) => {
+  const team = allTeamsInfo.value.find(t => t.name === teamName)
+  return team ? team.name : teamName
+}
+
+const toggleTeam1Dropdown = () => {
+  showTeam1Dropdown.value = !showTeam1Dropdown.value
+  showTeam2Dropdown.value = false
+}
+
+const toggleTeam2Dropdown = () => {
+  showTeam2Dropdown.value = !showTeam2Dropdown.value
+  showTeam1Dropdown.value = false
+}
+
+const selectTeam1 = (teamName: string) => {
+  team1.value = teamName
+  showTeam1Dropdown.value = false
+}
+
+const selectTeam2 = (teamName: string) => {
+  team2.value = teamName
+  showTeam2Dropdown.value = false
+}
+
 onMounted(() => {
   loadTeams()
+  document.addEventListener('click', handleClickOutside)
 })
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+const handleClickOutside = (event: Event) => {
+  const target = event.target as HTMLElement
+  if (!target.closest('.relative')) {
+    showTeam1Dropdown.value = false
+    showTeam2Dropdown.value = false
+  }
+}
 
 watch([team1, team2], () => {
   hasSearched.value = false
