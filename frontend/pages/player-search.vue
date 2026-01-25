@@ -85,37 +85,37 @@
                 {{ (playerStats.battingStats?.totalRuns > 0 && playerStats.bowlingStats?.totalWickets > 0) ? 'All Rounder' : 
                      (playerStats.battingStats?.totalRuns > 0 ? 'Batsman' : 'Bowler') }}
               </span>
-              <span v-if="playerStats.teamInfo?.totalTeams" class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider border border-blue-100">
-                {{ playerStats.teamInfo.totalTeams }} {{ playerStats.teamInfo.totalTeams === 1 ? 'Team' : 'Teams' }}
+              <span v-if="consolidatedTeamInfo?.totalTeams" class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-bold uppercase tracking-wider border border-blue-100">
+                {{ consolidatedTeamInfo.totalTeams }} {{ consolidatedTeamInfo.totalTeams === 1 ? 'Team' : 'Teams' }}
               </span>
             </div>
 
             <!-- Team Information -->
-            <div v-if="playerStats.teamInfo" class="space-y-3">
+            <div v-if="consolidatedTeamInfo" class="space-y-3">
               <!-- Debut Team -->
-              <div v-if="playerStats.teamInfo.debutTeam" class="flex items-center gap-2">
+              <div v-if="consolidatedTeamInfo.debutTeam" class="flex items-center gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16">Debut:</span>
-                <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100">
-                  <TeamLogo :teamName="playerStats.teamInfo.debutTeam" size="sm" :showName="false" />
-                  <span class="text-sm font-semibold">{{ playerStats.teamInfo.debutTeam }}</span>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-100">
+                  <TeamLogo :teamName="consolidatedTeamInfo.debutTeam" size="sm" :showName="false" />
+                  <span class="text-sm font-semibold">{{ consolidatedTeamInfo.debutTeam }}</span>
                 </div>
               </div>
 
               <!-- Latest Team -->
-              <div v-if="playerStats.teamInfo.latestTeam" class="flex items-center gap-2">
+              <div v-if="consolidatedTeamInfo.latestTeam" class="flex items-center gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16">Current:</span>
-                <div class="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100">
-                  <TeamLogo :teamName="playerStats.teamInfo.latestTeam" size="sm" :showName="false" />
-                  <span class="text-sm font-semibold">{{ playerStats.teamInfo.latestTeam }}</span>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg border border-purple-100">
+                  <TeamLogo :teamName="consolidatedTeamInfo.latestTeam" size="sm" :showName="false" />
+                  <span class="text-sm font-semibold">{{ consolidatedTeamInfo.latestTeam }}</span>
                 </div>
               </div>
 
               <!-- Other Teams -->
-              <div v-if="playerStats.teamInfo.otherTeams && playerStats.teamInfo.otherTeams.length > 0" class="flex items-start gap-2">
+              <div v-if="consolidatedTeamInfo.otherTeams && consolidatedTeamInfo.otherTeams.length > 0" class="flex items-start gap-2">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider w-16 mt-1">Other:</span>
                 <div class="flex flex-wrap gap-2">
                   <div 
-                    v-for="team in playerStats.teamInfo.otherTeams" 
+                    v-for="team in consolidatedTeamInfo.otherTeams" 
                     :key="team"
                     class="flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 text-slate-700 rounded-md border border-slate-200"
                   >
@@ -134,7 +134,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <CricketHelmetIcon class="w-5 h-5 text-indigo-500" />
+              <CricketHelmetIcon class="w-5 h-5 text-ipl-blue" />
               <h3 class="font-bold text-slate-800">Batting Analytics</h3>              <div v-if="loadingStats" class="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>            </div>
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Career Profile</span>
           </div>
@@ -152,7 +152,7 @@
               </div>
               <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Strike Rate</p>
-                <p class="text-2xl font-black text-indigo-600">{{ playerStats.battingStats?.strikeRate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
+                <p class="text-2xl font-black text-ipl-blue">{{ playerStats.battingStats?.strikeRate || '0.00' }}<span class="text-sm font-medium ml-0.5">%</span></p>
               </div>
             <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
               <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Average</p>
@@ -172,13 +172,13 @@
             </div>
             
             <!-- Boundary Trend Sparkline -->
-            <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+            <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                 <div>
-                  <p class="text-xs text-amber-700 font-bold uppercase tracking-wide mb-1">Boundary Rate Trend</p>
-                  <p class="text-sm text-amber-600">Season-wise boundaries per ball</p>
+                  <p class="text-xs text-blue-700 font-bold uppercase tracking-wide mb-1">Boundary Rate Trend</p>
+                  <p class="text-sm text-blue-600">Season-wise boundaries per ball</p>
                 </div>
-                <div class="text-amber-500 self-start">
+                <div class="text-blue-500 self-start">
                   <ChartBarIcon class="w-5 h-5" />
                 </div>
               </div>
@@ -187,13 +187,13 @@
                 type="boundary"
                 :width="240"
                 :height="50"
-                primaryColor="#f59e0b"
+                primaryColor="#1d4ed8"
                 backgroundColor="transparent"
                 class="w-full"
               />
             </div>
             
-            <div class="col-span-2 p-4 bg-indigo-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-indigo-100">
+            <div class="col-span-2 p-4 bg-ipl-blue rounded-xl flex justify-between items-center text-white shadow-md shadow-blue-100">
                <div>
                  <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Innings Played</p>
                  <p class="text-xl font-black">{{ playerStats.battingStats?.innings || 0 }}</p>
@@ -208,7 +208,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <CricketBallIcon class="w-5 h-5 text-rose-500" />
+              <CricketBallIcon class="w-5 h-5 text-purple-600" />
               <h3 class="font-bold text-slate-800">Bowling Analytics</h3>
               <div v-if="loadingStats" class="animate-spin h-4 w-4 border-2 border-rose-500 border-t-transparent rounded-full"></div>
             </div>
@@ -228,7 +228,7 @@
               </div>
               <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Economy Rate</p>
-                <p class="text-2xl font-black text-rose-600">{{ playerStats.bowlingStats?.economyRate ?? 'N/A' }}</p>
+                <p class="text-2xl font-black text-purple-600">{{ playerStats.bowlingStats?.economyRate ?? 'N/A' }}</p>
               </div>
               <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-wide mb-1">Bowling Average</p>
@@ -240,13 +240,13 @@
               </div>
               
               <!-- Bowling Economy Trend Sparkline -->
-              <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1 && Object.values(playerStats?.seasonWiseStats || {}).some((s: any) => s.bowling?.balls > 0)" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-rose-50 to-red-50 rounded-xl border border-rose-100">
+              <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1 && Object.values(playerStats?.seasonWiseStats || {}).some((s: any) => s.bowling?.balls > 0)" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                   <div>
-                    <p class="text-xs text-rose-700 font-bold uppercase tracking-wide mb-1">Economy Rate Trend</p>
-                    <p class="text-sm text-rose-600">Season-wise runs per over</p>
+                    <p class="text-xs text-purple-700 font-bold uppercase tracking-wide mb-1">Economy Rate Trend</p>
+                    <p class="text-sm text-purple-600">Season-wise runs per over</p>
                   </div>
-                  <div class="text-rose-500 self-start">
+                  <div class="text-purple-500 self-start">
                     <ChartBarIcon class="w-5 h-5" />
                   </div>
                 </div>
@@ -255,20 +255,20 @@
                   type="economy"
                   :width="240"
                   :height="50"
-                  primaryColor="#ef4444"
+                  primaryColor="#9333ea"
                   backgroundColor="transparent"
                   class="w-full"
                 />
               </div>
               
               <!-- Wickets Per Innings Trend (for all-rounders) -->
-              <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1 && Object.values(playerStats?.seasonWiseStats || {}).some((s: any) => s.bowling?.wickets > 0 && s.bowling?.innings > 0)" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100">
+              <div v-if="Object.keys(playerStats?.seasonWiseStats || {}).length > 1 && Object.values(playerStats?.seasonWiseStats || {}).some((s: any) => s.bowling?.wickets > 0 && s.bowling?.innings > 0)" class="col-span-1 md:col-span-2 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                   <div>
-                    <p class="text-xs text-purple-700 font-bold uppercase tracking-wide mb-1">Wickets Trend</p>
-                    <p class="text-sm text-purple-600">Season-wise wickets per innings</p>
+                    <p class="text-xs text-indigo-700 font-bold uppercase tracking-wide mb-1">Wickets Trend</p>
+                    <p class="text-sm text-indigo-600">Season-wise wickets per innings</p>
                   </div>
-                  <div class="text-purple-500 self-start">
+                  <div class="text-indigo-500 self-start">
                     <ChartBarIcon class="w-5 h-5" />
                   </div>
                 </div>
@@ -277,13 +277,13 @@
                   type="wickets"
                   :width="240"
                   :height="50"
-                  primaryColor="#8b5cf6"
+                  primaryColor="#6366f1"
                   backgroundColor="transparent"
                   class="w-full"
                 />
               </div>
               
-              <div class="col-span-2 p-4 bg-rose-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-rose-100">
+              <div class="col-span-2 p-4 bg-purple-600 rounded-xl flex justify-between items-center text-white shadow-md shadow-purple-100">
                  <div>
                    <p class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-0.5">Bowling Innings</p>
                    <p class="text-xl font-black">{{ playerStats.bowlingStats?.innings || 0 }}</p>
@@ -300,7 +300,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <div class="flex items-center gap-2">
-              <PresentationChartLineIcon class="w-5 h-5 text-purple-500" />
+              <PresentationChartLineIcon class="w-5 h-5 text-ipl-blue" />
               <h3 class="font-bold text-slate-800">Season-wise Performance</h3>
               <div v-if="loadingStats" class="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
             </div>
@@ -328,15 +328,15 @@
           </div>
           <div v-else class="p-6 space-y-4">
             <!-- Performance Trend Overview -->
-            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border border-purple-100">
-              <h4 class="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6 border border-blue-100">
+              <h4 class="font-semibold text-ipl-blue mb-3 flex items-center gap-2">
                 <PresentationChartLineIcon class="w-4 h-4" />
                 Performance Trajectory Analysis
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.runs > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
+                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.runs > 0)" class="text-center p-3 bg-white rounded-lg border border-blue-100">
                   <div class="flex items-center justify-center gap-2 mb-1">
-                    <CricketHelmetIcon class="w-4 h-4 text-indigo-600" />
+                    <CricketHelmetIcon class="w-4 h-4 text-ipl-blue" />
                     <span class="text-sm font-medium text-slate-600">Batting Trend</span>
                   </div>
                   <div class="flex items-center justify-center gap-2">
@@ -364,7 +364,7 @@
                 
                 <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.bowling?.wickets > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
                   <div class="flex items-center justify-center gap-2 mb-1">
-                    <CricketBallIcon class="w-4 h-4 text-rose-600" />
+                    <CricketBallIcon class="w-4 h-4 text-purple-600" />
                     <span class="text-sm font-medium text-slate-600">Bowling Trend</span>
                   </div>
                   <div class="flex items-center justify-center gap-2">
@@ -390,9 +390,9 @@
                   </div>
                 </div>
                 
-                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.fours > 0 || s.batting?.sixes > 0)" class="text-center p-3 bg-white rounded-lg border border-purple-100">
+                <div v-if="Object.values(playerStats.seasonWiseStats).some((s: any) => s.batting?.fours > 0 || s.batting?.sixes > 0)" class="text-center p-3 bg-white rounded-lg border border-indigo-100">
                   <div class="flex items-center justify-center gap-2 mb-1">
-                    <ChartBarIcon class="w-4 h-4 text-amber-600" />
+                    <ChartBarIcon class="w-4 h-4 text-indigo-600" />
                     <span class="text-sm font-medium text-slate-600">Boundary Rate</span>
                   </div>
                   <div class="flex items-center justify-center gap-2">
@@ -614,7 +614,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { 
   MagnifyingGlassIcon, 
@@ -643,6 +643,82 @@ const loadingRivals = ref(false)
 const loadingStats = ref(false)
 const highlightedIndex = ref(-1)
 let searchTimeout: any = null
+
+// Franchise mapping to consolidate team names
+const franchiseMapping: { [key: string]: string } = {
+  // Royal Challengers franchise
+  'Royal Challengers Bangalore': 'Royal Challengers Bengaluru',
+  'Royal Challengers Bengaluru': 'Royal Challengers Bengaluru',
+  
+  // Kings/Punjab franchise
+  'Kings XI Punjab': 'Punjab Kings',
+  'Punjab Kings': 'Punjab Kings',
+  
+  // Delhi franchise
+  'Delhi Daredevils': 'Delhi Capitals',
+  'Delhi Capitals': 'Delhi Capitals',
+  
+  // Sunrisers franchise
+  'Deccan Chargers': 'Sunrisers Hyderabad',
+  'Sunrisers Hyderabad': 'Sunrisers Hyderabad'
+}
+
+const getFranchiseName = (teamName: string): string => {
+  return franchiseMapping[teamName] || teamName
+}
+
+// Computed property to process and consolidate team information
+const consolidatedTeamInfo = computed(() => {
+  if (!playerStats.value?.teamInfo) return null
+  
+  const rawTeamInfo = playerStats.value.teamInfo
+  const allTeams = []
+  
+  // Collect all teams the player has played for
+  if (rawTeamInfo.debutTeam) allTeams.push(rawTeamInfo.debutTeam)
+  if (rawTeamInfo.latestTeam) allTeams.push(rawTeamInfo.latestTeam)
+  if (rawTeamInfo.otherTeams) allTeams.push(...rawTeamInfo.otherTeams)
+  
+  // Group by franchise
+  const franchiseGroups = new Map<string, string[]>()
+  allTeams.forEach(team => {
+    const franchise = getFranchiseName(team)
+    if (!franchiseGroups.has(franchise)) {
+      franchiseGroups.set(franchise, [])
+    }
+    if (!franchiseGroups.get(franchise)!.includes(team)) {
+      franchiseGroups.get(franchise)!.push(team)
+    }
+  })
+  
+  // Convert back to team info format
+  const franchises = Array.from(franchiseGroups.keys())
+  const totalTeams = franchises.length
+  
+  let debutTeam = ''
+  let latestTeam = ''
+  let otherTeams: string[] = []
+  
+  if (rawTeamInfo.debutTeam) {
+    debutTeam = getFranchiseName(rawTeamInfo.debutTeam)
+  }
+  
+  if (rawTeamInfo.latestTeam) {
+    latestTeam = getFranchiseName(rawTeamInfo.latestTeam)
+  }
+  
+  // For other teams, only include franchises that are different from debut and latest
+  otherTeams = franchises.filter(franchise => 
+    franchise !== debutTeam && franchise !== latestTeam
+  )
+  
+  return {
+    totalTeams,
+    debutTeam,
+    latestTeam,
+    otherTeams
+  }
+})
 
 // Performance trend analysis functions
 const calculateBattingTrend = (seasonStats: any): { trend: string, change: number, color: string, icon: string } => {
