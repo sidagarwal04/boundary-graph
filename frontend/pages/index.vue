@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="container mx-auto px-4 py-8">
+    <div class="pb-4">
     <!-- Project Intro -->
     <div class="mb-6 sm:mb-8 p-5 sm:p-6 bg-gradient-to-br from-white via-ipl-orange/5 to-ipl-blue/5 rounded-2xl sm:rounded-3xl border border-ipl-blue/10 shadow-xl overflow-hidden relative animate-in fade-in slide-in-from-top-4 duration-700">
       <!-- Decorative Elements -->
@@ -450,6 +451,7 @@
       </div>
     </div>
 
+    </div>
   </div>
 </template>
 

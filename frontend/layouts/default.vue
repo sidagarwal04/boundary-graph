@@ -38,11 +38,11 @@ const closeMenu = () => {
         <div class="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
           <NuxtLink to="/" class="flex items-center gap-2 min-w-0" @click="closeMenu">
             <!-- Logo Mark -->
-            <div class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full p-[0.125rem] shadow-md flex items-center justify-center flex-shrink-0">
               <img 
                 src="/bg-logo.png" 
                 alt="Boundary Graph Logo" 
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain rounded-full"
               />
             </div>
             <div class="hidden xs:block min-w-0">
