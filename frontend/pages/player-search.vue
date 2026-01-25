@@ -1,7 +1,8 @@
 <template>
-  <div class="space-y-8 animate-in fade-in duration-500">
+  <div class="container mx-auto px-4 py-8">
+    <div class="space-y-8 animate-in fade-in duration-500 pb-4">
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
         <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600/10 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-widest">
           <MagnifyingGlassIcon class="w-3 h-3" />
@@ -607,6 +608,7 @@
       </div>
       <h3 class="text-xl font-bold text-slate-800">No Intelligence Selected</h3>
       <p class="text-slate-500 max-w-sm mx-auto mt-2 font-medium">Use the search box above to lookup any player's statistics.</p>
+    </div>
     </div>
   </div>
 </template>

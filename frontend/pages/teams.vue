@@ -1,7 +1,8 @@
 <template>
-  <div class="space-y-8 pb-12">
+  <div class="container mx-auto px-4 py-8">
+    <div class="space-y-8 pb-4">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
         <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
           <CricketTeamIcon class="w-3 h-3" />
@@ -248,6 +249,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>

@@ -1205,7 +1205,6 @@ def scrape_points_table(season: str) -> PointsTable:
         last_updated=datetime.now().isoformat(),
         teams=[]
     )
-    )
 
 def extract_team_code(team_text: str) -> str:
     """Extract standardized team code from team name"""
