@@ -24,6 +24,7 @@ from contextlib import asynccontextmanager
 import requests
 import re
 from bs4 import BeautifulSoup
+from datetime import timedelta
 
 # Load environment variables
 load_dotenv()
@@ -36,6 +37,10 @@ logger = logging.getLogger(__name__)
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
 CACHE_TTL = int(os.getenv('CACHE_TTL', '1800'))  # 30 minutes default
 ENABLE_REDIS = os.getenv('ENABLE_REDIS', 'false').lower() == 'true'  # Default to false for Render
+
+# Daily rate limiting for Cricbuzz scraping (24 hours = 86400 seconds)
+DAILY_CACHE_TTL = 86400  # 24 hours for live scraping to respect Cricbuzz servers
+KEEP_ALIVE_INTERVAL = 900  # 15 minutes = 900 seconds
 
 # Global caches
 memory_cache = TTLCache(maxsize=1000, ttl=CACHE_TTL)
@@ -227,6 +232,33 @@ class Neo4jConnection:
 # Initialize connection
 db = Neo4jConnection()
 
+# Keep-alive background task for Render server
+async def keep_alive_task():
+    """Background task to keep the Render server warm by hitting endpoints every 15 minutes"""
+    await asyncio.sleep(60)  # Wait 1 minute after startup before starting
+    
+    while True:
+        try:
+            # Hit the overview endpoint to keep server warm
+            base_url = os.getenv('BASE_URL', 'http://localhost:8000')
+            keep_alive_url = f"{base_url}/api/overview"
+            
+            logger.info("🔥 Keep-alive ping to prevent server sleep...")
+            
+            headers = {'User-Agent': 'Keep-Alive-Bot/1.0'}
+            response = requests.get(keep_alive_url, headers=headers, timeout=30)
+            
+            if response.status_code == 200:
+                logger.info("✅ Keep-alive ping successful")
+            else:
+                logger.warning(f"⚠️ Keep-alive ping returned status: {response.status_code}")
+                
+        except Exception as e:
+            logger.warning(f"⚠️ Keep-alive ping failed: {e}")
+        
+        # Wait 15 minutes before next ping
+        await asyncio.sleep(KEEP_ALIVE_INTERVAL)
+
 # Initialize everything at startup
 @app.on_event("startup")
 async def startup_event():
@@ -251,6 +283,10 @@ async def startup_event():
             logger.warning("⚠️ Neo4j connection timeout - will retry later if needed")
         except Exception as neo4j_error:
             logger.warning(f"⚠️ Neo4j connection failed: {neo4j_error} - will retry later if needed")
+        
+        # Start keep-alive background task for Render server
+        asyncio.create_task(keep_alive_task())
+        logger.info("✅ Keep-alive task started (15min intervals)")
         
         logger.info("🚀 Application startup complete")
     except Exception as e:
@@ -1312,21 +1348,25 @@ async def clear_all_points_table_cache():
 
 @app.get("/api/points-table/{season}", response_model=PointsTable)
 async def get_points_table(season: str):
-    """Get IPL points table for a specific season"""
+    """Get IPL points table for a specific season with daily rate limiting for live scraping"""
     cache_key = f"points_table_{season}"
-    ttl = 1800 if season == "2026" else 3600  # Live season cached for shorter time
     
-    # For development/testing, optionally clear cache to get fresh data
-    # await set_cache(cache_key, None, 0)  # Uncomment to clear cache
+    # For current/future seasons (2025, 2026), use daily caching to respect Cricbuzz
+    # For historical seasons, use shorter cache for better UX
+    if season in ["2026", "2025"]:
+        ttl = DAILY_CACHE_TTL  # 24 hours - hit Cricbuzz only once per day
+        logger.info(f"Using daily cache (24h) for live season {season}")
+    else:
+        ttl = 3600  # 1 hour for historical data
     
     # Try to get from cache
     cached_result = await get_from_cache(cache_key)
     if cached_result:
-        logger.info(f"Returning cached points table for {season}")
+        logger.info(f"Returning cached points table for {season} (rate-limited)")
         return cached_result
     
     # Fetch fresh data
-    logger.info(f"Generating fresh points table for {season}")
+    logger.info(f"Generating fresh points table for {season} - will cache for {ttl/3600}h")
     result = scrape_points_table(season)
     
     # Store in cache
