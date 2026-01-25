@@ -24,6 +24,7 @@ export const teamLogoMap: TeamLogoMapping = {
   // Abbreviated forms
   'CSK': '/teams-logos/CSKoutline.avif',
   'DC': '/teams-logos/DCoutline.avif',
+  'DD': '/teams-logos/dd.png', // Delhi Daredevils
   'GT': '/teams-logos/GToutline.avif', 
   'KKR': '/teams-logos/KKRoutline.avif',
   'LSG': '/teams-logos/LSGoutline.avif',
@@ -34,7 +35,7 @@ export const teamLogoMap: TeamLogoMapping = {
   'SRH': '/teams-logos/SRHoutline.avif',
 
   // Historical variations
-  'Delhi Daredevils': '/teams-logos/DCoutline.avif', // Same as Delhi Capitals
+  'Delhi Daredevils': '/teams-logos/dd.png', // Delhi Daredevils original logo
   'Kings XI Punjab': '/teams-logos/PBKSoutline.avif', // Same as Punjab Kings
   
   // Defunct Teams
@@ -64,6 +65,7 @@ export const teamColorMap: TeamColorMapping = {
   // Abbreviated forms
   'CSK': '#ffcb03',
   'DC': '#b9251c', 
+  'DD': '#ffffff', // Delhi Daredevils white background
   'GT': '#77c7f2',
   'KKR': '#ecc542',
   'LSG': '#ffffff',
@@ -74,7 +76,7 @@ export const teamColorMap: TeamColorMapping = {
   'SRH': '#f26522',
 
   // Historical variations
-  'Delhi Daredevils': '#b9251c',
+  'Delhi Daredevils': '#ffffff', // White background for DD logo
   'Kings XI Punjab': '#d71920',
   
   // Defunct Teams - Grey background to denote defunct status
@@ -244,7 +246,8 @@ export function getTeamColor(teamName: string): string {
   // Try partial matches for teams that might have slight variations
   const colorPartialMatches: Array<[string, string]> = [
     ['Chennai', '#ffcb03'],
-    ['Delhi', '#b9251c'],
+    ['Delhi Daredevils', '#ffffff'], // White background for DD
+    ['Delhi', '#b9251c'], // Delhi Capitals (fallback)
     ['Gujarat Titans', '#77c7f2'], // Only Gujarat Titans
     ['Gujarat Lions', '#9ca3af'], // Defunct team - grey
     ['Kolkata', '#ecc542'],
@@ -288,7 +291,8 @@ export function getTeamLogo(teamName: string): string | null {
   // Try partial matches for teams that might have slight variations
   const partialMatches: Array<[string, string]> = [
     ['Chennai', '/teams-logos/CSKoutline.avif'],
-    ['Delhi', '/teams-logos/DCoutline.avif'],
+    ['Delhi Daredevils', '/teams-logos/dd.png'], // More specific match first
+    ['Delhi', '/teams-logos/DCoutline.avif'], // Delhi Capitals (fallback)
     ['Gujarat Titans', '/teams-logos/GToutline.avif'], // Only Gujarat Titans, not Gujarat Lions
     ['Gujarat Lions', '/teams-logos/Gujarat_Lions.png'], // Defunct team
     ['Kolkata', '/teams-logos/KKRoutline.avif'],

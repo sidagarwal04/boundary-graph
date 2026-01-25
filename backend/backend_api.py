@@ -1044,15 +1044,15 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "MI", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": 0.317},
             {"team": "RCB", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": 0.129},
             {"team": "PBKS", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.502},
-            {"team": "DD", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.222}
+            {"team": "Delhi Daredevils", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.222}
         ],
         "2017": [  # Actual 2017 season final standings (MI Champions)
             {"team": "MI", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.784},
-            {"team": "RPS", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.176},
+            {"team": "Rising Pune Supergiant", "played": 14, "won": 9, "lost": 5, "no_result": 0, "points": 18, "nrr": 0.176},
             {"team": "SRH", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.599},
             {"team": "KKR", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.641},
             {"team": "PBKS", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.009},
-            {"team": "DD", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.512},
+            {"team": "Delhi Daredevils", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.512},
             {"team": "GL", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.412},
             {"team": "RCB", "played": 14, "won": 3, "lost": 10, "no_result": 1, "points": 7, "nrr": -1.299}
         ],
@@ -1062,8 +1062,8 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "SRH", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.245},
             {"team": "KKR", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.106},
             {"team": "MI", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.146},
-            {"team": "DD", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.155},
-            {"team": "RPS", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": 0.015},
+            {"team": "Delhi Daredevils", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.155},
+            {"team": "Rising Pune Supergiant", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": 0.015},
             {"team": "PBKS", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.646}
         ],
         "2015": [  # Actual 2015 season final standings (MI Champions)
@@ -1073,7 +1073,7 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "RR", "played": 14, "won": 7, "lost": 5, "no_result": 2, "points": 16, "nrr": 0.062},
             {"team": "KKR", "played": 14, "won": 7, "lost": 6, "no_result": 1, "points": 15, "nrr": 0.253},
             {"team": "SRH", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.239},
-            {"team": "DD", "played": 14, "won": 5, "lost": 8, "no_result": 1, "points": 11, "nrr": -0.049},
+            {"team": "Delhi Daredevils", "played": 14, "won": 5, "lost": 8, "no_result": 1, "points": 11, "nrr": -0.049},
             {"team": "PBKS", "played": 14, "won": 3, "lost": 11, "no_result": 0, "points": 6, "nrr": -1.436}
         ],
         "2014": [  # Actual 2014 season final standings (KKR Champions)
@@ -1084,7 +1084,7 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "RR", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.06},
             {"team": "SRH", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.399},
             {"team": "RCB", "played": 14, "won": 5, "lost": 9, "no_result": 0, "points": 10, "nrr": -0.428},
-            {"team": "DD", "played": 14, "won": 2, "lost": 12, "no_result": 0, "points": 4, "nrr": -1.182}
+            {"team": "Delhi Daredevils", "played": 14, "won": 2, "lost": 12, "no_result": 0, "points": 4, "nrr": -1.182}
         ],
         "2013": [  # Actual 2013 season final standings (MI Champions)
             {"team": "CSK", "played": 16, "won": 11, "lost": 5, "no_result": 0, "points": 22, "nrr": 0.53},
@@ -1094,19 +1094,19 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "RCB", "played": 16, "won": 9, "lost": 7, "no_result": 0, "points": 18, "nrr": 0.457},
             {"team": "PBKS", "played": 16, "won": 8, "lost": 8, "no_result": 0, "points": 16, "nrr": 0.226},
             {"team": "KKR", "played": 16, "won": 6, "lost": 10, "no_result": 0, "points": 12, "nrr": -0.095},
-            {"team": "PWI", "played": 16, "won": 4, "lost": 12, "no_result": 0, "points": 8, "nrr": -1.006},
-            {"team": "DD", "played": 16, "won": 3, "lost": 13, "no_result": 0, "points": 6, "nrr": -0.848}
+            {"team": "Pune Warriors India", "played": 16, "won": 4, "lost": 12, "no_result": 0, "points": 8, "nrr": -1.006},
+            {"team": "Delhi Daredevils", "played": 16, "won": 3, "lost": 13, "no_result": 0, "points": 6, "nrr": -0.848}
         ],
         "2012": [  # Actual 2012 season final standings (KKR Champions)
-            {"team": "DD", "played": 16, "won": 11, "lost": 5, "no_result": 0, "points": 22, "nrr": 0.617},
+            {"team": "Delhi Daredevils", "played": 16, "won": 11, "lost": 5, "no_result": 0, "points": 22, "nrr": 0.617},
             {"team": "KKR", "played": 16, "won": 10, "lost": 5, "no_result": 1, "points": 21, "nrr": 0.561},
             {"team": "MI", "played": 16, "won": 10, "lost": 6, "no_result": 0, "points": 20, "nrr": -0.1},
             {"team": "CSK", "played": 16, "won": 8, "lost": 7, "no_result": 1, "points": 17, "nrr": 0.1},
             {"team": "RCB", "played": 16, "won": 8, "lost": 7, "no_result": 1, "points": 17, "nrr": -0.022},
             {"team": "PBKS", "played": 16, "won": 8, "lost": 8, "no_result": 0, "points": 16, "nrr": -0.216},
             {"team": "RR", "played": 16, "won": 7, "lost": 9, "no_result": 0, "points": 14, "nrr": 0.201},
-            {"team": "DEC", "played": 16, "won": 4, "lost": 11, "no_result": 1, "points": 9, "nrr": -0.509},
-            {"team": "PWI", "played": 16, "won": 4, "lost": 12, "no_result": 0, "points": 8, "nrr": -0.551}
+            {"team": "Deccan Chargers", "played": 16, "won": 4, "lost": 11, "no_result": 1, "points": 9, "nrr": -0.509},
+            {"team": "Pune Warriors India", "played": 16, "won": 4, "lost": 12, "no_result": 0, "points": 8, "nrr": -0.551}
         ],
         "2011": [  # Actual 2011 season final standings (CSK Champions)
             {"team": "RCB", "played": 14, "won": 9, "lost": 4, "no_result": 1, "points": 19, "nrr": 0.326},
@@ -1115,26 +1115,26 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "KKR", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": 0.433},
             {"team": "PBKS", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.051},
             {"team": "RR", "played": 14, "won": 6, "lost": 7, "no_result": 1, "points": 13, "nrr": -0.691},
-            {"team": "DEC", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": 0.222},
+            {"team": "Deccan Chargers", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": 0.222},
             {"team": "KTK", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.214},
-            {"team": "PWI", "played": 14, "won": 4, "lost": 9, "no_result": 1, "points": 9, "nrr": -0.134},
-            {"team": "DD", "played": 14, "won": 4, "lost": 9, "no_result": 1, "points": 9, "nrr": -0.448}
+            {"team": "Pune Warriors India", "played": 14, "won": 4, "lost": 9, "no_result": 1, "points": 9, "nrr": -0.134},
+            {"team": "Delhi Daredevils", "played": 14, "won": 4, "lost": 9, "no_result": 1, "points": 9, "nrr": -0.448}
         ],
         "2010": [  # Actual 2010 season final standings (CSK Champions)
             {"team": "MI", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 1.084},
-            {"team": "DEC", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.297},
+            {"team": "Deccan Chargers", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.297},
             {"team": "CSK", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.274},
             {"team": "RCB", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.219},
-            {"team": "DD", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.021},
+            {"team": "Delhi Daredevils", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.021},
             {"team": "KKR", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.341},
             {"team": "RR", "played": 14, "won": 6, "lost": 8, "no_result": 0, "points": 12, "nrr": -0.514},
             {"team": "PBKS", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -0.478}
         ],
         "2009": [  # Actual 2009 season final standings (DC Champions)
-            {"team": "DD", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.311},
+            {"team": "Delhi Daredevils", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.311},
             {"team": "CSK", "played": 14, "won": 8, "lost": 5, "no_result": 1, "points": 17, "nrr": 0.951},
             {"team": "RCB", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.191},
-            {"team": "DEC", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.203},
+            {"team": "Deccan Chargers", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.203},
             {"team": "PBKS", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": -0.483},
             {"team": "RR", "played": 14, "won": 6, "lost": 7, "no_result": 1, "points": 13, "nrr": -0.352},
             {"team": "MI", "played": 14, "won": 5, "lost": 8, "no_result": 1, "points": 11, "nrr": 0.297},
@@ -1144,11 +1144,11 @@ def scrape_points_table(season: str) -> PointsTable:
             {"team": "RR", "played": 14, "won": 11, "lost": 3, "no_result": 0, "points": 22, "nrr": 0.632},
             {"team": "PBKS", "played": 14, "won": 10, "lost": 4, "no_result": 0, "points": 20, "nrr": 0.509},
             {"team": "CSK", "played": 14, "won": 8, "lost": 6, "no_result": 0, "points": 16, "nrr": -0.192},
-            {"team": "DD", "played": 14, "won": 7, "lost": 6, "no_result": 1, "points": 15, "nrr": 0.342},
+            {"team": "Delhi Daredevils", "played": 14, "won": 7, "lost": 6, "no_result": 1, "points": 15, "nrr": 0.342},
             {"team": "MI", "played": 14, "won": 7, "lost": 7, "no_result": 0, "points": 14, "nrr": 0.57},
             {"team": "KKR", "played": 14, "won": 6, "lost": 7, "no_result": 1, "points": 13, "nrr": -0.147},
             {"team": "RCB", "played": 14, "won": 4, "lost": 10, "no_result": 0, "points": 8, "nrr": -1.16},
-            {"team": "DEC", "played": 14, "won": 2, "lost": 12, "no_result": 0, "points": 4, "nrr": -0.467}
+            {"team": "Deccan Chargers", "played": 14, "won": 2, "lost": 12, "no_result": 0, "points": 4, "nrr": -0.467}
         ]
     }
     
@@ -1239,14 +1239,15 @@ def extract_team_code(team_text: str) -> str:
         'LUCKNOW SUPER GIANTS': 'LSG',  # 2022-present
         
         # Historical teams
-        'DELHI DAREDEVILS': 'DC',  # 2008-2018
+        'DELHI DAREDEVILS': 'Delhi Daredevils',  # 2008-2018
         'KINGS XI PUNJAB': 'PBKS',  # 2008-2020
-        'RISING PUNE SUPERGIANT': 'RPS',  # 2016-2017
-        'RISING PUNE SUPERGIANTS': 'RPS',  # 2016-2017
+        'RISING PUNE SUPERGIANT': 'Rising Pune Supergiant',  # 2016-2017
+        'RISING PUNE SUPERGIANTS': 'Rising Pune Supergiant',  # 2016-2017
+        'RPS': 'Rising Pune Supergiant',  # 2016-2017 (abbreviation)
         'GUJARAT LIONS': 'GL',  # 2016-2017
-        'PUNE WARRIORS INDIA': 'PWI',  # 2011-2013
+        'PUNE WARRIORS INDIA': 'Pune Warriors India',  # 2011-2013
         'KOCHI TUSKERS KERALA': 'KTK',  # 2011
-        'DECCAN CHARGERS': 'DC',  # 2008-2012 (became SRH)
+        'DECCAN CHARGERS': 'Deccan Chargers',  # 2008-2012 (became SRH)
         'SUNRISERS HYDERABAD': 'SRH',  # 2013-present (replaced DC)
     }
     
@@ -1288,8 +1289,8 @@ def get_teams_for_season(season: str) -> list:
         2018: ['CSK', 'MI', 'RCB', 'KKR', 'DC', 'PBKS', 'RR', 'SRH'],
         
         # RPS/GL Era (8 teams, CSK/RR suspended)
-        2017: ['MI', 'RCB', 'KKR', 'DC', 'PBKS', 'SRH', 'RPS', 'GL'],
-        2016: ['MI', 'RCB', 'KKR', 'DC', 'PBKS', 'SRH', 'RPS', 'GL'],
+        2017: ['MI', 'RCB', 'KKR', 'DC', 'PBKS', 'SRH', 'Rising Pune Supergiant', 'GL'],
+        2016: ['MI', 'RCB', 'KKR', 'DC', 'PBKS', 'SRH', 'Rising Pune Supergiant', 'GL'],
         
         # Standard 8 teams (SRH replaced DC in 2013)
         2015: ['CSK', 'MI', 'RCB', 'KKR', 'DC', 'PBKS', 'RR', 'SRH'],
