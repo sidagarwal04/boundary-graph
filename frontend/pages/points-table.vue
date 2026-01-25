@@ -115,14 +115,6 @@
       <!-- Legend -->
       <div class="px-6 py-4 border-t border-slate-200 bg-slate-50">
         <div class="flex flex-wrap gap-6 text-xs text-slate-600">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-green-100 border border-green-300 rounded"></span>
-            <span>Qualified (Q)</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-red-100 border border-red-300 rounded"></span>
-            <span>Eliminated (E)</span>
-          </div>
           <div class="text-slate-500">
             P: Played • W: Won • L: Lost • NR: No Result • Pts: Points • NRR: Net Run Rate
           </div>
@@ -178,7 +170,10 @@ const teamNameMap: Record<string, string> = {
   'RR': 'Rajasthan Royals',
   'SRH': 'Sunrisers Hyderabad',
   'GT': 'Gujarat Titans',
-  'LSG': 'Lucknow Super Giants'
+  'LSG': 'Lucknow Super Giants',
+  // Defunct teams
+  'GL': 'Gujarat Lions',
+  'KTK': 'Kochi Tuskers Kerala'
 }
 
 // Methods

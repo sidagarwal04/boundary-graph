@@ -958,6 +958,18 @@ def scrape_points_table(season: str) -> PointsTable:
     
     # Actual IPL Points Table Data (as of available records)
     ACTUAL_IPL_DATA = {
+        "2026": [  # 2026 season placeholder - will be updated with real data
+            {"team": "CSK", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "MI", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "RCB", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "KKR", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "DC", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "PBKS", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "RR", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "SRH", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "GT", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0},
+            {"team": "LSG", "played": 0, "won": 0, "lost": 0, "no_result": 0, "points": 0, "nrr": 0.0}
+        ],
         "2025": [  # Actual 2025 season final standings
             {"team": "PBKS", "played": 14, "won": 9, "lost": 4, "no_result": 1, "points": 19, "nrr": 0.372},
             {"team": "RCB", "played": 14, "won": 9, "lost": 4, "no_result": 1, "points": 19, "nrr": 0.301},
@@ -1183,32 +1195,7 @@ def scrape_points_table(season: str) -> PointsTable:
             last_updated=datetime.now().isoformat(),
             teams=teams,
             season_start_date="2026-03-26" if season == "2026" else None,
-            season_end_date="2026-05-31" if season == "2026" else None
-        )
-    
-    # For 2026, return zero stats (season hasn't started)
-    if season == "2026":
-        team_codes = get_teams_for_season(season)
-        teams = [
-            PointsTableTeam(
-                position=i + 1,
-                team=team_codes[i],
-                played=0,
-                won=0,
-                lost=0,
-                no_result=0,
-                points=0,
-                nrr=0.0,
-                status=None
-            ) for i in range(len(team_codes))
-        ]
-        
-        return PointsTable(
-            season=season,
-            last_updated=datetime.now().isoformat(),
-            teams=teams,
-            season_start_date="2026-03-26",
-            season_end_date="2026-05-31"
+            season_end_date="2026-05-31" if season == "2026" else None  # Includes playoffs through May 31st
         )
     
     # For seasons not available in historical data, return empty table
@@ -1217,6 +1204,7 @@ def scrape_points_table(season: str) -> PointsTable:
         season=season,
         last_updated=datetime.now().isoformat(),
         teams=[]
+    )
     )
 
 def extract_team_code(team_text: str) -> str:
