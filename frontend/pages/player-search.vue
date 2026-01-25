@@ -4,11 +4,11 @@
     <!-- Page Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600/10 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-ipl-blue/15 text-ipl-blue rounded-full text-xs font-bold uppercase tracking-widest border border-ipl-blue/20">
           <MagnifyingGlassIcon class="w-3 h-3" />
           Player Intelligence
         </div>
-        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="text-indigo-600">Search Engine</span></h1>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="bg-gradient-to-r from-ipl-blue to-purple-600 bg-clip-text text-transparent">Search Engine</span></h1>
         <p class="text-slate-500 max-w-xl">
             Deep dive into individual player careers with comprehensive analytics. Search any player to unlock batting and bowling insights.
         </p>
@@ -17,7 +17,7 @@
 
     <!-- Search Section -->
     <div class="relative max-w-2xl">
-      <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm focus-within:ring-4 focus-within:ring-brand-primary/10 focus-within:border-brand-primary transition-all flex items-center gap-3">
+      <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm focus-within:ring-4 focus-within:ring-ipl-blue/10 focus-within:border-ipl-blue transition-all flex items-center gap-3">
         <div class="pl-3 text-slate-400">
           <MagnifyingGlassIcon class="w-5 h-5" />
         </div>

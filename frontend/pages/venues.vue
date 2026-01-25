@@ -4,11 +4,11 @@
     <!-- Header Area -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-ipl-blue/15 text-ipl-blue rounded-full text-xs font-bold uppercase tracking-widest border border-ipl-blue/20">
           <MapPinIcon class="w-3 h-3" />
           Venue Intelligence
         </div>
-        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="text-brand-primary">Home Grounds</span></h1>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">The <span class="bg-gradient-to-r from-ipl-blue to-purple-600 bg-clip-text text-transparent">Home Grounds</span></h1>
         <p class="text-slate-500 max-w-xl">
           Analyze pitch behavior across India's iconic stadiums. Discover where the coin toss matters most and where the boundaries flow.
         </p>
@@ -40,7 +40,7 @@
             <tr v-for="venue in venues" :key="venue.name" class="hover:bg-slate-50/50 transition-colors group">
               <td class="px-3 sm:px-6 py-3 sm:py-4">
                 <div class="flex items-center gap-2 sm:gap-3">
-                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-brand-primary group-hover:text-white transition-colors flex-shrink-0">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-ipl-blue group-hover:text-white transition-colors flex-shrink-0">
                     <BuildingLibraryIcon class="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div class="min-w-0">
@@ -76,7 +76,7 @@
               <td class="px-3 sm:px-6 py-3 sm:py-4 text-right">
                 <button 
                   @click="showVenueDetails(venue)"
-                  class="px-2 sm:px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-brand-primary transition-colors whitespace-nowrap"
+                  class="px-2 sm:px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-ipl-blue transition-colors whitespace-nowrap"
                 >
                   <span class="hidden sm:inline">View Intelligence</span>
                   <span class="sm:hidden">View</span>

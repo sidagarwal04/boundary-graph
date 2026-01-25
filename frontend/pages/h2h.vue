@@ -4,11 +4,11 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-ipl-blue/15 text-ipl-blue rounded-full text-xs font-bold uppercase tracking-widest border border-ipl-blue/20">
           <CrossedBatsIcon class="w-3 h-3" />
           Rivalry Intelligence
         </div>
-        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Head-to-Head <span class="text-brand-primary">Analysis</span></h1>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Head-to-Head <span class="bg-gradient-to-r from-ipl-blue to-purple-600 bg-clip-text text-transparent">Analysis</span></h1>
         <p class="text-slate-500 max-w-xl">
           Dive into epic franchise battles and historical matchups. Compare team records, analyze winning patterns, and discover which teams dominate specific rivalries.
         </p>
@@ -21,7 +21,7 @@
         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">First Team</label>
         <select 
           v-model="team1"
-          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all text-slate-800 font-medium shadow-sm"
+          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-ipl-blue/20 focus:border-ipl-blue outline-none transition-all text-slate-800 font-medium shadow-sm"
         >
           <option value="">Select Team...</option>
           <optgroup label="Active Teams">
@@ -38,14 +38,14 @@
       </div>
       
       <div class="md:col-span-2 flex justify-center pb-2">
-        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs border border-slate-200">VS</div>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-ipl-blue/10 to-purple-100/50 flex items-center justify-center text-ipl-blue font-bold text-xs border border-ipl-blue/20 shadow-sm">VS</div>
       </div>
 
       <div class="md:col-span-5 space-y-2">
         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Second Team</label>
         <select 
           v-model="team2"
-          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all text-slate-800 font-medium shadow-sm"
+          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-ipl-blue/20 focus:border-ipl-blue outline-none transition-all text-slate-800 font-medium shadow-sm"
         >
           <option value="">Select Team...</option>
           <optgroup label="Active Teams">

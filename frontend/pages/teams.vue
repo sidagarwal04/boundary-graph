@@ -4,11 +4,11 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-ipl-blue/15 text-ipl-blue rounded-full text-xs font-bold uppercase tracking-widest border border-ipl-blue/20">
           <CricketTeamIcon class="w-3 h-3" />
           Team Intelligence
         </div>
-        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Teams & <span class="text-brand-primary">Statistics</span></h1>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Teams & <span class="bg-gradient-to-r from-ipl-blue to-purple-600 bg-clip-text text-transparent">Statistics</span></h1>
         <p class="text-slate-500 max-w-xl">
           Explore the dynasties and rivalries that define the IPL. Track team's evolution, squad compositions, and head-to-head battle records across all seasons.
         </p>
@@ -18,9 +18,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
       <!-- Team Selector -->
       <div class="lg:col-span-4 lg:sticky lg:top-24 h-fit">
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="px-4 sm:px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Select Team</h2>
+        <div class="bg-gradient-to-br from-white via-ipl-blue/5 to-purple-50 rounded-2xl shadow-lg border border-ipl-blue/10 overflow-hidden">
+          <div class="px-4 sm:px-5 py-4 border-b border-ipl-blue/10 bg-gradient-to-r from-ipl-blue/5 to-purple-100/50">
+            <h2 class="text-sm font-bold text-ipl-blue uppercase tracking-wider">Select Team</h2>
           </div>
           <div class="p-3 sm:p-4 space-y-4 max-h-[60vh] lg:max-h-[calc(100vh-250px)] overflow-y-auto custom-scrollbar">
             <!-- Active Teams separator -->
@@ -41,8 +41,8 @@
                   :class="[
                     'w-full text-left px-4 py-3 rounded-lg transition-all duration-200 text-base font-medium border',
                     selectedTeam?.name === team.name 
-                      ? 'bg-brand-primary text-white border-brand-primary shadow-md shadow-brand-primary/20' 
-                      : 'bg-white text-slate-600 hover:bg-slate-50 border-transparent'
+                      ? 'bg-gradient-to-r from-ipl-blue to-purple-600 text-white border-ipl-blue shadow-md shadow-ipl-blue/20' 
+                      : 'bg-white text-slate-600 hover:bg-ipl-blue/5 border-transparent'
                   ]"
                 >
                   <TeamLogo :teamName="team.name" size="md" :showName="true" :textClass="selectedTeam?.name === team.name ? 'text-white' : 'text-slate-600'" />
@@ -105,7 +105,7 @@
                 <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">Team Information</div>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-2">
                   <div class="flex flex-col items-start">
-                    <span class="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase"><span class="w-2 h-2 rounded-full bg-brand-primary"></span>Captain</span>
+                    <span class="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase"><span class="w-2 h-2 rounded-full bg-ipl-blue"></span>Captain</span>
                     <span class="text-sm font-semibold text-slate-900">{{ teamDetails?.captain || 'N/A' }}</span>
                   </div>
                   <div class="flex flex-col items-start">
@@ -132,12 +132,12 @@
             </div>
             <div class="p-4 sm:p-6">
               <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Wins</p>
-              <p class="text-3xl sm:text-4xl font-black text-brand-primary">{{ teamStats.wins }}</p>
+              <p class="text-3xl sm:text-4xl font-black text-ipl-blue">{{ teamStats.wins }}</p>
             </div>
             <div class="p-4 sm:p-6">
               <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Win Rate</p>
               <div class="flex items-baseline gap-1">
-                <p class="text-3xl sm:text-4xl font-black text-brand-accent">{{ teamStats.win_percentage }}</p>
+                <p class="text-3xl sm:text-4xl font-black text-purple-600">{{ teamStats.win_percentage }}</p>
                 <span class="text-base sm:text-lg font-bold text-slate-400">%</span>
               </div>
             </div>
@@ -176,7 +176,7 @@
                     <p class="text-[10px] font-bold text-slate-400">{{ rival.win_pct }}% Win Ratio</p>
                   </div>
                   <div class="w-full sm:w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-brand-primary rounded-full transition-all duration-700" :style="{ width: rival.win_pct + '%' }"></div>
+                    <div class="h-full bg-ipl-blue rounded-full transition-all duration-700" :style="{ width: rival.win_pct + '%' }"></div>
                   </div>
                 </div>
               </div>
@@ -189,17 +189,17 @@
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Squad by Season & Role</h2>
             <div>
-              <select v-model="selectedSeason" class="border border-slate-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary">
+              <select v-model="selectedSeason" class="border border-slate-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ipl-blue">
                 <option v-for="season in availableSeasons" :key="season" :value="season">{{ season }}</option>
               </select>
             </div>
           </div>
           <div class="p-6">
             <div v-if="segmentedSquad.batters.length > 0" class="mb-6">
-              <h3 class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-2">Batters</h3>
+              <h3 class="text-xs font-bold text-ipl-blue uppercase tracking-wider mb-2">Batters</h3>
               <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                <button v-for="player in segmentedSquad.batters" :key="player.name" @click="goToPlayer(player.name)" class="group text-left p-3 bg-white border border-slate-100 hover:border-brand-primary/30 hover:bg-slate-50 rounded-lg transition-all duration-200">
-                  <p class="text-sm font-semibold text-slate-700 group-hover:text-brand-primary transition-colors">{{ player.name }}</p>
+                <button v-for="player in segmentedSquad.batters" :key="player.name" @click="goToPlayer(player.name)" class="group text-left p-3 bg-white border border-slate-100 hover:border-ipl-blue/30 hover:bg-ipl-blue/5 rounded-lg transition-all duration-200">
+                  <p class="text-sm font-semibold text-slate-700 group-hover:text-ipl-blue transition-colors">{{ player.name }}</p>
                   <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">Batter</p>
                 </button>
               </div>
@@ -242,7 +242,7 @@
           </div>
           <div class="p-6 text-center py-12">
             <div class="animate-pulse">
-              <div class="w-8 h-8 bg-brand-primary/20 rounded-full mx-auto mb-3"></div>
+              <div class="w-8 h-8 bg-ipl-blue/20 rounded-full mx-auto mb-3"></div>
               <p class="text-slate-500 text-sm">Loading squad data...</p>
               <p class="text-slate-400 text-xs mt-1">Fetching player database</p>
             </div>

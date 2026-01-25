@@ -3,11 +3,11 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-ipl-blue/15 text-ipl-blue rounded-full text-xs font-bold uppercase tracking-widest border border-ipl-blue/20">
           <TrophyIcon class="w-3 h-3" />
           Tournament Standings
         </div>
-        <h1 class="text-4xl font-black text-slate-900 tracking-tight">IPL <span class="text-brand-primary">Points Table</span></h1>
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight">IPL <span class="bg-gradient-to-r from-ipl-blue to-purple-600 bg-clip-text text-transparent">Points Table</span></h1>
         <p class="text-slate-500 max-w-xl">
           Live standings and team performance across IPL seasons
         </p>
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Season Filter -->
-    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 bg-gradient-to-r from-ipl-blue/5 to-purple-50 rounded-2xl border border-ipl-blue/20 shadow-md">
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 bg-gradient-to-r from-ipl-blue/8 to-purple-100/50 rounded-2xl border border-ipl-blue/15 shadow-md">
       <div class="flex items-center gap-4">
         <label for="season-select" class="text-sm font-bold text-ipl-blue uppercase tracking-wide">
           🏏 Select Season:
@@ -24,7 +24,7 @@
           id="season-select"
           v-model="selectedSeason" 
           @change="fetchPointsTable"
-          class="px-4 py-2 border-2 border-ipl-blue/30 rounded-xl focus:ring-2 focus:ring-ipl-orange focus:border-ipl-orange bg-white font-semibold text-ipl-blue transition-all duration-300 hover:border-ipl-orange/50"
+          class="px-4 py-2 border-2 border-ipl-blue/30 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white font-semibold text-ipl-blue transition-all duration-300 hover:border-purple-500/50"
         >
           <option v-for="season in availableSeasons" :key="season" :value="season">
             IPL {{ season }}
@@ -72,7 +72,7 @@
                 🏆 IPL {{ selectedSeason }} Standings
               </h2>
               <div v-if="selectedSeason === '2026'" class="mt-1 flex items-center gap-2 text-sm">
-                <span class="font-semibold text-ipl-orange">📅 Playoffs: 26 March – 31 May 2026</span>
+                <span class="font-semibold text-ipl-blue">📅 Playoffs: 26 March – 31 May 2026</span>
               </div>
             </div>
           </div>
