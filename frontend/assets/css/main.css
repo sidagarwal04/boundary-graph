@@ -80,10 +80,6 @@ h6 {
   @apply bg-white rounded-2xl border border-slate-200 p-6 shadow-sm transition-all duration-300;
 }
 
-.stat-card:hover {
-  @apply border-ipl-blue/30 shadow-lg transform scale-[1.02];
-}
-
 /* Button Styles */
 .btn-primary {
   @apply px-6 py-3 bg-gradient-to-r from-ipl-blue to-ipl-blue-dark text-white rounded-xl text-sm font-semibold hover:from-ipl-blue-dark hover:to-ipl-blue transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105;

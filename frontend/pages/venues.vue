@@ -37,10 +37,10 @@
             </tr>
           </thead>
           <tbody v-if="!isLoading && !loadError && venues.length > 0" class="divide-y divide-slate-50">
-            <tr v-for="venue in venues" :key="venue.name" class="hover:bg-slate-50/50 transition-colors group">
+            <tr v-for="venue in venues" :key="venue.name">
               <td class="px-3 sm:px-6 py-3 sm:py-4">
                 <div class="flex items-center gap-2 sm:gap-3">
-                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-ipl-blue group-hover:text-white transition-colors flex-shrink-0">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 flex-shrink-0">
                     <BuildingLibraryIcon class="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div class="min-w-0">
@@ -76,7 +76,7 @@
               <td class="px-3 sm:px-6 py-3 sm:py-4 text-right">
                 <button 
                   @click="showVenueDetails(venue)"
-                  class="px-2 sm:px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-ipl-blue transition-colors whitespace-nowrap"
+                  class="px-2 sm:px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest whitespace-nowrap"
                 >
                   <span class="hidden sm:inline">View Intelligence</span>
                   <span class="sm:hidden">View</span>
@@ -115,7 +115,7 @@
                   <div class="text-center">
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Failed to Load Venues</h3>
                     <p class="text-slate-500 mb-4">{{ loadError }}</p>
-                    <button @click="fetchVenues" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors">
+                    <button @click="fetchVenues" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium">
                       Retry Loading
                     </button>
                   </div>
@@ -153,7 +153,7 @@
             <h3 class="text-lg sm:text-xl font-bold text-slate-900 truncate">{{ selectedVenue.name }}</h3>
             <p class="text-sm text-slate-500">Venue Intelligence Report</p>
           </div>
-          <button @click="closeModal" class="text-slate-400 hover:text-slate-600 p-2">
+          <button @click="closeModal" class="text-slate-400 p-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -163,9 +163,9 @@
         <!-- Content -->
         <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(90vh-80px)]">
           <!-- Venue Personality Card -->
-          <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4 sm:p-6 rounded-2xl border border-purple-100">
+          <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-6 rounded-2xl border border-blue-200">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-ipl-blue to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
                 <span class="text-white text-lg sm:text-xl">🏟️</span>
               </div>
               <div class="min-w-0">
@@ -199,19 +199,19 @@
 
           <!-- Venue Superpowers -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gradient-to-br from-yellow-50 to-orange-100 p-4 rounded-xl border border-yellow-200">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-xl border border-blue-200">
               <div class="text-center">
                 <div class="text-2xl mb-2">⚡</div>
-                <p class="text-xs text-orange-600 font-bold uppercase tracking-widest mb-1">Power Hitting</p>
-                <p class="text-xl font-black text-orange-800">{{ selectedVenue.avg_first_innings > 180 ? 'EXTREME' : selectedVenue.avg_first_innings > 160 ? 'HIGH' : selectedVenue.avg_first_innings > 140 ? 'MEDIUM' : 'LOW' }}</p>
+                <p class="text-xs text-blue-600 font-bold uppercase tracking-widest mb-1">Power Hitting</p>
+                <p class="text-xl font-black text-blue-800">{{ selectedVenue.avg_first_innings > 180 ? 'EXTREME' : selectedVenue.avg_first_innings > 160 ? 'HIGH' : selectedVenue.avg_first_innings > 140 ? 'MEDIUM' : 'LOW' }}</p>
               </div>
             </div>
             
-            <div class="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-xl border border-green-200">
+            <div class="bg-gradient-to-br from-indigo-50 to-purple-100 p-4 rounded-xl border border-indigo-200">
               <div class="text-center">
                 <div class="text-2xl mb-2">🎯</div>
-                <p class="text-xs text-green-600 font-bold uppercase tracking-widest mb-1">Chase Mastery</p>
-                <p class="text-xl font-black text-green-800">{{ selectedVenue.chase_win_pct > 60 ? 'LEGENDARY' : selectedVenue.chase_win_pct > 50 ? 'STRONG' : selectedVenue.chase_win_pct > 40 ? 'BALANCED' : 'TOUGH' }}</p>
+                <p class="text-xs text-purple-600 font-bold uppercase tracking-widest mb-1">Chase Mastery</p>
+                <p class="text-xl font-black text-purple-800">{{ selectedVenue.chase_win_pct > 60 ? 'LEGENDARY' : selectedVenue.chase_win_pct > 50 ? 'STRONG' : selectedVenue.chase_win_pct > 40 ? 'BALANCED' : 'TOUGH' }}</p>
               </div>
             </div>
             
@@ -225,9 +225,9 @@
           </div>
 
           <!-- Crazy Predictions -->
-          <div class="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 p-6 rounded-2xl text-white">
+          <div class="bg-gradient-to-r from-ipl-blue via-purple-600 to-purple-700 p-6 rounded-2xl text-white">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+              <div class="w-8 h-8 bg-purple-400 rounded-lg flex items-center justify-center">
                 <span class="text-lg">🔮</span>
               </div>
               <h4 class="text-lg font-bold text-white">AI Venue Oracle</h4>
@@ -326,14 +326,14 @@
           </div>
 
           <!-- Fun Venue Facts -->
-          <div class="bg-gradient-to-r from-amber-50 to-yellow-100 p-6 rounded-2xl border border-amber-200">
-            <h4 class="text-lg font-bold text-amber-900 mb-4 flex items-center gap-2">
+          <div class="bg-gradient-to-r from-blue-50 to-purple-100 p-6 rounded-2xl border border-blue-200">
+            <h4 class="text-lg font-bold text-ipl-blue mb-4 flex items-center gap-2">
               <span class="text-lg">🎪</span> Venue Secrets & Fun Facts
             </h4>
             <div class="space-y-3">
               <div class="flex items-start gap-3">
                 <span class="text-lg flex-shrink-0">🏆</span>
-                <p class="text-sm text-amber-800 leading-relaxed">
+                <p class="text-sm text-purple-800 leading-relaxed">
                   <strong>Stadium Superpower:</strong> 
                   <span v-if="selectedVenue.chase_win_pct > 50 && selectedVenue.avg_first_innings > 165">
                     CHASE MASTER'S HEAVEN! High scores ({{ selectedVenue.avg_first_innings }}) + {{ selectedVenue.chase_win_pct }}% chase success = second innings magic!
@@ -358,7 +358,7 @@
               
               <div class="flex items-start gap-3">
                 <span class="text-lg flex-shrink-0">⚡</span>
-                <p class="text-sm text-amber-800 leading-relaxed">
+                <p class="text-sm text-purple-800 leading-relaxed">
                   <strong>Batting Mood:</strong> 
                   <span v-if="selectedVenue.avg_first_innings > 168">
                     FIREWORKS GUARANTEED! {{ selectedVenue.avg_first_innings }} average means sixes rain like monsoon!
@@ -380,7 +380,7 @@
               
               <div class="flex items-start gap-3">
                 <span class="text-lg flex-shrink-0">🎯</span>
-                <p class="text-sm text-amber-800 leading-relaxed">
+                <p class="text-sm text-purple-800 leading-relaxed">
                   <strong>Captain&apos;s Dilemma:</strong> 
                   <span v-if="selectedVenue.chase_win_pct > selectedVenue.bat_first_win_pct + 15">
                     BOWL FIRST OR GO HOME! {{ selectedVenue.chase_win_pct }}% vs {{ selectedVenue.bat_first_win_pct }}% - chasing is the only way!
