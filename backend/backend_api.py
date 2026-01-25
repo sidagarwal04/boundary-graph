@@ -804,29 +804,118 @@ async def get_seasons():
 
 # ==================== POINTS TABLE ENDPOINTS ====================
 
-# Season mappings for IPL official website URLs
+# Season mappings for Cricbuzz URLs (more reliable than IPL official site)
 SEASON_URL_MAP = {
-    "2025": "https://www.iplt20.com/points-table/men/2025",
-    "2024": "https://www.iplt20.com/points-table/men/2024", 
-    "2023": "https://www.iplt20.com/points-table/men/2023",
-    "2022": "https://www.iplt20.com/points-table/men/2022",
-    "2021": "https://www.iplt20.com/points-table/men/2021",
-    "2020": "https://www.iplt20.com/points-table/men/2020",
-    "2019": "https://www.iplt20.com/points-table/men/2019",
-    "2018": "https://www.iplt20.com/points-table/men/2018",
-    "2017": "https://www.iplt20.com/points-table/men/2017",
-    "2016": "https://www.iplt20.com/points-table/men/2016",
-    "2015": "https://www.iplt20.com/points-table/men/2015",
-    "2014": "https://www.iplt20.com/points-table/men/2014",
-    "2013": "https://www.iplt20.com/points-table/men/2013",
-    "2012": "https://www.iplt20.com/points-table/men/2012",
-    "2011": "https://www.iplt20.com/points-table/men/2011",
-    "2010": "https://www.iplt20.com/points-table/men/2010",
-    "2009": "https://www.iplt20.com/points-table/men/2009",
-    "2008": "https://www.iplt20.com/points-table/men/2008",
-    # For 2026, we'll use fallback mock data since season hasn't started
-    "2026": "https://www.iplt20.com/points-table/men/2025",  # Will fallback to mock data
+    "2026": "https://www.cricbuzz.com/cricket-series/9241/indian-premier-league-2026/points-table",
+    "2025": "https://www.cricbuzz.com/cricket-series/8693/indian-premier-league-2025/points-table",
+    "2024": "https://www.cricbuzz.com/cricket-series/7607/indian-premier-league-2024/points-table", 
+    "2023": "https://www.cricbuzz.com/cricket-series/6732/indian-premier-league-2023/points-table",
+    "2022": "https://www.cricbuzz.com/cricket-series/5945/indian-premier-league-2022/points-table",
+    "2021": "https://www.cricbuzz.com/cricket-series/4061/indian-premier-league-2021/points-table",
+    "2020": "https://www.cricbuzz.com/cricket-series/3472/indian-premier-league-2020/points-table",
+    "2019": "https://www.cricbuzz.com/cricket-series/2878/indian-premier-league-2019/points-table",
+    "2018": "https://www.cricbuzz.com/cricket-series/2339/indian-premier-league-2018/points-table",
+    "2017": "https://www.cricbuzz.com/cricket-series/1887/indian-premier-league-2017/points-table",
+    "2016": "https://www.cricbuzz.com/cricket-series/1479/indian-premier-league-2016/points-table",
+    "2015": "https://www.cricbuzz.com/cricket-series/1123/indian-premier-league-2015/points-table",
+    "2014": "https://www.cricbuzz.com/cricket-series/744/indian-premier-league-2014/points-table",
+    "2013": "https://www.cricbuzz.com/cricket-series/508/indian-premier-league-2013/points-table",
+    "2012": "https://www.cricbuzz.com/cricket-series/278/indian-premier-league-2012/points-table",
+    "2011": "https://www.cricbuzz.com/cricket-series/183/indian-premier-league-2011/points-table",
+    "2010": "https://www.cricbuzz.com/cricket-series/118/indian-premier-league-2010/points-table",
+    "2009": "https://www.cricbuzz.com/cricket-series/63/indian-premier-league-2009/points-table",
+    "2008": "https://www.cricbuzz.com/cricket-series/15/indian-premier-league-2008/points-table",
 }
+
+def scrape_cricbuzz_points_table(season: str) -> Optional[PointsTable]:
+    """Scrape live points table from Cricbuzz"""
+    try:
+        if season not in SEASON_URL_MAP:
+            logger.warning(f"No Cricbuzz URL available for season {season}")
+            return None
+            
+        url = SEASON_URL_MAP[season]
+        logger.info(f"Scraping points table from Cricbuzz: {url}")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.text, 'lxml')
+        
+        # Find the points table - Cricbuzz uses specific classes for points table
+        table_container = soup.find('div', class_='cb-srs-pnts')
+        if not table_container:
+            logger.warning(f"Could not find points table container for season {season}")
+            return None
+            
+        # Look for table rows with team data
+        team_rows = table_container.find_all('div', class_='cb-srs-pnts-itm')
+        
+        if not team_rows:
+            logger.warning(f"Could not find team rows in points table for season {season}")
+            return None
+            
+        teams = []
+        for position, row in enumerate(team_rows, 1):
+            try:
+                # Extract team name
+                team_name_elem = row.find('div', class_='cb-col-84')
+                if not team_name_elem:
+                    continue
+                    
+                team_name = team_name_elem.text.strip()
+                team_code = extract_team_code(team_name)
+                
+                # Extract stats from the row - Cricbuzz typically has stats in specific order
+                stats_elems = row.find_all('div', class_='cb-col-8')
+                if len(stats_elems) < 6:  # Need at least P, W, L, NR, Pts, NRR
+                    continue
+                    
+                played = int(stats_elems[0].text.strip())
+                won = int(stats_elems[1].text.strip())
+                lost = int(stats_elems[2].text.strip())
+                no_result = int(stats_elems[3].text.strip()) if len(stats_elems) > 3 else 0
+                points = int(stats_elems[4].text.strip())
+                nrr = float(stats_elems[5].text.strip())
+                
+                teams.append(PointsTableTeam(
+                    position=position,
+                    team=team_code,
+                    played=played,
+                    won=won,
+                    lost=lost,
+                    no_result=no_result,
+                    points=points,
+                    nrr=nrr,
+                    status=determine_status(position, season)
+                ))
+                
+            except (ValueError, AttributeError) as e:
+                logger.warning(f"Failed to parse team row {position} for season {season}: {e}")
+                continue
+                
+        if not teams:
+            logger.warning(f"No valid team data found for season {season}")
+            return None
+            
+        return PointsTable(
+            season=season,
+            last_updated=datetime.now().isoformat(),
+            teams=teams,
+            season_start_date="2026-03-26" if season == "2026" else None,
+            season_end_date="2026-05-31" if season == "2026" else None
+        )
+        
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch points table from Cricbuzz for season {season}: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error scraping Cricbuzz points table for season {season}: {e}")
+        return None
 
 def scrape_points_table(season: str) -> PointsTable:
     """Get points table with actual IPL historical data"""
@@ -1027,6 +1116,15 @@ def scrape_points_table(season: str) -> PointsTable:
         ]
     }
     
+    # For 2026 and 2025 (current/future seasons), try live scraping first
+    if season in ["2026", "2025"]:
+        live_data = scrape_cricbuzz_points_table(season)
+        if live_data:
+            logger.info(f"Successfully scraped live data for season {season}")
+            return live_data
+        else:
+            logger.warning(f"Failed to scrape live data for season {season}, falling back to stored data")
+    
     # For seasons with actual data, use it
     if season in ACTUAL_IPL_DATA:
         teams_data = ACTUAL_IPL_DATA[season]
@@ -1047,7 +1145,9 @@ def scrape_points_table(season: str) -> PointsTable:
         return PointsTable(
             season=season,
             last_updated=datetime.now().isoformat(),
-            teams=teams
+            teams=teams,
+            season_start_date="2026-03-26" if season == "2026" else None,
+            season_end_date="2026-05-31" if season == "2026" else None
         )
     
     # For 2026, return zero stats (season hasn't started)
