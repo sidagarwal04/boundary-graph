@@ -1,152 +1,160 @@
 <template>
   <div>
     <!-- Project Intro -->
-    <div class="mb-6 sm:mb-8 p-4 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm overflow-hidden relative animate-in fade-in slide-in-from-top-4 duration-700">
-      <div class="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-brand-primary/5 rounded-full -mr-12 -mt-12 sm:-mr-16 sm:-mt-16"></div>
-      <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
+    <div class="mb-6 sm:mb-8 p-5 sm:p-6 bg-gradient-to-br from-white via-ipl-orange/5 to-ipl-blue/5 rounded-2xl sm:rounded-3xl border border-ipl-blue/10 shadow-xl overflow-hidden relative animate-in fade-in slide-in-from-top-4 duration-700">
+      <!-- Decorative Elements -->
+      <div class="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-ipl-orange/20 to-ipl-blue/20 rounded-full -mr-12 -mt-12 sm:-mr-16 sm:-mt-16 animate-pulse-slow"></div>
+      <div class="absolute bottom-0 left-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-tr from-ipl-gold/20 to-transparent rounded-full -ml-10 -mb-10 sm:-ml-12 sm:-mb-12"></div>
+      
+      <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6">
         <div class="space-y-3 sm:space-y-4">
-            <div class="space-y-1">
-              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight text-responsive">Boundary Graph <span class="text-brand-primary">Analytics</span></h2>
-              <p class="text-slate-500 max-w-2xl leading-relaxed text-sm sm:text-base">
-                Welcome to <strong>Boundary Graph</strong>, an advanced cricket analytics platform focused exclusively on the <strong>Indian Premier League (IPL)</strong>. This educational project processes ball-by-ball IPL data using high-performance Neo4j graph technology. Explore player trajectories, team dynamics, and venue insights from India's most exciting T20 tournament spanning 2008-2025.
+            <div class="space-y-2">
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight text-responsive">
+                <span class="bg-gradient-to-r from-ipl-blue to-ipl-orange bg-clip-text text-transparent">Boundary Graph</span> 
+                <span class="text-ipl-blue">Analytics</span>
+              </h2>
+              <p class="text-slate-600 max-w-2xl leading-relaxed text-base sm:text-lg">
+                Welcome to <strong class="text-ipl-blue">Boundary Graph</strong>, the ultimate cricket analytics platform designed exclusively for the <strong class="text-ipl-orange">Indian Premier League (IPL)</strong>. This cutting-edge educational project leverages ball-by-ball IPL data through high-performance Neo4j graph technology. Dive deep into player trajectories, team dynamics, and venue insights from India's most electrifying T20 tournament spanning 2008-2025.
               </p>
             </div>
-            <div class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
-              <p class="text-xs text-blue-800 leading-relaxed">
-              <strong class="text-blue-900">Educational Project:</strong> This is an independent, non-commercial project created for educational and technical demonstration purposes. Not affiliated with any cricket organization. <NuxtLink to="/disclaimer" class="underline font-medium">View legal disclaimer</NuxtLink>.
+            <div class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-orange-50 border-l-4 border-ipl-orange rounded-xl">
+              <p class="text-sm text-slate-700 leading-relaxed">
+              <strong class="text-ipl-blue">Educational Project:</strong> This is an independent, non-commercial project created for educational and technical demonstration purposes. Not affiliated with any cricket organization. <NuxtLink to="/disclaimer" class="text-ipl-orange underline font-semibold hover:text-ipl-blue transition-colors">View legal disclaimer</NuxtLink>.
               </p>
             </div>
             
             <!-- Tech Stack Pill -->
-            <div class="flex flex-wrap items-start gap-2 sm:gap-4 pt-2">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0">Engineered With</span>
-              <div class="flex flex-wrap gap-1.5 sm:gap-3 min-w-0">
-                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="Graph Database">
-                  <CircleStackIcon class="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Neo4j</span>
+            <div class="flex flex-wrap items-start gap-3 sm:gap-4 pt-4">
+              <span class="text-xs font-bold text-ipl-blue/70 uppercase tracking-widest shrink-0">Powered By</span>
+              <div class="flex flex-wrap gap-2 sm:gap-3 min-w-0">
+                <div class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl border border-blue-200 min-h-touch shadow-sm hover:shadow-md transition-all duration-200" title="Graph Database">
+                  <CircleStackIcon class="w-4 h-4 text-blue-600 shrink-0" />
+                  <span class="text-xs font-bold text-blue-800 whitespace-nowrap">Neo4j</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="Frontend Framework">
-                  <SparklesIcon class="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Nuxt 3</span>
+                <div class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-emerald-100 to-emerald-50 rounded-xl border border-emerald-200 min-h-touch shadow-sm hover:shadow-md transition-all duration-200" title="Frontend Framework">
+                  <SparklesIcon class="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span class="text-xs font-bold text-emerald-800 whitespace-nowrap">Nuxt 3</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="API Backend">
-                  <BoltIcon class="w-3.5 h-3.5 text-orange-600 shrink-0" />
-                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">FastAPI</span>
+                <div class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-orange-100 to-orange-50 rounded-xl border border-orange-200 min-h-touch shadow-sm hover:shadow-md transition-all duration-200" title="API Backend">
+                  <BoltIcon class="w-4 h-4 text-orange-600 shrink-0" />
+                  <span class="text-xs font-bold text-orange-800 whitespace-nowrap">FastAPI</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="AI Coding Assistant">
-                  <CpuChipIcon class="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Antigravity</span>
+                <div class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-indigo-100 to-indigo-50 rounded-xl border border-indigo-200 min-h-touch shadow-sm hover:shadow-md transition-all duration-200" title="AI Coding Assistant">
+                  <CpuChipIcon class="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span class="text-xs font-bold text-indigo-800 whitespace-nowrap">Antigravity</span>
                 </div>
-                <div class="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-1 bg-slate-50 rounded-lg border border-slate-100 min-h-touch" title="LLM Technology">
-                  <SparklesIcon class="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                  <span class="text-[10px] font-bold text-slate-700 whitespace-nowrap">Gemini</span>
+                <div class="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-100 to-purple-50 rounded-xl border border-purple-200 min-h-touch shadow-sm hover:shadow-md transition-all duration-200" title="LLM Technology">
+                  <SparklesIcon class="w-4 h-4 text-purple-600 shrink-0" />
+                  <span class="text-xs font-bold text-purple-800 whitespace-nowrap">Gemini</span>
                 </div>
               </div>
             </div>
         </div>
-        <div class="flex flex-col items-center gap-3 shrink-0">
-          <div class="flex-shrink-0">
+        <div class="flex flex-col items-center gap-4 shrink-0">
+          <div class="flex-shrink-0 relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-ipl-blue to-ipl-orange rounded-full blur-lg opacity-30 animate-pulse-slow"></div>
             <img 
               src="/bg-logo.png" 
               alt="Boundary Graph Logo" 
-              class="w-32 h-32 object-contain"
+              class="w-36 h-36 object-contain relative z-10 drop-shadow-lg"
             />
           </div>
-          <div class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-slate-200">
-            IPL 2008 - 2025
+          <div class="px-6 py-3 bg-gradient-to-r from-ipl-blue to-ipl-orange text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-ipl-blue/25 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+            <span class="relative z-10">IPL 2008 - 2025</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
-      <NuxtLink to="/h2h" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+    <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6 mb-8">
+      <NuxtLink to="/h2h" class="stat-card bg-gradient-to-br from-ipl-blue/5 to-blue-100/50 border-ipl-blue/20 hover:border-ipl-blue/40 hover:from-ipl-blue/10 hover:to-blue-100 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 group min-h-[140px] shadow-lg hover:shadow-xl">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-2 group-hover:text-blue-600 transition-colors">Total Matches</h3>
+            <h3 class="text-label text-slate-600 mb-2 group-hover:text-ipl-blue transition-colors font-semibold">Total Matches</h3>
             <div class="h-12 flex items-center">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">{{ overview.total_matches }}</p>
+              <p class="text-2xl xl:text-3xl font-bold text-ipl-blue tracking-tight leading-none whitespace-nowrap">{{ overview.total_matches }}</p>
             </div>
           </div>
-          <div class="p-2 bg-blue-50 rounded-lg shrink-0">
-             <CricketStadiumIcon class="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
+          <div class="p-3 bg-gradient-to-br from-ipl-blue/10 to-blue-100 rounded-xl shrink-0 group-hover:from-ipl-blue/20 group-hover:to-blue-200 transition-all duration-300">
+             <CricketStadiumIcon class="w-7 h-7 sm:w-8 sm:h-8 text-ipl-blue" />
           </div>
         </div>
-        <div class="h-1 w-12 bg-blue-500 mt-4 rounded-full"></div>
+        <div class="h-1.5 w-12 bg-gradient-to-r from-ipl-blue to-blue-500 mt-4 rounded-full"></div>
       </NuxtLink>
       
-      <NuxtLink to="/player-search" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+      <NuxtLink to="/player-search" class="stat-card bg-gradient-to-br from-emerald-50 to-green-100/50 border-emerald-200/60 hover:border-emerald-300 hover:from-emerald-100 hover:to-green-100 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 group min-h-[140px] shadow-lg hover:shadow-xl">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-2 group-hover:text-green-600 transition-colors">Total Players</h3>
+            <h3 class="text-label text-slate-600 mb-2 group-hover:text-emerald-700 transition-colors font-semibold">Total Players</h3>
             <div class="h-12 flex items-center">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">{{ overview.total_players }}</p>
+              <p class="text-2xl xl:text-3xl font-bold text-emerald-700 tracking-tight leading-none whitespace-nowrap">{{ overview.total_players }}</p>
             </div>
           </div>
-          <div class="p-2 bg-green-50 rounded-lg shrink-0">
-             <CricketHelmetIcon class="w-7 h-7 sm:w-8 sm:h-8 text-green-600" />
+          <div class="p-3 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl shrink-0 group-hover:from-emerald-200 group-hover:to-green-200 transition-all duration-300">
+             <CricketHelmetIcon class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-700" />
           </div>
         </div>
-        <div class="h-1 w-12 bg-green-500 mt-4 rounded-full"></div>
+        <div class="h-1.5 w-12 bg-gradient-to-r from-emerald-500 to-green-500 mt-4 rounded-full"></div>
       </NuxtLink>
       
-      <NuxtLink to="/teams" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+      <NuxtLink to="/teams" class="stat-card bg-gradient-to-br from-ipl-orange/10 to-orange-100/50 border-ipl-orange/30 hover:border-ipl-orange/50 hover:from-ipl-orange/20 hover:to-orange-100 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 group min-h-[140px] shadow-lg hover:shadow-xl">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-2 group-hover:text-orange-600 transition-colors">Total Teams</h3>
+            <h3 class="text-label text-slate-600 mb-2 group-hover:text-ipl-orange transition-colors font-semibold">Total Teams</h3>
             <div class="h-12 flex flex-col justify-center">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">{{ overview.active_teams }} <span class="text-[10px] text-slate-400 font-medium leading-tight mt-0.5">({{ overview.defunct_teams }} defunct)</span></p>
+              <p class="text-2xl xl:text-3xl font-bold text-ipl-orange tracking-tight leading-none whitespace-nowrap">{{ overview.active_teams }} <span class="text-[10px] text-slate-500 font-medium leading-tight mt-0.5">({{ overview.defunct_teams }} defunct)</span></p>
             </div>
           </div>
-          <div class="p-2 bg-orange-50 rounded-lg shrink-0">
-             <CricketJerseyIcon class="w-7 h-7 sm:w-8 sm:h-8 text-orange-600" />
+          <div class="p-3 bg-gradient-to-br from-ipl-orange/10 to-orange-100 rounded-xl shrink-0 group-hover:from-ipl-orange/20 group-hover:to-orange-200 transition-all duration-300">
+             <CricketJerseyIcon class="w-7 h-7 sm:w-8 sm:h-8 text-ipl-orange" />
           </div>
         </div>
-        <div class="h-1 w-12 bg-orange-500 mt-4 rounded-full"></div>
+        <div class="h-1.5 w-12 bg-gradient-to-r from-ipl-orange to-orange-500 mt-4 rounded-full"></div>
       </NuxtLink>
 
-      <NuxtLink to="/batsmen" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+      <NuxtLink to="/batsmen" class="stat-card bg-gradient-to-br from-ipl-gold/10 to-yellow-100/50 border-ipl-gold/40 hover:border-ipl-gold/60 hover:from-ipl-gold/20 hover:to-yellow-100 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 group min-h-[140px] shadow-lg hover:shadow-xl">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-2 group-hover:text-yellow-600 transition-colors">Total Runs Scored</h3>
+            <h3 class="text-label text-slate-600 mb-2 group-hover:text-yellow-700 transition-colors font-semibold">Total Runs Scored</h3>
             <div class="h-12 flex items-center">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap text-ellipsis">{{ formatNumber(overview.total_runs) }}</p>
+              <p class="text-2xl xl:text-3xl font-bold text-yellow-700 tracking-tight leading-none whitespace-nowrap text-ellipsis">{{ formatNumber(overview.total_runs) }}</p>
             </div>
           </div>
-          <div class="p-2 bg-yellow-50 rounded-lg shrink-0">
-             <CricketBatIcon class="w-7 h-7 sm:w-8 sm:h-8 text-yellow-600" />
+          <div class="p-3 bg-gradient-to-br from-ipl-gold/20 to-yellow-100 rounded-xl shrink-0 group-hover:from-ipl-gold/30 group-hover:to-yellow-200 transition-all duration-300">
+             <CricketBatIcon class="w-7 h-7 sm:w-8 sm:h-8 text-yellow-700" />
           </div>
         </div>
-        <div class="h-1 w-12 bg-yellow-500 mt-4 rounded-full"></div>
+        <div class="h-1.5 w-12 bg-gradient-to-r from-ipl-gold to-yellow-500 mt-4 rounded-full"></div>
       </NuxtLink>
       
-      <NuxtLink to="/bowlers" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+      <NuxtLink to="/bowlers" class="stat-card bg-gradient-to-br from-red-50 to-red-100/50 border-red-200/60 hover:border-red-300 hover:from-red-100 hover:to-red-100 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 group min-h-[140px] shadow-lg hover:shadow-xl">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-2 group-hover:text-red-600 transition-colors">Total Deliveries</h3>
+            <h3 class="text-label text-slate-600 mb-2 group-hover:text-red-700 transition-colors font-semibold">Total Deliveries</h3>
             <div class="h-12 flex items-center">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap text-ellipsis">{{ formatNumber(overview.total_deliveries) }}</p>
+              <p class="text-2xl xl:text-3xl font-bold text-red-700 tracking-tight leading-none whitespace-nowrap text-ellipsis">{{ formatNumber(overview.total_deliveries) }}</p>
             </div>
           </div>
-          <div class="p-2 bg-red-50 rounded-lg shrink-0">
-             <CricketBallIcon class="w-7 h-7 sm:w-8 sm:h-8 text-red-600" />
+          <div class="p-3 bg-gradient-to-br from-red-100 to-red-100 rounded-xl shrink-0 group-hover:from-red-200 group-hover:to-red-200 transition-all duration-300">
+             <CricketBallIcon class="w-7 h-7 sm:w-8 sm:h-8 text-red-700" />
           </div>
         </div>
-        <div class="h-1 w-12 bg-red-500 mt-4 rounded-full"></div>
+        <div class="h-1.5 w-12 bg-gradient-to-r from-red-500 to-red-600 mt-4 rounded-full"></div>
       </NuxtLink>
-      <NuxtLink to="/venues" class="stat-card flex flex-col justify-between hover:scale-[1.02] transition-transform group min-h-[140px]">
+      <NuxtLink to="/venues" class="stat-card bg-gradient-to-br from-ipl-purple/10 to-purple-100/50 border-ipl-purple/30 hover:border-ipl-purple/50 hover:from-ipl-purple/20 hover:to-purple-100 flex flex-col justify-between hover:scale-[1.02] transition-all duration-300 group min-h-[140px] shadow-lg hover:shadow-xl">
         <div class="flex justify-between items-start w-full gap-3">
           <div class="flex flex-col min-w-0 flex-1">
-            <h3 class="text-label text-slate-500 mb-2 group-hover:text-purple-600 transition-colors">Total Venues</h3>
+            <h3 class="text-label text-slate-600 mb-2 group-hover:text-ipl-purple transition-colors font-semibold">Total Venues</h3>
             <div class="h-12 flex items-center">
-              <p class="text-2xl xl:text-3xl font-bold text-slate-900 tracking-tight leading-none whitespace-nowrap">36+</p>
+              <p class="text-2xl xl:text-3xl font-bold text-ipl-purple tracking-tight leading-none whitespace-nowrap">36+</p>
             </div>
           </div>
-          <div class="p-2 bg-purple-50 rounded-lg shrink-0">
-             <MapPinIcon class="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" />
+          <div class="p-3 bg-gradient-to-br from-ipl-purple/10 to-purple-100 rounded-xl shrink-0 group-hover:from-ipl-purple/20 group-hover:to-purple-200 transition-all duration-300">
+             <MapPinIcon class="w-7 h-7 sm:w-8 sm:h-8 text-ipl-purple" />
           </div>
         </div>
-        <div class="h-1 w-12 bg-purple-500 mt-4 rounded-full"></div>
+        <div class="h-1.5 w-12 bg-gradient-to-r from-ipl-purple to-purple-500 mt-4 rounded-full"></div>
       </NuxtLink>
     </div>
 

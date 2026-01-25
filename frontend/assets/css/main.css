@@ -3,12 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #2563EB;
-  --color-secondary: #475569;
+  --color-primary: #1E3A8A;
+  --color-secondary: #F97316;
+  --ipl-blue: #1E3A8A;
+  --ipl-orange: #F97316;
+  --ipl-gold: #FFD700;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  @apply bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900 font-sans antialiased;
 }
 
 h1,
@@ -17,34 +20,77 @@ h3,
 h4,
 h5,
 h6 {
-  @apply font-sans tracking-tight text-brand-dark;
+  @apply font-sans tracking-tight text-slate-900;
 }
 
-/* Professional Utilities */
+/* IPL-inspired Utilities */
 .text-label {
-  @apply text-slate-500 text-xs font-semibold uppercase tracking-wider;
+  @apply text-slate-600 text-xs font-semibold uppercase tracking-wider;
 }
 
 .text-value {
   @apply font-mono text-slate-900;
 }
 
+/* IPL Loading Animation */
+.ipl-loader {
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+.ipl-loader::before,
+.ipl-loader::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.ipl-loader::before {
+  width: 50px;
+  height: 50px;
+  border-top-color: var(--ipl-blue);
+  border-right-color: var(--ipl-orange);
+  animation: ipl-spin 1.5s linear infinite;
+}
+
+.ipl-loader::after {
+  width: 36px;
+  height: 36px;
+  top: 7px;
+  left: 7px;
+  border-bottom-color: var(--ipl-gold);
+  border-left-color: var(--ipl-orange);
+  animation: ipl-spin 1s linear infinite reverse;
+}
+
+@keyframes ipl-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* IPL Gradient Text */
+.text-ipl-gradient {
+  @apply bg-gradient-to-r from-ipl-blue via-ipl-orange to-ipl-gold bg-clip-text text-transparent font-bold;
+}
+
 /* Card Styles */
 .stat-card {
-  @apply bg-white rounded-lg border border-slate-200 p-6 shadow-sm transition-all duration-200;
+  @apply bg-white rounded-2xl border border-slate-200 p-6 shadow-sm transition-all duration-300;
 }
 
 .stat-card:hover {
-  @apply border-brand-primary/30 shadow-md;
+  @apply border-ipl-blue/30 shadow-lg transform scale-[1.02];
 }
 
 /* Button Styles */
 .btn-primary {
-  @apply px-4 py-2 bg-brand-primary text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm;
+  @apply px-6 py-3 bg-gradient-to-r from-ipl-blue to-ipl-blue-dark text-white rounded-xl text-sm font-semibold hover:from-ipl-blue-dark hover:to-ipl-blue transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105;
 }
 
 .btn-secondary {
-  @apply px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm;
+  @apply px-6 py-3 bg-white text-ipl-blue border-2 border-ipl-blue rounded-xl text-sm font-semibold hover:bg-ipl-blue hover:text-white transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105;
 }
 
 /* Badge Styles */
