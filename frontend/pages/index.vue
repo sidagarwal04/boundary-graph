@@ -246,21 +246,21 @@
             :to="'/match/' + selectedSeasonDetails.final_match_id"
             class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-ipl-gold/10 to-yellow-100 p-6 rounded-2xl border-2 border-ipl-gold/30 hover:scale-[1.02] hover:border-ipl-gold/50 transition-all duration-300 cursor-pointer group shadow-lg"
           >
-             <span class="text-xs font-bold text-ipl-gold/80 bg-ipl-gold/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3">🏆 Season Winner</span>
+             <span class="text-xs font-bold text-slate-800 bg-ipl-gold/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3">🏆 Season Winner</span>
              <div class="flex items-center gap-4 group-hover:scale-105 transition-transform duration-300">
                <TrophyIcon class="w-10 h-10 text-ipl-gold" />
                <TeamLogo :teamName="selectedSeasonDetails.winner" size="lg" :showName="false" />
-               <h2 class="text-3xl font-black text-ipl-blue group-hover:text-ipl-orange transition-colors">{{ selectedSeasonDetails.winner }}</h2>
+               <h2 class="text-3xl font-black text-slate-800 group-hover:text-slate-900 transition-colors">{{ selectedSeasonDetails.winner }}</h2>
              </div>
              <p class="text-sm text-slate-600 mt-3 font-semibold">Won by {{ selectedSeasonDetails.margin }} • <span class="text-ipl-orange">View Final Storyline →</span></p>
           </NuxtLink>
 
           <div v-else class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-ipl-gold/10 to-yellow-100 p-6 rounded-2xl border-2 border-ipl-gold/30 shadow-lg">
-             <span class="text-xs font-bold text-ipl-gold/80 bg-ipl-gold/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3">🏆 Winner</span>
+             <span class="text-xs font-bold text-slate-800 bg-ipl-gold/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3">🏆 Winner</span>
              <div class="flex items-center gap-4">
                <TrophyIcon class="w-10 h-10 text-ipl-gold" />
                <TeamLogo :teamName="selectedSeasonDetails.winner" size="lg" :showName="false" />
-               <h2 class="text-3xl font-black text-ipl-blue">{{ selectedSeasonDetails.winner }}</h2>
+               <h2 class="text-3xl font-black text-slate-800">{{ selectedSeasonDetails.winner }}</h2>
              </div>
              <p class="text-sm text-slate-600 mt-3 font-semibold">Won by {{ selectedSeasonDetails.margin }}</p>
           </div>
