@@ -56,7 +56,7 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover' },
-        { name: 'description', content: 'Professional cricket analytics dashboard' },
+        { name: 'description', content: 'IPL Analytics dashboard' },
         { name: 'theme-color', content: '#FBBF24' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
@@ -64,7 +64,7 @@ export default defineNuxtConfig({
         { name: 'format-detection', content: 'telephone=no' },
         // Open Graph meta tags for social media sharing
         { property: 'og:title', content: 'Boundary Graph - Cricket Analytics Dashboard' },
-        { property: 'og:description', content: 'Professional cricket analytics dashboard with comprehensive player statistics, team insights, and match analysis' },
+        { property: 'og:description', content: 'IPL Analytics dashboard with comprehensive player statistics, team insights, and match analysis' },
         { property: 'og:image', content: 'https://boundary-graph.netlify.app/bg-thumbnail.webp' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
@@ -75,7 +75,7 @@ export default defineNuxtConfig({
         // Twitter Card meta tags
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Boundary Graph - Cricket Analytics Dashboard' },
-        { name: 'twitter:description', content: 'Professional cricket analytics dashboard with comprehensive player statistics, team insights, and match analysis' },
+        { name: 'twitter:description', content: 'IPL Analytics dashboard with comprehensive player statistics, team insights, and match analysis' },
         { name: 'twitter:image', content: 'https://boundary-graph.netlify.app/bg-thumbnail.webp' },
         // Additional SEO meta tags
         { name: 'keywords', content: 'cricket, analytics, statistics, IPL, dashboard, boundary graph, sports data' },
