@@ -34,7 +34,7 @@ const closeMenu = () => {
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 font-sans flex flex-col">
     <!-- Header Navigation -->
     <header class="bg-gradient-to-r from-ipl-blue via-brand-primary to-ipl-blue-dark text-white border-b border-ipl-blue-dark/20 sticky top-0 z-50 safe-area-inset shadow-lg">
-      <div class="max-w-7xl mx-auto px-4 py-2 sm:py-3 flex justify-between items-center min-h-[56px]">
+      <div class="max-w-7xl mx-auto px-4 py-2 sm:py-3 flex justify-between items-center min-h-[56px] relative">
         <div class="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
           <NuxtLink to="/" class="flex items-center gap-2 min-w-0" @click="closeMenu">
             <!-- Logo Mark -->
@@ -45,15 +45,21 @@ const closeMenu = () => {
                 class="w-full h-full object-contain rounded-full"
               />
             </div>
-            <div class="hidden xs:block min-w-0">
-              <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight truncate">Boundary Graph</h1>
-              <p class="text-[8px] sm:text-[9px] text-ipl-orange font-bold uppercase tracking-wide mt-0.5 hidden sm:block leading-none">IPL Analytics for Gentlemen and Madmen</p>
+            <div class="min-w-0 flex-1">
+              <h1 class="text-xs xs:text-sm sm:text-base md:text-lg font-bold tracking-tight text-white leading-tight">
+                <span class="block sm:hidden">Boundary Graph</span>
+                <span class="hidden sm:block">Boundary Graph</span>
+              </h1>
+              <p class="text-[6px] xs:text-[7px] sm:text-[8px] md:text-[9px] text-ipl-orange font-bold uppercase tracking-wide mt-0.5 leading-none">
+                <span class="block sm:hidden">IPL Analytics for Cricket Fans</span>
+                <span class="hidden sm:block">IPL Analytics for Gentlemen and Madmen</span>
+              </p>
             </div>
           </NuxtLink>
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex gap-4 lg:gap-6 items-center">
+        <nav class="hidden xl:flex gap-4 2xl:gap-6 items-center">
           <NuxtLink to="/" class="nav-link">Overview</NuxtLink>
           <NuxtLink to="/points-table" class="nav-link">Points Table</NuxtLink>
           <NuxtLink to="/batsmen" class="nav-link">Batsmen</NuxtLink>
@@ -78,7 +84,7 @@ const closeMenu = () => {
         </nav>
 
         <!-- Mobile Menu Toggle -->
-        <button class="md:hidden p-2 -mr-2 text-white hover:text-ipl-orange transition-colors touch-target flex-shrink-0" @click="toggleMenu">
+        <button class="xl:hidden p-2 -mr-2 text-white hover:text-ipl-orange transition-colors touch-target flex-shrink-0" @click="toggleMenu">
           <Bars3Icon v-if="!isMenuOpen" class="w-6 h-6" />
           <XMarkIcon v-else class="w-6 h-6" />
         </button>
@@ -87,9 +93,14 @@ const closeMenu = () => {
       <!-- Mobile Navigation Drawer -->
       <div 
         v-if="isMenuOpen" 
-        class="md:hidden border-t border-ipl-blue-dark/20 bg-gradient-to-r from-ipl-blue to-ipl-blue-dark absolute top-full left-0 w-full shadow-xl animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-80px)] overflow-y-auto safe-area-inset"
+        class="xl:hidden fixed inset-0 z-40 bg-black/20" 
+        @click="closeMenu"
       >
-        <nav class="flex flex-col p-4 space-y-1">
+        <div 
+          class="bg-gradient-to-r from-ipl-blue to-ipl-blue-dark border-t border-ipl-blue-dark/20 shadow-2xl animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto mt-16"
+          @click.stop
+        >
+          <nav class="flex flex-col p-4 space-y-1">
           <NuxtLink to="/" class="nav-link-mobile touch-target" @click="closeMenu">Overview</NuxtLink>
           <NuxtLink to="/points-table" class="nav-link-mobile touch-target" @click="closeMenu">Points Table</NuxtLink>
           <NuxtLink to="/batsmen" class="nav-link-mobile touch-target" @click="closeMenu">Batsmen</NuxtLink>
@@ -113,6 +124,7 @@ const closeMenu = () => {
           </a>
         </nav>
       </div>
+    </div>
     </header>
 
     <!-- Main Content -->
