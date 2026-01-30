@@ -1330,7 +1330,8 @@ class IPLNeo4jImporter:
 
 
 def main():
-    """Main execution function."""
+    """Main execution function with smart skipping and once-a-day check."""
+    from datetime import date
     
     # Load configuration from .env file
     NEO4J_URI = os.getenv("NEO4J_URI")
@@ -1338,6 +1339,38 @@ def main():
     NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
     JSON_FOLDER = os.getenv("JSON_FOLDER", "./data/ipl_json")
     
+    # State check for smart skipping
+    state_file = ".importer_state.json"
+    today = date.today().isoformat()
+    
+    # Get current file count
+    try:
+        current_files = [f for f in os.listdir(JSON_FOLDER) if f.endswith(".json")]
+        current_count = len(current_files)
+    except Exception as e:
+        logger.error(f"Could not access JSON folder {JSON_FOLDER}: {e}")
+        return
+
+    # Check previous state
+    if os.path.exists(state_file):
+        try:
+            with open(state_file, 'r') as f:
+                state = json.load(f)
+                last_run_date = state.get("last_run_date")
+                last_file_count = state.get("last_file_count")
+                
+                # Rule 1: Don't run more than once a day
+                if last_run_date == today:
+                    logger.info(f"⏭️ Skipping: Importer already ran today ({today}).")
+                    return
+                
+                # Rule 2: Only run if files were added
+                if last_file_count == current_count:
+                    logger.info(f"⏭️ Skipping: No new files added since last run (Count: {current_count}).")
+                    return
+        except Exception as e:
+            logger.warning(f"⚠️ Could not read state file: {e}. Proceeding with check.")
+
     # Create importer instance
     importer = IPLNeo4jImporter(
         uri=NEO4J_URI,
@@ -1349,6 +1382,16 @@ def main():
     try:
         # Import all matches
         importer.import_all_matches(batch_size=10)
+        
+        # Save state after successful check/run
+        with open(state_file, 'w') as f:
+            json.dump({
+                "last_run_date": today,
+                "last_file_count": current_count
+            }, f)
+            
+    except Exception as e:
+        logger.error(f"❌ Importer failed: {e}")
     finally:
         # Always close the connection
         importer.close()

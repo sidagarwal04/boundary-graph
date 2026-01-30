@@ -34,11 +34,11 @@ This project follows a modern JAMstack architecture:
 boundary-graph/
 ├── backend/                    # FastAPI backend with Redis caching
 │   ├── backend_api.py         # Main API application with endpoints
-│   ├── main.py               # Data import and Neo4j utilities  
 │   ├── requirements.txt      # Python dependencies
 │   ├── neo4j_optimization.cypher # Database performance queries
-│   ├── example.env           # Environment configuration template
 │   └── README.md            # Backend-specific documentation
+├── data_importer.py            # Automated Neo4j data import utility
+├── example.env                 # Unified environment template
 ├── frontend/                   # Nuxt 3 frontend application
 │   ├── components/           # Reusable Vue components
 │   ├── composables/         # API integration and caching logic
@@ -317,6 +317,22 @@ Rather than using `.env` files in production, you should set these variables dir
 - Configure appropriate cache TTL values
 - Set up Neo4j connection pooling
 - Monitor API response times and database query performance
+
+## 📊 Data Importer
+
+The `data_importer.py` script handles the ingestion of IPL JSON data into the Neo4j Graph Database.
+
+### Smart Logic
+To prevent redundant database operations and save resources, the importer includes:
+- **File Ingestion Check**: It only runs if the number of `.json` files in `data/ipl_json` has changed since the last successful run.
+- **Once-a-Day Constraint**: It will not execute more than once in a 24-hour period (unless the state file `.importer_state.json` is deleted).
+- **Resume Capability**: If an import is interrupted, it detects which matches are already in the database and skips them.
+
+### Running Manually
+```bash
+# Ensure your .env is configured with NEO4J credentials
+python3 data_importer.py
+```
 
 ## 🤝 Contributing
 
