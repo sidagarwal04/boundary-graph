@@ -62,6 +62,24 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
         { name: 'format-detection', content: 'telephone=no' },
+        // Open Graph meta tags for social media sharing
+        { property: 'og:title', content: 'Boundary Graph - Cricket Analytics Dashboard' },
+        { property: 'og:description', content: 'Professional cricket analytics dashboard with comprehensive player statistics, team insights, and match analysis' },
+        { property: 'og:image', content: 'https://boundary-graph.netlify.app/bg-thumbnail.webp' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:image:type', content: 'image/webp' },
+        { property: 'og:url', content: 'https://boundary-graph.netlify.app' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'Boundary Graph' },
+        // Twitter Card meta tags
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Boundary Graph - Cricket Analytics Dashboard' },
+        { name: 'twitter:description', content: 'Professional cricket analytics dashboard with comprehensive player statistics, team insights, and match analysis' },
+        { name: 'twitter:image', content: 'https://boundary-graph.netlify.app/bg-thumbnail.webp' },
+        // Additional SEO meta tags
+        { name: 'keywords', content: 'cricket, analytics, statistics, IPL, dashboard, boundary graph, sports data' },
+        { name: 'author', content: 'Boundary Graph' },
       ],
       link: [
         { rel: 'manifest', href: '/manifest.json' },
