@@ -295,18 +295,22 @@ All ball-by-ball IPL data is sourced from [Cricsheet.org](https://cricsheet.org/
 
 ### Environment Setup
 
-#### Netlify (Frontend)
-1. Connect GitHub repository to Netlify
-2. Set build command: `cd frontend && npm run build`
-3. Set publish directory: `frontend/.output/public`
-4. Configure environment variables in Netlify dashboard
+Rather than using `.env` files in production, you should set these variables directly in your hosting provider's dashboard.
 
-#### Render (Backend)
-1. Connect GitHub repository to Render
-2. Create new Web Service with Python runtime
-3. Set build command: `cd backend && pip install -r requirements.txt`
-4. Set start command: `cd backend && uvicorn backend_api:app --host 0.0.0.0 --port $PORT`
-5. Configure environment variables in Render dashboard
+#### Render (Backend API)
+1. Go to your Render Dashboard -> **Environment Secrets**.
+2. Add the following keys:
+   - `NEO4J_URI`: Your Neo4j Aura URI
+   - `NEO4J_USERNAME`: `neo4j`
+   - `NEO4J_PASSWORD`: Your Aura password
+   - `REDIS_URL`: (Optional) Your Redis instance URL
+   - `ENABLE_REDIS`: `true`
+
+#### Netlify (Frontend)
+1. Go to Netlify -> **Site Configuration** -> **Environment variables**.
+2. Add the following key:
+   - `NUXT_PUBLIC_API_BASE`: The URL of your Render backend (e.g., `https://boundary-graph.onrender.com`)
+   - `NUXT_PUBLIC_CACHE_ENABLED`: `true`
 
 ### Performance Optimization
 - Enable Redis caching for production workloads
