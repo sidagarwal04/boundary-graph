@@ -233,9 +233,9 @@
         </div>
 
         <!-- Content -->
-        <div v-if="loadingDetails" class="p-8 text-center text-slate-500">
-           <div class="ipl-loader mx-auto mb-4"></div>
-           <p class="text-ipl-blue font-semibold">Loading season stats...</p>
+        <div v-if="loadingDetails" class="p-4 sm:p-6 md:p-8 text-center text-slate-500">
+           <div class="ipl-loader mx-auto mb-3 sm:mb-4"></div>
+           <p class="text-ipl-blue font-semibold text-sm sm:text-base">Loading season stats...</p>
         </div>
         
         <div v-else-if="selectedSeasonDetails" class="p-3 sm:p-4 md:p-6">
@@ -341,9 +341,9 @@
         </div>
 
         <!-- Content -->
-        <div v-if="loadingTeamDetails" class="p-8 text-center text-slate-500">
-           <div class="ipl-loader mx-auto mb-4"></div>
-           <p class="text-ipl-orange font-semibold">Loading team stats...</p>
+        <div v-if="loadingTeamDetails" class="p-4 sm:p-6 md:p-8 text-center text-slate-500">
+           <div class="ipl-loader mx-auto mb-3 sm:mb-4"></div>
+           <p class="text-ipl-orange font-semibold text-sm sm:text-base">Loading team stats...</p>
         </div>
         
         <div v-else-if="selectedTeamDetails" class="p-3 sm:p-4 md:p-6">
