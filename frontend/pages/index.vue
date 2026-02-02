@@ -12,7 +12,7 @@
             <div class="space-y-2">
               <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight text-responsive">
                 <span class="bg-gradient-to-r from-ipl-blue to-ipl-orange bg-clip-text text-transparent">Boundary Graph</span> 
-                <span class="text-ipl-blue">Analytics</span>
+                <!-- <span class="text-ipl-blue">Analytics</span> -->
               </h2>
               <p class="text-slate-600 leading-relaxed text-base sm:text-lg">
                 Welcome to <strong class="text-ipl-blue">Boundary Graph</strong>, the ultimate cricket analytics platform designed exclusively for the <strong class="text-ipl-orange">Indian Premier League (IPL)</strong>. This cutting-edge educational project leverages ball-by-ball IPL data through high-performance Neo4j graph technology. Dive deep into player trajectories, team dynamics, and venue insights from India's most electrifying T20 tournament spanning 2008-2025.
