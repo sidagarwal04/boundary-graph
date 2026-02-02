@@ -214,21 +214,21 @@
 
 
     <!-- Season Detail Modal -->
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" @click.self="closeModal">
-      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-fade-in-up border border-ipl-blue/20">
+    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm" @click.self="closeModal">
+      <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-up border border-ipl-blue/20">
         
         <!-- Header -->
-        <div class="bg-gradient-to-r from-ipl-blue/10 to-purple-50 px-6 py-5 border-b border-ipl-blue/20 flex justify-between items-center">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-gradient-to-br from-ipl-blue/10 to-purple-100 rounded-xl">
-              <svg class="w-5 h-5 text-ipl-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-gradient-to-r from-ipl-blue/10 to-purple-50 px-4 sm:px-6 py-4 sm:py-5 border-b border-ipl-blue/20 flex justify-between items-center sticky top-0 z-10">
+          <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div class="p-1.5 sm:p-2 bg-gradient-to-br from-ipl-blue/10 to-purple-100 rounded-lg sm:rounded-xl flex-shrink-0">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-ipl-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <h3 class="text-xl font-black text-ipl-blue">IPL {{ selectedSeasonDetails?.season }} Season Details</h3>
+            <h3 class="text-lg sm:text-xl font-black text-ipl-blue truncate">IPL {{ selectedSeasonDetails?.season }} Season Details</h3>
           </div>
-          <button @click="closeModal" class="text-slate-400 hover:text-ipl-orange transition-colors p-1 rounded-lg hover:bg-ipl-orange/10">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <button @click="closeModal" class="text-slate-400 hover:text-ipl-orange transition-colors p-2 rounded-lg hover:bg-ipl-orange/10 flex-shrink-0 touch-manipulation">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
@@ -238,84 +238,84 @@
            <p class="text-ipl-blue font-semibold">Loading season stats...</p>
         </div>
         
-        <div v-else-if="selectedSeasonDetails" class="p-6">
+        <div v-else-if="selectedSeasonDetails" class="p-3 sm:p-4 md:p-6">
           
           <!-- Winner Section -->
           <NuxtLink 
             v-if="selectedSeasonDetails.final_match_id"
             :to="'/match/' + selectedSeasonDetails.final_match_id"
-            class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-ipl-gold/10 to-yellow-100 p-6 rounded-2xl border-2 border-ipl-gold/30 hover:scale-[1.02] hover:border-ipl-gold/50 transition-all duration-300 cursor-pointer group shadow-lg"
+            class="flex flex-col items-center justify-center mb-4 sm:mb-6 md:mb-8 bg-gradient-to-br from-ipl-gold/10 to-yellow-100 p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl border-2 border-ipl-gold/30 hover:scale-[1.02] hover:border-ipl-gold/50 transition-all duration-300 cursor-pointer group shadow-lg touch-manipulation"
           >
-             <span class="text-xs font-bold text-slate-800 bg-ipl-gold/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3">🏆 Season Winner</span>
-             <div class="flex items-center gap-4 group-hover:scale-105 transition-transform duration-300">
-               <TrophyIcon class="w-10 h-10 text-ipl-gold" />
+             <span class="text-xs font-bold text-slate-800 bg-ipl-gold/20 px-2 sm:px-3 py-1 rounded-full uppercase tracking-widest mb-2 sm:mb-3">🏆 Season Winner</span>
+             <div class="flex items-center gap-2 sm:gap-3 md:gap-4 group-hover:scale-105 transition-transform duration-300">
+               <TrophyIcon class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-ipl-gold flex-shrink-0" />
                <TeamLogo :teamName="selectedSeasonDetails.winner" size="lg" :showName="false" />
-               <h2 class="text-3xl font-black text-slate-800 group-hover:text-slate-900 transition-colors">{{ selectedSeasonDetails.winner }}</h2>
+               <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 group-hover:text-slate-900 transition-colors text-center">{{ selectedSeasonDetails.winner }}</h2>
              </div>
-             <p class="text-sm text-slate-600 mt-3 font-semibold">Won by {{ selectedSeasonDetails.margin }} • <span class="text-ipl-orange">View Final Storyline →</span></p>
+             <p class="text-xs sm:text-sm text-slate-600 mt-2 sm:mt-3 font-semibold text-center">Won by {{ selectedSeasonDetails.margin }} • <span class="text-ipl-orange">View Final Storyline →</span></p>
           </NuxtLink>
 
-          <div v-else class="flex flex-col items-center justify-center mb-8 bg-gradient-to-br from-ipl-gold/10 to-yellow-100 p-6 rounded-2xl border-2 border-ipl-gold/30 shadow-lg">
-             <span class="text-xs font-bold text-slate-800 bg-ipl-gold/20 px-3 py-1 rounded-full uppercase tracking-widest mb-3">🏆 Winner</span>
-             <div class="flex items-center gap-4">
-               <TrophyIcon class="w-10 h-10 text-ipl-gold" />
+          <div v-else class="flex flex-col items-center justify-center mb-4 sm:mb-6 md:mb-8 bg-gradient-to-br from-ipl-gold/10 to-yellow-100 p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl border-2 border-ipl-gold/30 shadow-lg">
+             <span class="text-xs font-bold text-slate-800 bg-ipl-gold/20 px-2 sm:px-3 py-1 rounded-full uppercase tracking-widest mb-2 sm:mb-3">🏆 Winner</span>
+             <div class="flex items-center gap-2 sm:gap-3 md:gap-4">
+               <TrophyIcon class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-ipl-gold flex-shrink-0" />
                <TeamLogo :teamName="selectedSeasonDetails.winner" size="lg" :showName="false" />
-               <h2 class="text-3xl font-black text-slate-800">{{ selectedSeasonDetails.winner }}</h2>
+               <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 text-center">{{ selectedSeasonDetails.winner }}</h2>
              </div>
-             <p class="text-sm text-slate-600 mt-3 font-semibold">Won by {{ selectedSeasonDetails.margin }}</p>
+             <p class="text-xs sm:text-sm text-slate-600 mt-2 sm:mt-3 font-semibold text-center">Won by {{ selectedSeasonDetails.margin }}</p>
           </div>
 
           <!-- Stats Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
              <!-- Runner Up -->
-             <div class="p-5 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 min-h-[100px] flex flex-col justify-center shadow-md hover:shadow-lg transition-shadow">
-                <p class="text-xs text-ipl-blue font-bold mb-2 uppercase tracking-wide">🥈 Runner Up</p>
-                <div class="flex items-center gap-3">
+             <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl sm:rounded-2xl border border-slate-200 min-h-[80px] sm:min-h-[100px] flex flex-col justify-center shadow-md hover:shadow-lg transition-shadow">
+                <p class="text-xs text-ipl-blue font-bold mb-1 sm:mb-2 uppercase tracking-wide">🥈 Runner Up</p>
+                <div class="flex items-center gap-2 sm:gap-3">
                   <TeamLogo :teamName="selectedSeasonDetails.runner_up" size="sm" :showName="false" />
-                  <p class="text-lg font-black text-slate-800 leading-tight">{{ selectedSeasonDetails.runner_up }}</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-slate-800 leading-tight">{{ selectedSeasonDetails.runner_up }}</p>
                 </div>
              </div>
              
              <!-- Venue -->
-             <div class="p-5 bg-gradient-to-br from-ipl-orange/5 to-orange-50 rounded-2xl border border-ipl-orange/20 min-h-[100px] flex flex-col justify-center shadow-md hover:shadow-lg transition-shadow">
-                <p class="text-xs text-ipl-orange font-bold mb-2 uppercase tracking-wide">🏟️ Final Venue</p>
-                <p class="text-lg font-black text-slate-800 leading-tight">{{ selectedSeasonDetails.venue }}</p>
+             <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-orange/5 to-orange-50 rounded-xl sm:rounded-2xl border border-ipl-orange/20 min-h-[80px] sm:min-h-[100px] flex flex-col justify-center shadow-md hover:shadow-lg transition-shadow">
+                <p class="text-xs text-ipl-orange font-bold mb-1 sm:mb-2 uppercase tracking-wide">🏟️ Final Venue</p>
+                <p class="text-sm sm:text-base md:text-lg font-black text-slate-800 leading-tight">{{ selectedSeasonDetails.venue }}</p>
              </div>
              
              <!-- Total Teams -->
-             <div class="p-5 bg-gradient-to-br from-ipl-blue/5 to-blue-50 rounded-2xl border border-ipl-blue/20 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+             <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-blue/5 to-blue-50 rounded-xl sm:rounded-2xl border border-ipl-blue/20 flex items-center justify-between min-h-[80px] sm:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
                 <div>
-                  <p class="text-xs text-ipl-blue font-bold mb-2 uppercase tracking-wide">👥 Participating Teams</p>
-                  <p class="text-2xl font-black text-ipl-blue">{{ selectedSeasonDetails.total_teams }}</p>
+                  <p class="text-xs text-ipl-blue font-bold mb-1 sm:mb-2 uppercase tracking-wide">👥 Participating Teams</p>
+                  <p class="text-xl sm:text-2xl font-black text-ipl-blue">{{ selectedSeasonDetails.total_teams }}</p>
                 </div>
-                <ShieldCheckIcon class="w-5 h-5 text-slate-300" />
+                <ShieldCheckIcon class="w-4 h-4 sm:w-5 sm:h-5 text-slate-300 flex-shrink-0" />
              </div>
 
              <!-- Total Matches -->
-             <div class="p-5 bg-gradient-to-br from-ipl-orange/5 to-orange-50 rounded-2xl border border-ipl-orange/20 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+             <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-orange/5 to-orange-50 rounded-xl sm:rounded-2xl border border-ipl-orange/20 flex items-center justify-between min-h-[80px] sm:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
                 <div>
-                  <p class="text-xs text-ipl-orange font-bold mb-2 uppercase tracking-wide">🏏 Total Matches played</p>
-                  <p class="text-2xl font-black text-ipl-orange">{{ selectedSeasonDetails.total_matches }}</p>
+                  <p class="text-xs text-ipl-orange font-bold mb-1 sm:mb-2 uppercase tracking-wide">🏏 Total Matches played</p>
+                  <p class="text-xl sm:text-2xl font-black text-ipl-orange">{{ selectedSeasonDetails.total_matches }}</p>
                 </div>
-                 <CricketBallIcon class="w-5 h-5 text-slate-300" />
+                 <CricketBallIcon class="w-4 h-4 sm:w-5 sm:h-5 text-slate-300 flex-shrink-0" />
              </div>
              
              <!-- Player of the Tournament -->
-             <div v-if="selectedSeasonDetails.player_of_tournament" class="p-5 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl border border-yellow-300/30 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
-                <div>
-                  <p class="text-xs text-yellow-800 font-bold mb-2 uppercase tracking-wide">🏆 Player of the Tournament</p>
-                  <p class="text-lg font-black text-yellow-900 leading-tight">{{ selectedSeasonDetails.player_of_tournament }}</p>
+             <div v-if="selectedSeasonDetails.player_of_tournament" class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl sm:rounded-2xl border border-yellow-300/30 flex items-center justify-between min-h-[80px] sm:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+                <div class="min-w-0 pr-2">
+                  <p class="text-xs text-yellow-800 font-bold mb-1 sm:mb-2 uppercase tracking-wide">🏆 Player of the Tournament</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-yellow-900 leading-tight truncate">{{ selectedSeasonDetails.player_of_tournament }}</p>
                 </div>
-                <CricketHelmetIcon class="w-5 h-5 text-slate-300" />
+                <CricketHelmetIcon class="w-4 h-4 sm:w-5 sm:h-5 text-slate-300 flex-shrink-0" />
              </div>
              
              <!-- Player of the Match (Final) -->
-             <div v-if="selectedSeasonDetails.player_of_match" class="p-5 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl border border-green-300/30 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
-                <div>
-                  <p class="text-xs text-green-800 font-bold mb-2 uppercase tracking-wide">🎯 Player of the Match (Final)</p>
-                  <p class="text-lg font-black text-green-900 leading-tight">{{ selectedSeasonDetails.player_of_match }}</p>
+             <div v-if="selectedSeasonDetails.player_of_match" class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl sm:rounded-2xl border border-green-300/30 flex items-center justify-between min-h-[80px] sm:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+                <div class="min-w-0 pr-2">
+                  <p class="text-xs text-green-800 font-bold mb-1 sm:mb-2 uppercase tracking-wide">🎯 Player of the Match (Final)</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-green-900 leading-tight truncate">{{ selectedSeasonDetails.player_of_match }}</p>
                 </div>
-                <TrophyIcon class="w-5 h-5 text-slate-300" />
+                <TrophyIcon class="w-4 h-4 sm:w-5 sm:h-5 text-slate-300 flex-shrink-0" />
              </div>
           </div>
           
@@ -324,19 +324,19 @@
     </div>
 
     <!-- Team Detail Modal -->
-    <div v-if="isTeamModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" @click.self="closeTeamModal">
-      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-fade-in-up border border-ipl-orange/20">
+    <div v-if="isTeamModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm" @click.self="closeTeamModal">
+      <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-up border border-ipl-orange/20">
         
         <!-- Header -->
-        <div class="bg-gradient-to-r from-ipl-orange/10 to-yellow-50 px-6 py-5 border-b border-ipl-orange/20 flex justify-between items-center">
-          <div class="flex items-center gap-4">
-            <div class="p-2 bg-gradient-to-br from-ipl-orange/10 to-yellow-100 rounded-xl">
+        <div class="bg-gradient-to-r from-ipl-orange/10 to-yellow-50 px-4 sm:px-6 py-4 sm:py-5 border-b border-ipl-orange/20 flex justify-between items-center sticky top-0 z-10">
+          <div class="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0">
+            <div class="p-1.5 sm:p-2 bg-gradient-to-br from-ipl-orange/10 to-yellow-100 rounded-lg sm:rounded-xl flex-shrink-0">
               <TeamLogo v-if="selectedTeam" :teamName="selectedTeam.name" size="sm" :showName="false" />
             </div>
-            <h3 class="text-xl font-black text-ipl-orange">{{ selectedTeam?.name }}</h3>
+            <h3 class="text-lg sm:text-xl font-black text-ipl-orange truncate">{{ selectedTeam?.name }}</h3>
           </div>
-          <button @click="closeTeamModal" class="text-slate-400 hover:text-ipl-orange transition-colors p-1 rounded-lg hover:bg-ipl-orange/10">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <button @click="closeTeamModal" class="text-slate-400 hover:text-ipl-orange transition-colors p-2 rounded-lg hover:bg-ipl-orange/10 flex-shrink-0 touch-manipulation">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
@@ -346,92 +346,92 @@
            <p class="text-ipl-orange font-semibold">Loading team stats...</p>
         </div>
         
-        <div v-else-if="selectedTeamDetails" class="p-6">
+        <div v-else-if="selectedTeamDetails" class="p-3 sm:p-4 md:p-6">
           
           <!-- Team Status -->
-          <div class="mb-6 text-center p-4 rounded-2xl" :class="selectedTeam?.is_active ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200' : 'bg-gradient-to-r from-red-50 to-pink-50 border border-red-200'">
-            <div class="flex items-center justify-center gap-3 mb-2">
-              <div :class="selectedTeam?.is_active ? 'w-4 h-4 bg-green-500 rounded-full animate-pulse' : 'w-4 h-4 bg-red-500 rounded-full'"></div>
-              <span :class="selectedTeam?.is_active ? 'text-green-700 font-black text-lg' : 'text-red-700 font-black text-lg'">{{ selectedTeam?.is_active ? '✅ Active Team' : '❌ Inactive Team' }}</span>
+          <div class="mb-4 sm:mb-6 text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl" :class="selectedTeam?.is_active ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200' : 'bg-gradient-to-r from-red-50 to-pink-50 border border-red-200'">
+            <div class="flex items-center justify-center gap-2 sm:gap-3 mb-2">
+              <div :class="selectedTeam?.is_active ? 'w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse' : 'w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full'"></div>
+              <span :class="selectedTeam?.is_active ? 'text-green-700 font-black text-base sm:text-lg' : 'text-red-700 font-black text-base sm:text-lg'">{{ selectedTeam?.is_active ? '✅ Active Team' : '❌ Inactive Team' }}</span>
             </div>
-            <p class="text-sm font-semibold" :class="selectedTeam?.is_active ? 'text-green-600' : 'text-red-600'">{{ selectedTeam?.is_active ? 'Currently participating in IPL' : 'No longer part of IPL' }}</p>
+            <p class="text-xs sm:text-sm font-semibold" :class="selectedTeam?.is_active ? 'text-green-600' : 'text-red-600'">{{ selectedTeam?.is_active ? 'Currently participating in IPL' : 'No longer part of IPL' }}</p>
           </div>
 
           <!-- Team Details -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <!-- Captain -->
-            <div v-if="selectedTeamDetails.captain" class="p-5 bg-gradient-to-br from-ipl-blue/10 to-blue-100 rounded-2xl border border-ipl-blue/30 shadow-md hover:shadow-lg transition-shadow">
+            <div v-if="selectedTeamDetails.captain" class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-blue/10 to-blue-100 rounded-xl sm:rounded-2xl border border-ipl-blue/30 shadow-md hover:shadow-lg transition-shadow">
               <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-ipl-blue font-bold uppercase tracking-widest mb-2">👨‍✈️ Captain</p>
-                  <p class="text-lg font-black text-slate-900">{{ selectedTeamDetails.captain }}</p>
+                <div class="min-w-0 pr-2">
+                  <p class="text-xs text-ipl-blue font-bold uppercase tracking-widest mb-1 sm:mb-2">👨‍✈️ Captain</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-slate-900 truncate">{{ selectedTeamDetails.captain }}</p>
                 </div>
-                <CricketHelmetIcon class="w-8 h-8 text-ipl-blue" />
+                <CricketHelmetIcon class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-ipl-blue flex-shrink-0" />
               </div>
             </div>
             
             <!-- Coach -->
-            <div v-if="selectedTeamDetails.coach" class="p-5 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-300 shadow-md hover:shadow-lg transition-shadow">
+            <div v-if="selectedTeamDetails.coach" class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl sm:rounded-2xl border border-emerald-300 shadow-md hover:shadow-lg transition-shadow">
               <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-emerald-700 font-bold uppercase tracking-widest mb-2">🎯 Coach</p>
-                  <p class="text-lg font-black text-slate-900">{{ selectedTeamDetails.coach }}</p>
+                <div class="min-w-0 pr-2">
+                  <p class="text-xs text-emerald-700 font-bold uppercase tracking-widest mb-1 sm:mb-2">🎯 Coach</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-slate-900 truncate">{{ selectedTeamDetails.coach }}</p>
                 </div>
-                <UserIcon class="w-8 h-8 text-emerald-600" />
+                <UserIcon class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-emerald-600 flex-shrink-0" />
               </div>
             </div>
             
             <!-- Home Ground -->
-            <div v-if="selectedTeamDetails.home_ground" class="p-5 bg-gradient-to-br from-ipl-orange/10 to-orange-100 rounded-2xl border border-ipl-orange/30 shadow-md hover:shadow-lg transition-shadow">
+            <div v-if="selectedTeamDetails.home_ground" class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-orange/10 to-orange-100 rounded-xl sm:rounded-2xl border border-ipl-orange/30 shadow-md hover:shadow-lg transition-shadow">
               <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-ipl-orange font-bold uppercase tracking-widest mb-2">🏟️ Home Ground</p>
-                  <p class="text-lg font-black text-slate-900">{{ selectedTeamDetails.home_ground }}</p>
+                <div class="min-w-0 pr-2">
+                  <p class="text-xs text-ipl-orange font-bold uppercase tracking-widest mb-1 sm:mb-2">🏟️ Home Ground</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-slate-900 truncate">{{ selectedTeamDetails.home_ground }}</p>
                 </div>
-                <CricketStadiumIcon class="w-8 h-8 text-ipl-orange" />
+                <CricketStadiumIcon class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-ipl-orange flex-shrink-0" />
               </div>
             </div>
             
             <!-- Owner -->
-            <div v-if="selectedTeamDetails.owner" class="p-5 bg-gradient-to-br from-ipl-purple/10 to-purple-100 rounded-2xl border border-ipl-purple/30 shadow-md hover:shadow-lg transition-shadow">
+            <div v-if="selectedTeamDetails.owner" class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-purple/10 to-purple-100 rounded-xl sm:rounded-2xl border border-ipl-purple/30 shadow-md hover:shadow-lg transition-shadow">
               <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-xs text-ipl-purple font-bold uppercase tracking-widest mb-2">👑 Owner</p>
-                  <p class="text-lg font-black text-slate-900">{{ selectedTeamDetails.owner }}</p>
+                <div class="min-w-0 pr-2">
+                  <p class="text-xs text-ipl-purple font-bold uppercase tracking-widest mb-1 sm:mb-2">👑 Owner</p>
+                  <p class="text-sm sm:text-base md:text-lg font-black text-slate-900 truncate">{{ selectedTeamDetails.owner }}</p>
                 </div>
-                <ShieldCheckIcon class="w-8 h-8 text-ipl-purple" />
+                <ShieldCheckIcon class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-ipl-purple flex-shrink-0" />
               </div>
             </div>
           </div>
 
           <!-- Quick Stats -->
-          <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="p-5 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl border border-slate-300/30 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+          <div class="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+            <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl sm:rounded-2xl border border-slate-300/30 flex items-center justify-between min-h-[70px] sm:min-h-[80px] md:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
               <div>
-                <p class="text-xs text-slate-700 font-bold mb-2 uppercase tracking-wide">📊 Total Matches</p>
-                <p class="text-2xl font-black text-slate-800">{{ selectedTeamDetails.total_matches || 'N/A' }}</p>
+                <p class="text-xs text-slate-700 font-bold mb-1 sm:mb-2 uppercase tracking-wide">📊 Total Matches</p>
+                <p class="text-lg sm:text-xl md:text-2xl font-black text-slate-800">{{ selectedTeamDetails.total_matches || 'N/A' }}</p>
               </div>
             </div>
-            <div class="p-5 bg-gradient-to-br from-ipl-gold/10 to-yellow-200 rounded-2xl border border-ipl-gold/30 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+            <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-ipl-gold/10 to-yellow-200 rounded-xl sm:rounded-2xl border border-ipl-gold/30 flex items-center justify-between min-h-[70px] sm:min-h-[80px] md:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
               <div>
-                <p class="text-xs text-yellow-800 font-bold mb-2 uppercase tracking-wide">🎯 Win Rate</p>
-                <p class="text-2xl font-black text-yellow-900">
+                <p class="text-xs text-yellow-800 font-bold mb-1 sm:mb-2 uppercase tracking-wide">🎯 Win Rate</p>
+                <p class="text-lg sm:text-xl md:text-2xl font-black text-yellow-900">
                   {{ selectedTeamDetails.wins && selectedTeamDetails.total_matches ? 
                      Math.round((selectedTeamDetails.wins / selectedTeamDetails.total_matches) * 100) + '%' : 
                      'N/A' }}
                 </p>
               </div>
             </div>
-            <div class="p-5 bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl border border-green-300/30 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+            <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-green-100 to-emerald-200 rounded-xl sm:rounded-2xl border border-green-300/30 flex items-center justify-between min-h-[70px] sm:min-h-[80px] md:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
               <div>
-                <p class="text-xs text-green-800 font-bold mb-2 uppercase tracking-wide">✅ Wins</p>
-                <p class="text-2xl font-black text-green-900">{{ selectedTeamDetails.wins || 'N/A' }}</p>
+                <p class="text-xs text-green-800 font-bold mb-1 sm:mb-2 uppercase tracking-wide">✅ Wins</p>
+                <p class="text-lg sm:text-xl md:text-2xl font-black text-green-900">{{ selectedTeamDetails.wins || 'N/A' }}</p>
               </div>
             </div>
-            <div class="p-5 bg-gradient-to-br from-red-100 to-pink-200 rounded-2xl border border-red-300/30 flex items-center justify-between min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
+            <div class="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-red-100 to-pink-200 rounded-xl sm:rounded-2xl border border-red-300/30 flex items-center justify-between min-h-[70px] sm:min-h-[80px] md:min-h-[100px] shadow-md hover:shadow-lg transition-shadow">
               <div>
-                <p class="text-xs text-red-800 font-bold mb-2 uppercase tracking-wide">❌ Losses</p>
-                <p class="text-2xl font-black text-red-900">{{ selectedTeamDetails.losses || 'N/A' }}</p>
+                <p class="text-xs text-red-800 font-bold mb-1 sm:mb-2 uppercase tracking-wide">❌ Losses</p>
+                <p class="text-lg sm:text-xl md:text-2xl font-black text-red-900">{{ selectedTeamDetails.losses || 'N/A' }}</p>
               </div>
             </div>
           </div>
@@ -440,10 +440,10 @@
           <div class="text-center">
             <button 
               @click="goToTeamsPage"
-              class="w-full bg-gradient-to-r from-ipl-orange to-orange-500 hover:from-orange-500 hover:to-ipl-orange text-white font-black py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+              class="w-full bg-gradient-to-r from-ipl-orange to-orange-500 hover:from-orange-500 hover:to-ipl-orange text-white font-black py-3 sm:py-4 px-4 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 touch-manipulation text-sm sm:text-base"
             >
               <span>🏏 Know More About This Team</span>
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
           </div>
           
