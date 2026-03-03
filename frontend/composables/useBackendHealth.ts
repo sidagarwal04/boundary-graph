@@ -3,6 +3,8 @@
  * Handles Render cold starts by polling the backend until it's ready
  */
 
+import { ref } from 'vue'
+
 interface HealthResponse {
   message: string
   status: string
