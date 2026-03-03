@@ -2,8 +2,14 @@
 import { onMounted, onUnmounted } from 'vue'
 
 const config = useRuntimeConfig()
+const { isBackendActive, isCheckingHealth, error, initHealthCheck } = useBackendHealth()
+
+let heartbeat: NodeJS.Timer
 
 onMounted(async () => {
+  // 1. First, check if backend is active
+  await initHealthCheck()
+
   // Register service worker for caching and offline support
   if ('serviceWorker' in navigator) {
     try {
@@ -28,20 +34,22 @@ onMounted(async () => {
     }
   }
 
-  // Initial "Wake up" call to Render backend
+  // Keep backend awake every 10 minutes (Render timeout is 15 mins)
   const wakeUpBackend = () => {
     const apiBase = config.public.apiBase as string
     if (apiBase && apiBase.includes('render.com')) {
       console.log('💓 Sending heartbeat to Render backend...')
-      $fetch(`${apiBase}/health`).catch(() => {})
+      $fetch(`${apiBase}/`).catch(() => {})
     }
   }
 
-  // Ping immediately on load
-  wakeUpBackend()
+  // Ping immediately after backend is confirmed active
+  if (isBackendActive.value) {
+    wakeUpBackend()
+  }
 
   // Keep it awake every 10 minutes (Render timeout is 15 mins)
-  const heartbeat = setInterval(wakeUpBackend, 10 * 60 * 1000)
+  heartbeat = setInterval(wakeUpBackend, 10 * 60 * 1000)
 
   // Mobile-specific optimizations
   if ('requestIdleCallback' in window) {
@@ -90,7 +98,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <!-- Show interim UI while checking backend health -->
+  <BackendWakingUp v-if="!isBackendActive" :error="error" />
+
+  <!-- Show main UI once backend is confirmed active -->
+  <div v-else>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
